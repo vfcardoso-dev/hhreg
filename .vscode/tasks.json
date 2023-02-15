@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Hhreg/Hhreg.csproj",
+                "${workspaceFolder}/hhreg/hhreg.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Hhreg/Hhreg.csproj",
+                "${workspaceFolder}/hhreg/hhreg.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Hhreg/Hhreg.csproj"
+                "${workspaceFolder}/hhreg/hhreg.csproj"
             ],
             "problemMatcher": "$msCompile"
         }
