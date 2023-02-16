@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace hhreg;
@@ -6,23 +8,20 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Configure logging
-        var serviceCollection = new ServiceCollection()
-            .AddLogging(lb =>
-            {
-                lb.ClearProviders();
-                lb.AddConsole();
-            });
+        var config = Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logBuilder =>
+                {
+                    logBuilder.ClearProviders(); // removes all providers from LoggerFactory
+                    logBuilder.AddConsole();  
+                })
+                .ConfigureServices(sp => {
+                    sp.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();
+                    sp.AddSingleton<AppHost>();
+                    // resto das dependencias....
+                })
+                .Build();
 
-        // Add services
-        serviceCollection.AddSingleton<AppHost>();
-        serviceCollection.AddSingleton<DatabaseEnsurer>();
-        // Add other dependencies here ...                
-
-        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-        
-        serviceProvider.GetService<AppHost>()?.Run(args);
+        config.Services.GetService<AppHost>()?.Run(args);
     }
 }
 
