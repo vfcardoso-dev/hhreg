@@ -3,6 +3,7 @@
 - @hhreg
     - !alert
         - regras:
+            - antes de cada chamada (exceto init), verificar se banco existe e está inicializado.
             - antes de cada chamada, verificar se existem dias com quantidade ímpar de entradas.
             - todos os dias deveriam ter quantidade par de entradas
     - @init

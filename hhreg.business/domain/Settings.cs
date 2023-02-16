@@ -2,7 +2,7 @@ namespace hhreg.business.domain;
 
 public class Settings
 {
-    public int InitialBalance { get; set; } // in minutes
-    public int WorkDay { get; set; } // in minutes
-    public int LunchTime { get; set; } = 60; // in minutes
+    public double InitialBalance { get; set; } // in minutes
+    public double WorkDay { get; set; } // in minutes
+    public double LunchTime { get; set; } = 60; // in minutes
 }

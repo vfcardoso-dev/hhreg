@@ -1,27 +1,22 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Spectre.Console;
 
 namespace hhreg;
-class Program
+static class Program
 {
-    static void Main(string[] args)
+    static int Main(string[] args)
     {
-        var config = Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logBuilder =>
-                {
-                    logBuilder.ClearProviders(); // removes all providers from LoggerFactory
-                    logBuilder.AddConsole();  
-                })
-                .ConfigureServices(sp => {
-                    sp.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();
-                    sp.AddSingleton<AppHost>();
-                    // resto das dependencias....
-                })
-                .Build();
+        var app = Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(LoggingConfigurer.Configure)
+            .ConfigureServices(ServicesConfigurer.Configure)
+            .Build();
 
-        config.Services.GetService<AppHost>()?.Run(args);
+        try {
+            return app.Services.GetRequiredService<AppHost>().Run(args);
+        } catch (Exception ex) {
+            AnsiConsole.MarkupLineInterpolated($"[red]ERRO:[/] {ex.Message}");
+            return -99;
+        }
     }
 }
-

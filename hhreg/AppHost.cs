@@ -1,19 +1,28 @@
-using Microsoft.Extensions.Logging;
+using hhreg.business;
+using Spectre.Console;
+using Spectre.Console.Cli;
 
 namespace hhreg;
 public class AppHost {
-
-    private readonly ILogger<AppHost> _logger;
     private readonly IDatabaseEnsurer _databaseEnsurer;
+    private readonly ICommandsConfigurer _commandsConfigurer;
+    private readonly ITypeRegistrar _typeRegistrar;
 
-    public AppHost(ILoggerFactory loggerFactory, IDatabaseEnsurer databaseEnsurer) {
-        _logger = loggerFactory.CreateLogger<AppHost>();
-        _databaseEnsurer = databaseEnsurer;
+    public AppHost(
+        IDatabaseEnsurer databaseEnsurer,
+        ICommandsConfigurer commandsConfigurer, 
+        ITypeRegistrar typeRegistrar) {
+            _databaseEnsurer = databaseEnsurer;
+            _commandsConfigurer = commandsConfigurer;
+            _typeRegistrar = typeRegistrar;
     }
 
-    public void Run(string[] args) {
+    public int Run(string[] args) {
         _databaseEnsurer.Ensure();
 
-        _logger.LogInformation("Olá, mundo");
+        var app = new CommandApp(_typeRegistrar);        
+        app.Configure(_commandsConfigurer.Configure);
+        
+        return app.Run(args);
     }
 }
