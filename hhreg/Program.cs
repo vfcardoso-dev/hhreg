@@ -11,18 +11,18 @@ class Program
             .AddLogging(lb =>
             {
                 lb.ClearProviders();
-                lb.AddSimpleConsole();
+                lb.AddConsole();
             });
 
         // Add services
         serviceCollection.AddSingleton<AppHost>();
+        serviceCollection.AddSingleton<DatabaseEnsurer>();
         // Add other dependencies here ...                
 
         var serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var appHost = serviceProvider.GetService<AppHost>();
-
-        appHost?.Run(args);
+        
+        serviceProvider.GetService<AppHost>()?.Run(args);
     }
 }
 
