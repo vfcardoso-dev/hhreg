@@ -21,15 +21,15 @@ public class CommandsConfigurer : ICommandsConfigurer {
         config.SetInterceptor(_ensureInitInterceptor);
 
         config.AddCommand<InitCommand>("init")
-            .WithDescription("Inicializa as configurações.");
+            .WithDescription("Initialize CLI settings.");
         
         config.AddBranch("config", cfg => {
             cfg.AddCommand<ConfigShowCommand>("show")
-                .WithDescription("Mostra as configurações atuais.");
+                .WithDescription("Shows current settings.");
             cfg.AddCommand<ConfigEditCommand>("edit")
-                .WithDescription("Altera as configurações atuais.");
+                .WithDescription("Change current settings.");
             
-            cfg.SetDescription("Gerencia as configurações");
+            cfg.SetDescription("Manage CLI settings");
         });
     }
 }

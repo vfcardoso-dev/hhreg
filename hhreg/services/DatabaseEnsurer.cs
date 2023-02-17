@@ -23,17 +23,24 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
     }
 
     public void Ensure() {
-        if (!File.Exists(_appSettings.DatabaseFile)) {
-            File.Create(_appSettings.DatabaseFile);
-            _logger.LogInformation("Arquivo de banco de dados não existia. Criado em '{databaseFile}'", _appSettings.DatabaseFile);
+        if (!Directory.Exists(_appSettings.AppDataFolder)) 
+        {
+            Directory.CreateDirectory(_appSettings.AppDataFolder);
+        }
+        
+        if (!File.Exists(_appSettings.DatabaseFilePath)) 
+        {
+            File.Create(_appSettings.DatabaseFilePath);
+            _logger.LogInformation("Database file did not exists. Created on '{databaseFile}'", _appSettings.DatabaseFilePath);
         }
 
         var tableExists = _unitOfWork.QuerySingle<bool>(
             @"SELECT case when count(*) == 0 then false else true end 
             FROM sqlite_master WHERE type='table' AND name='Settings';");
 
-        if (!tableExists) {
-            _logger.LogInformation("Garantindo tabelas do banco de dados em '{connectionString}'", _appSettings.ConnectionString);
+        if (!tableExists) 
+        {
+            _logger.LogInformation("Ensuring database tables on '{connectionString}'", _appSettings.ConnectionString);
 
             var sql = $@"
                 PRAGMA foreign_keys = ON;

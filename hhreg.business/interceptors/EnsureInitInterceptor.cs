@@ -21,7 +21,7 @@ public class EnsureInitInterceptor : IEnsureInitInterceptor
         var initialized = _settingsRepository.IsAlreadyInitialized();
 
         if (!initialized) {
-            throw new HhregException("É necessário inicializar as configurações com o comando 'init'.");
+            throw new HhregException("You need to initialize CLI settings with '[green]init[/]' option.");
         }
     }
 }

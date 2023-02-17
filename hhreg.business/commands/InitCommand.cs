@@ -15,30 +15,30 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
     public sealed class Settings : CommandSettings 
     {
-        [Description("Saldo inicial do banco de horas (em minutos)")]
-        [CommandOption("--saldo-minutos")]
+        [Description("Time bank initial balance (in minutes)")]
+        [CommandOption("--initial-balance-in-minutes")]
         public double? InitialBalanceMinutes { get; init; }
 
-        [Description("Jornada de trabalho (em minutos)")]
-        [CommandOption("--jornada-minutos")]
+        [Description("Workday (in minutes)")]
+        [CommandOption("--workday-in-minutes")]
         public double? WorkDayMinutes { get; init; }
 
-        [Description("Saldo inicial do banco de horas (em horas)")]
-        [CommandOption("--saldo-horas")]
+        [Description("Time bank initial balance (in hours)")]
+        [CommandOption("-b|--initial-balance-in-hours")]
         public string? InitialBalanceHours { get; init; }
 
-        [Description("Jornada de trabalho (em horas)")]
-        [CommandOption("--jornada-horas")]
+        [Description("Workday (in hours)")]
+        [CommandOption("-w|--workday-in-hours")]
         public string? WorkDayHours { get; init; }
 
         public override ValidationResult Validate()
         {
             if (InitialBalanceMinutes == null && InitialBalanceHours == null) {
-                return ValidationResult.Error("Você deve informar um saldo inicial do banco de horas (em minutos ou horas).");
+                return ValidationResult.Error("You should inform an initial balance for the hour bank (in minutes or hours).");
             }
                 
             if (WorkDayMinutes == null && WorkDayHours == null) {
-                return ValidationResult.Error("Você deve informar a jornada de trabalho (em minutos ou horas).");
+                return ValidationResult.Error("You should inform your workday (in minutes or hours).");
             }
             
             return ValidationResult.Success();
@@ -48,7 +48,7 @@ public sealed class InitCommand : Command<InitCommand.Settings>
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         if (_settingsRepository.IsAlreadyInitialized()) {
-            throw new HhregException("Configuração já inicializada. Você pode editar com 'config edit'");
+            throw new HhregException("Settings already initialized. You can change it with 'config edit'");
         }
         
         var initialBalance = settings.InitialBalanceMinutes ?? ExtractMinutes(settings.InitialBalanceHours!);
@@ -56,7 +56,7 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
         _settingsRepository.Create(initialBalance, workDay);
         
-        AnsiConsole.MarkupLineInterpolated($@"Configurações inicializadas com [green]SUCESSO[/]!");
+        AnsiConsole.MarkupLineInterpolated($@"Settings [green]SUCCESSFULLY[/] initialized!");
         return 0;
     }
 

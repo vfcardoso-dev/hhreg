@@ -1,6 +1,6 @@
 namespace hhreg.business.domain;
 
-public class DayEntry
+public class DayEntry : BaseEntity<DayEntry>
 {
     public Guid Id { get; set; }
     public DateOnly Day { get; set; }

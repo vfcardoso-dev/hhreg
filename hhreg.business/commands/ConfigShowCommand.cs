@@ -16,23 +16,12 @@ public sealed class ConfigShowCommand : Command<ConfigShowCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var cfg = _settingsRepository.GetOrDefault();
+        var cfg = _settingsRepository.Get()!;
 
         var table = new Table();
-        table.AddColumns("Saldo inicial", "Jornada", "Almoço");
-        
-        var initBalance = FormatTime(cfg.InitialBalance);
-        var workDay = FormatTime(cfg.WorkDay);
-        var lunchTime = FormatTime(cfg.LunchTime);
-        
-        table.AddRow(initBalance, workDay, lunchTime);
-
+        table.AddColumns(cfg.CreateHeaders());
+        table.AddRow(cfg.CreateRenderableRow());
         AnsiConsole.Write(table);
         return 0;
-    }
-
-    private string FormatTime(double value) {
-        var signal = value < 0 ? "-" : "";
-        return $"{signal}{TimeSpan.FromMinutes(value).ToString("hh\\:mm")}";
     }
 }
