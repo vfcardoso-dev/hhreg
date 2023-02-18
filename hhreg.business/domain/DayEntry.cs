@@ -41,9 +41,6 @@ public class DayEntry : BaseEntity<DayEntry>
             summary = summary.Add(diff);
         }
 
-        var lunchTime = TimeSpan.FromMinutes(cfg.LunchTime);
-        summary = summary.Subtract(lunchTime);
-
         return summary;
     }
 
@@ -65,14 +62,14 @@ public class DayEntry : BaseEntity<DayEntry>
         var workDay = TimeSpan.FromMinutes(cfg.WorkDay);
         var balance = summary.Subtract(workDay);
         var balanceColor = balance > TimeSpan.Zero ? Color.Green : Color.Red;
-        var balanceSignal = balance > TimeSpan.Zero ? "+" : "-";
+        var plusSignal = balance > TimeSpan.Zero ? "+" : "";
         
         var row = new List<Text>();
         row.Add(new Text(DateOnly.Parse(Day!).ToString()));
         row.Add(new Text(DayType.ToString()));
         row.Add(new Text(string.Join(" / ", TimeEntries.Select(x => x.Time))));
         row.Add(new Text(summary.ToTimeString())); // Total hours
-        row.Add(new Text($"{balanceSignal}{balance.ToTimeString()}", new Style(balanceColor, Color.Black))); // balance
+        row.Add(new Text($"{plusSignal}{balance.ToTimeString()}", new Style(balanceColor, Color.Black))); // balance
         row.Add(new Text(Justification ?? "-")); // justification
         return row.ToArray();
     }

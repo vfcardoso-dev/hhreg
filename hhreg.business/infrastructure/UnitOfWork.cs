@@ -1,5 +1,6 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
+using Spectre.Console;
 
 namespace hhreg.business;
 
@@ -7,6 +8,8 @@ public interface IUnitOfWork : IDisposable
 {
     void Execute(string query, object? param = null);
     void BulkExecute(string query, IList<object> paramList);
+    void BulkExecute(IList<SqliteCommand> commands);
+    SqliteCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null);
     IEnumerable<T> Query<T>(string query, object? param = null);
     T QuerySingle<T>(string query, object? param = null);
     T QuerySingleOrDefault<T>(string query, object? param = null);
@@ -38,6 +41,7 @@ public class UnitOfWork : IUnitOfWork
             tx.Commit();
         } catch(Exception) {
             tx.Rollback();
+            throw;
         }
     }
 
@@ -53,7 +57,40 @@ public class UnitOfWork : IUnitOfWork
             tx.Commit();
         } catch(Exception) {
             tx.Rollback();
+            throw;
         }
+    }
+
+    public void BulkExecute(IList<SqliteCommand> commands)
+    {
+        var conn = GetConnection();
+        var tx = conn.BeginTransaction();
+        
+        try {
+            foreach(var cmd in commands) {
+                cmd.Connection = conn;
+                cmd.Transaction = tx;
+                cmd.Prepare();
+                cmd.ExecuteNonQuery();
+            }
+            tx.Commit();
+        } catch(Exception) {
+            tx.Rollback();
+            throw;
+        }
+    }
+
+    public SqliteCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null) 
+    {
+        var cmd = new SqliteCommand(query);
+
+        if (param != null) {
+            foreach(var paramEntry in param) {
+                cmd.Parameters.AddWithValue(paramEntry.Key, paramEntry.Value ?? DBNull.Value);
+            }
+        }
+        
+        return cmd;
     }
 
     public IEnumerable<T> Query<T>(string query, object? param = null)

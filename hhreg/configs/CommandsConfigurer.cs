@@ -34,6 +34,8 @@ public class CommandsConfigurer : ICommandsConfigurer {
             entry.SetDescription("Manage entry logs.");
 
             entry.AddCommand<EntryNewCommand>("new").WithDescription("Logs new entries.");
+            entry.AddCommand<EntryOverrideCommand>("override").WithDescription("Override entry logs.");
+            entry.AddCommand<EntryNowCommand>("now").WithDescription("Log an entry now.");
         });
 
         cmd.AddBranch("report", report => {

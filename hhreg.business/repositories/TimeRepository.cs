@@ -1,11 +1,14 @@
 using hhreg.business;
 using hhreg.business.domain;
+using Microsoft.Data.Sqlite;
 
 public interface ITimeRepository {
     DayEntry? GetDayEntry(string day);
     DayEntry GetOrCreateDay(string day, string? justification = null, DayType? dayType = DayType.Work);
     void CreateTime(long dayEntryId, string time);
     void CreateTime(long dayEntryId, params string[] timeList);
+    void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, 
+        params string[] timeList);
 }
 
 public class TimeRepository : ITimeRepository
@@ -58,5 +61,29 @@ public class TimeRepository : ITimeRepository
         var parameters = timeList.Select(time => new { time, dayEntryId }).ToList<object>();
 
         _unitOfWork.BulkExecute(query, parameters);
+    }
+
+    public void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList) 
+    {
+        var cmdList = new List<SqliteCommand>{
+            _unitOfWork.CreateSqlCommand(@"update DayEntry set Justification = @justification, DayType = @dayType where Id = @dayEntryId;",
+                new Dictionary<string, object?> {
+                    {"@justification", justification}, {"@dayType", dayType}, {"@dayEntryId", dayEntryId}
+                }
+            ),
+            _unitOfWork.CreateSqlCommand(@"delete from TimeEntry where DayEntryId = @dayEntryId;",
+                new Dictionary<string, object?> {{"@dayEntryId", dayEntryId}}
+            )
+        };
+
+        cmdList.AddRange(
+            timeList.Select(time => {
+                return _unitOfWork.CreateSqlCommand(@"insert into TimeEntry (Time, DayEntryId) values (@time, @dayEntryId);",
+                    new Dictionary<string, object?> {{"@time", time},{"@dayEntryId", dayEntryId}}
+                );
+            })
+        );
+
+        _unitOfWork.BulkExecute(cmdList);
     }
 }

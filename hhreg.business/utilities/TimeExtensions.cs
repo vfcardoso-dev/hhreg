@@ -11,4 +11,9 @@ public static class TimeExtensions
         var signal = value < TimeSpan.Zero ? "-" : "";
         return $"{signal}{value.ToString("hh\\:mm")}";
     }
+
+    public static string ToTimeString(this TimeOnly value)
+    {
+        return value.ToString("hh\\:mm");
+    }
 }

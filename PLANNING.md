@@ -13,10 +13,9 @@
             - [x] deve inicializar banco de dados de horas
             - [x] deve persistir o saldo de horas inicial e jornada diária padrão
             - [x] não deve permitir inicializar mais de uma vez.
-            - [x] tempo de almoço mínimo fixo em 1h
     - [ ] @reset
         - regras:
-            - zera o saldo de horas
+            - [ ] zera o saldo de horas
     - [x] @config
         - [x] @show: 
         - [x] @change:
@@ -33,17 +32,20 @@
             - regras:
                 - [x] obrigatório -t ou -d
                 - [x] obrigatório -j ou ao menos 1 argumento em entries
-        - [ ] @override
-            - [ ] (-t|--today): define a data da entrada como hoje
-            - [ ] (-d|--day): define a data da entrada
-            - [ ] (-j|--justification): registra uma justificativa
-            - [ ] (-y|--work-day): tipo de dia (padrão: Work)
-            - [ ] (entries): persiste as entradas informadas
+        - [x] @override
+            - [x] (-t|--today): define a data da entrada como hoje
+            - [x] (-d|--day): define a data da entrada
+            - [x] (-j|--justification): registra uma justificativa
+            - [x] (-y|--work-day): tipo de dia (padrão: Work)
+            - [x] (entries): persiste as entradas informadas
             - regras:
-                - [ ] obrigatório -t ou -d
-                - [ ] obrigatório -j ou ao menos 1 argumento em entries
+                - [x] não sobrescreve datas ainda não criadas
+                - [x] obrigatório -t ou -d
+                - [x] obrigatório -j ou ao menos 1 argumento em entries
+        - [x] @now: insere uma entrada hoje e agora
     - [ ] @report
-        - [x] @day: mostra as entradas registradas para o dia VALOR
-        - [ ] @mes: mostra as entradas registradas para o mes VALOR
-        - [ ] @balance: mostra saldo atual de horas
+        - [x] @day (day): mostra as entradas registradas para o dia
+        - [ ] @mes (mes): mostra as entradas registradas para o mes
+        - [ ] @balance: mostra saldo atual acumulado de horas
+            - [ ] (-t|--tail): trazer ultimos N dias (padrão: 5)
         - [ ] @drake: DIA_INICIO, DIA_FIM: exporta base64 para inclusão em lote no drake usando extensão hhreg-chrome. DATA_FIM é opcional. Se não informada, exporta até data de hoje.

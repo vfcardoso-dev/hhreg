@@ -21,8 +21,8 @@ public class SettingsRepository : ISettingsRepository
     public void Create(double initialBalance, double workDay)
     {
         _unitOfWork.Execute(
-                @"insert into Settings (InitialBalance, WorkDay, LunchTime) 
-                    values (@initialBalance, @workDay, 60);", new { initialBalance, workDay });
+                @"insert into Settings (InitialBalance, WorkDay) 
+                    values (@initialBalance, @workDay);", new { initialBalance, workDay });
     }
 
     public void Update(double newInitialBalance, double newWorkDay)

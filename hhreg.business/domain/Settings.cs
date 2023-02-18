@@ -7,14 +7,12 @@ public class Settings : BaseEntity<Settings>
 {
     public double InitialBalance { get; set; } // in minutes
     public double WorkDay { get; set; } // in minutes
-    public double LunchTime { get; set; } = 60; // in minutes
 
     public override IRenderable[] RenderRow()
     {
         return new Text[] {
             new Text(InitialBalance.ToTimeString()),
-            new Text(WorkDay.ToTimeString()),
-            new Text(LunchTime.ToTimeString())
+            new Text(WorkDay.ToTimeString())
         };
     }
 }

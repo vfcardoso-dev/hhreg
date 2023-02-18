@@ -62,8 +62,7 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
                     
                 CREATE TABLE IF NOT EXISTS Settings (
                         InitialBalance DOUBLE NOT NULL,
-                        WorkDay DOUBLE NOT NULL,
-                        LunchTime DOUBLE NOT NULL
+                        WorkDay DOUBLE NOT NULL
                     );";
 
             _unitOfWork.Execute(sql);
