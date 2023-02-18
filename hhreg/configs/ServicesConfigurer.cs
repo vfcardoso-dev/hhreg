@@ -22,6 +22,7 @@ public static class ServicesConfigurer {
 
         services.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
+        services.AddScoped<ITimeRepository, TimeRepository>();
         
         // resto das dependencias....
         // ...

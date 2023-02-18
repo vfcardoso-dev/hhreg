@@ -30,8 +30,9 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
         
         if (!File.Exists(_appSettings.DatabaseFilePath)) 
         {
-            File.Create(_appSettings.DatabaseFilePath);
+            var f = File.Create(_appSettings.DatabaseFilePath);
             _logger.LogInformation("Database file did not exists. Created on '{databaseFile}'", _appSettings.DatabaseFilePath);
+            f.Close();
         }
 
         var tableExists = _unitOfWork.QuerySingle<bool>(

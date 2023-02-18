@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using hhreg.business;
 using hhreg.business.domain;
 

@@ -14,18 +14,12 @@ static class Program
             .ConfigureAppConfiguration(AppConfigurer.Configure)
             .Build();
 
-        var env = app.Services.GetRequiredService<IHostEnvironment>();
-
         try {
-            if (!env.IsProduction()) {
-                AnsiConsole.MarkupLineInterpolated($"[yellow]ENV:[/] {env.EnvironmentName}");
-            }
-
             return app.Services.GetRequiredService<AppHost>().Run(args);
         } catch (Exception ex) {
             AnsiConsole.MarkupLine($"[red]ERROR:[/] {ex.Message}");
             
-            if (!env.IsProduction()) {
+            if (!app.Services.GetRequiredService<IHostEnvironment>().IsProduction()) {
                 AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
             }
 

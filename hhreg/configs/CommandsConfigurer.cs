@@ -20,16 +20,15 @@ public class CommandsConfigurer : ICommandsConfigurer {
         config.PropagateExceptions();
         config.SetInterceptor(_ensureInitInterceptor);
 
-        config.AddCommand<InitCommand>("init")
-            .WithDescription("Initialize CLI settings.");
+        config.AddCommand<InitCommand>("init").WithDescription("Initializes CLI settings.");
         
         config.AddBranch("config", cfg => {
-            cfg.AddCommand<ConfigShowCommand>("show")
-                .WithDescription("Shows current settings.");
-            cfg.AddCommand<ConfigEditCommand>("edit")
-                .WithDescription("Change current settings.");
-            
             cfg.SetDescription("Manage CLI settings");
+
+            cfg.AddCommand<ConfigShowCommand>("show").WithDescription("Shows current settings.");
+            cfg.AddCommand<ConfigEditCommand>("edit").WithDescription("Changes current settings.");
         });
+
+        config.AddCommand<NewEntryCommand>("new").WithDescription("Logs new entries.");
     }
 }

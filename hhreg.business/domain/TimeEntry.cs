@@ -2,6 +2,6 @@ namespace hhreg.business.domain;
 
 public class TimeEntry : BaseEntity<TimeEntry>
 {
-    public Guid Id { get; set; }
-    public TimeOnly Time { get; set; }
+    public long Id { get; set; }
+    public string? Time { get; set; }
 }

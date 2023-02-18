@@ -5,4 +5,10 @@ public static class TimeExtensions
         var signal = value < 0 ? "-" : "";
         return $"{signal}{TimeSpan.FromMinutes(value).ToString("hh\\:mm")}";
     }
+
+    public static string ToTimeString(this TimeSpan value)
+    {
+        var signal = value < TimeSpan.Zero ? "-" : "";
+        return $"{signal}{value.ToString("hh\\:mm")}";
+    }
 }
