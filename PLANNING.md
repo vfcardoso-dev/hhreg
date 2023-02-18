@@ -43,7 +43,7 @@
                 - [ ] obrigatório -t ou -d
                 - [ ] obrigatório -j ou ao menos 1 argumento em entries
     - [ ] @report
-        - [x] @day VALOR: mostra as entradas registradas para o dia VALOR
-        - [ ] @mes VALOR): mostra as entradas registradas para o mes VALOR
-        - [ ] @saldo: mostra saldo atual de horas
+        - [x] @day: mostra as entradas registradas para o dia VALOR
+        - [ ] @mes: mostra as entradas registradas para o mes VALOR
+        - [ ] @balance: mostra saldo atual de horas
         - [ ] @drake: DIA_INICIO, DIA_FIM: exporta base64 para inclusão em lote no drake usando extensão hhreg-chrome. DATA_FIM é opcional. Se não informada, exporta até data de hoje.
