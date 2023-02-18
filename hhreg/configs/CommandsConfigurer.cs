@@ -30,5 +30,11 @@ public class CommandsConfigurer : ICommandsConfigurer {
         });
 
         config.AddCommand<NewEntryCommand>("new").WithDescription("Logs new entries.");
+
+        config.AddBranch("report", report => {
+            report.SetDescription("Summarize and show time entries");
+
+            report.AddCommand<ReportDayCommand>("day").WithDescription("Show time entries for a single day.");
+        });
     }
 }

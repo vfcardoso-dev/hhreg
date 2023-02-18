@@ -61,6 +61,11 @@ public class UnitOfWork : IUnitOfWork
         return GetConnection().Query<T>(query, param);
     }
 
+    public IEnumerable<T3> Query<T1,T2,T3>(string query, Func<T1,T2,T3> action, object? param = null, string? splitOn = null)
+    {
+        return GetConnection().Query<T1,T2,T3>(query, action, param, splitOn: splitOn);
+    }
+
     public T QuerySingle<T>(string query, object? param = null)
     {
         return GetConnection().QuerySingle<T>(query, param);

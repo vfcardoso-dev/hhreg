@@ -20,6 +20,11 @@ public sealed class NewEntryCommand : Command<NewEntryCommand.Settings>
         [CommandOption("-t|--today")]
         public bool IsToday { get; init; }
 
+        [Description("Sets day type (Work,Weekend,Sick,Holiday,Vacation)")]
+        [CommandOption("-y|--day-type")]
+        [DefaultValue(DayType.Work)]
+        public DayType DayType { get; init; }
+
         [Description("Defines a justification")]
         [CommandOption("-j|--justification")]
         public string? Justification { get; init; }
@@ -39,7 +44,7 @@ public sealed class NewEntryCommand : Command<NewEntryCommand.Settings>
                 return ValidationResult.Error("You should inform a day to log (or set entry as today with -t).");
             }
 
-            if (!IsToday && !DateTime.TryParse(Day, out var _)) {
+            if (!IsToday && !DateOnly.TryParse(Day, out var _)) {
                 return ValidationResult.Error($"Could not parse '{Day}' as a valid date format.");
             }
                 
@@ -59,14 +64,12 @@ public sealed class NewEntryCommand : Command<NewEntryCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var inputDay = settings.IsToday ? DateOnly.FromDateTime(DateTime.Today) : DateOnly.Parse(settings.Day!);
-        var dayEntry = _timeRepository.GetOrCreateDay(inputDay.ToString("yyyy-MM-dd"), settings.Justification);
+        var inputDay = settings.IsToday 
+            ? DateOnly.FromDateTime(DateTime.Today) 
+            : DateOnly.Parse(settings.Day!);
 
-        // var firstPersistedTime = dayEntry.TimeEntries.OrderBy(x => x.Time).First();
-        // if (settings.Entries.Any(x => x < firstPersistedTime.Time)) {
-        //     // If any of entries informed is before first persisted entry, then its forbidden
-        //     throw new HhregException("You cannot inform a time entry minor than the first already informed.");
-        // }
+        var dayEntry = _timeRepository.GetOrCreateDay(inputDay.ToString("yyyy-MM-dd"), 
+            settings.Justification, settings.DayType);
 
         _timeRepository.CreateTime(dayEntry.Id, settings.Entries);
         

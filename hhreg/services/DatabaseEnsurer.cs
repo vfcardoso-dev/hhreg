@@ -49,6 +49,7 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
                 CREATE TABLE IF NOT EXISTS DayEntry (
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Day TEXT NOT NULL UNIQUE,
+                        DayType TEXT NOT NULL,
                         Justification TEXT NULL
                     );
                 
