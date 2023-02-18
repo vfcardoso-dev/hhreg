@@ -1,46 +1,44 @@
-# HHreg - Registering working hours
+# hhreg - registering working hours
 
 - @hhreg
-    - !alert
+    - [ ] !alert
         - regras:
-            - antes de cada chamada (exceto init), verificar se banco existe e está inicializado.
-            - antes de cada chamada, verificar se existem dias com quantidade ímpar de entradas.
-            - todos os dias deveriam ter quantidade par de entradas
-    - @init
-        - (-s|--saldo VALOR): saldo inicial (obrigatório) 
-        - (-j|--jornada VALOR): jornada (obrigatório)
+            - [x] antes de cada chamada (exceto init), verificar se banco existe e está inicializado.
+            - [ ] antes de cada chamada, verificar se existem dias com quantidade ímpar de entradas.
+            - [ ] todos os dias deveriam ter quantidade par de entradas
+    - [x] @init
+        - [x] (-s|--saldo VALOR): saldo inicial (obrigatório) 
+        - [x] (-j|--jornada VALOR): jornada (obrigatório)
         - regras:
-            - deve inicializar banco de dados de horas
-            - deve persistir o saldo de horas inicial e jornada diária padrão
-            - não deve permitir inicializar mais de uma vez.
-            - tempo de almoço mínimo fixo em 1h
-    - @reset
+            - [x] deve inicializar banco de dados de horas
+            - [x] deve persistir o saldo de horas inicial e jornada diária padrão
+            - [x] não deve permitir inicializar mais de uma vez.
+            - [x] tempo de almoço mínimo fixo em 1h
+    - [ ] @reset
         - regras:
             - zera o saldo de horas
-    - @config
-        - @show: 
-        - @change:
-            - (-s|--saldo NOVO_VALOR): altera saldo inicial para NOVO_VALOR
-            - (-j|--jornada NOVO_VALOR): altera jornada para NOVO_VALOR
-    - @new
-        - (-h|--hoje): define a data da entrada como hoje (opcional)
-        - (-d|--data VALOR): define a data da entrada como VALOR (opcional)
-        - (-j|--justificativa): registra uma justificativa (opcional)
-        - (-e|--entradas VALORES...): persiste as entradas informadas em VALORES... (opcional)
+    - [x] @config
+        - [x] @show: 
+        - [x] @change:
+            - [x] (-s|--saldo NOVO_VALOR): altera saldo inicial para NOVO_VALOR
+            - [x] (-j|--jornada NOVO_VALOR): altera jornada para NOVO_VALOR
+    - [x] @new
+        - [x] (-h|--hoje): define a data da entrada como hoje (opcional)
+        - [x] (-d|--data VALOR): define a data da entrada como VALOR (opcional)
+        - [x] (-j|--justificativa): registra uma justificativa (opcional)
+        - [x] (-t|--tipo-dia): tipo de dia (opcional)
+        - [x] (-e|--entradas VALORES...): persiste as entradas informadas em VALORES... (opcional)
         - regras:
-            - se não informado -h nem -d, então a data da entrada é hoje
-            - valores de -e devem ser maiores que o já informado anteriormente para o dia
-            - valores de -e não podem ter repetições
-            - obrigatório ou -j ou -e com ao menos 1 entrada
-    - @edit
-        - (-d|--dia VALOR): define a data da entrada como VALOR (obrigatório)
-        - (-j|--justificativa): registra uma justificativa (opcional)
-        - (-e|--entradas VALORES...): sobrescreve as entradas informadas em VALORES... (obrigatório ao menos 1)
+            - [x] obrigatório ou -j ou -e com ao menos 1 entrada
+    - [ ] @edit
+        - [ ] (-d|--dia VALOR): define a data da entrada como VALOR (obrigatório)
+        - [ ] (-j|--justificativa): registra uma justificativa (opcional)
+        - [ ] (-t|--tipo-dia): tipo de dia (opcional)
+        - [ ] (-e|--entradas VALORES...): sobrescreve as entradas informadas em VALORES... (obrigatório ao menos 1)
         - regras:
-            - valores de -e não podem ter repetições
-            - obrigatório ou -j ou -e com ao menos 1 entrada
-    - @report
-        - (-d|--dia VALOR): mostra as entradas registradas para o dia VALOR
-        - (-m|--mes VALOR): mostra as entradas registradas para o mes VALOR
-        - (-s|--saldo): mostra saldo atual de horas
-        - (-k|--drake DIA_INICIO DIA_FIM): exporta base64 para inclusão em lote no drake usando extensão hhreg-chrome. DATA_FIM é opcional. Se não informada, exporta até data de hoje.
+            - [ ] obrigatório ou -j ou -e com ao menos 1 entrada
+    - [ ] @report
+        - [x] @day VALOR: mostra as entradas registradas para o dia VALOR
+        - [ ] @mes VALOR): mostra as entradas registradas para o mes VALOR
+        - [ ] @saldo: mostra saldo atual de horas
+        - [ ] @drake: DIA_INICIO, DIA_FIM: exporta base64 para inclusão em lote no drake usando extensão hhreg-chrome. DATA_FIM é opcional. Se não informada, exporta até data de hoje.

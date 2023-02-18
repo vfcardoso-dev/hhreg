@@ -1,1 +1,1 @@
-# hhreg
+# hhreg - registering working hours
