@@ -19,8 +19,8 @@ public sealed class ConfigShowCommand : Command<ConfigShowCommand.Settings>
         var cfg = _settingsRepository.Get()!;
 
         var table = new Table();
-        table.AddColumns(cfg.CreateHeaders());
-        table.AddRow(cfg.CreateRenderableRow());
+        table.AddColumns(cfg.RenderColumns());
+        table.AddRow(cfg.RenderRow());
         AnsiConsole.Write(table);
         return 0;
     }

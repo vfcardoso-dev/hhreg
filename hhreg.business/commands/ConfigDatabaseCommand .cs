@@ -18,7 +18,7 @@ public sealed class ConfigDatabaseCommand : Command<ConfigDatabaseCommand.Settin
     {
         var table = new Table();
         table.AddColumns(new TableColumn(new Text("Database location", new Style(Color.Green, Color.Black))));
-        table.AddRow(new string[]{ _appSettings.DatabaseFilePath });
+        table.AddRow(new TextPath[]{ new TextPath(_appSettings.DatabaseFilePath) });
         AnsiConsole.Write(table);
         return 0;
     }

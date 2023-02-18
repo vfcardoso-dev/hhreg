@@ -22,22 +22,26 @@
         - [x] @change:
             - [x] (-b|--initial-balance): saldo inicial em horas ou minutos
             - [x] (-w|--workday): jornada em horas ou minutos
-        - [ ] @database: mostra local do banco de dados
-    - [x] @new
-        - [x] (-h|--hoje): define a data da entrada como hoje (opcional)
-        - [x] (-d|--data VALOR): define a data da entrada como VALOR (opcional)
-        - [x] (-j|--justificativa): registra uma justificativa (opcional)
-        - [x] (-t|--tipo-dia): tipo de dia (opcional)
-        - [x] (-e|--entradas VALORES...): persiste as entradas informadas em VALORES... (opcional)
-        - regras:
-            - [x] obrigatório ou -j ou -e com ao menos 1 entrada
-    - [ ] @edit
-        - [ ] (-d|--dia VALOR): define a data da entrada como VALOR (obrigatório)
-        - [ ] (-j|--justificativa): registra uma justificativa (opcional)
-        - [ ] (-t|--tipo-dia): tipo de dia (opcional)
-        - [ ] (-e|--entradas VALORES...): sobrescreve as entradas informadas em VALORES... (obrigatório ao menos 1)
-        - regras:
-            - [ ] obrigatório ou -j ou -e com ao menos 1 entrada
+            - [x] @database: mostra local do banco de dados
+    - @entry
+        - [x] @new
+            - [x] (-t|--today): define a data da entrada como hoje
+            - [x] (-d|--day): define a data da entrada
+            - [x] (-j|--justification): registra uma justificativa
+            - [x] (-y|--work-day): tipo de dia (padrão: Work)
+            - [x] (entries): persiste as entradas informadas
+            - regras:
+                - [x] obrigatório -t ou -d
+                - [x] obrigatório -j ou ao menos 1 argumento em entries
+        - [ ] @override
+            - [ ] (-t|--today): define a data da entrada como hoje
+            - [ ] (-d|--day): define a data da entrada
+            - [ ] (-j|--justification): registra uma justificativa
+            - [ ] (-y|--work-day): tipo de dia (padrão: Work)
+            - [ ] (entries): persiste as entradas informadas
+            - regras:
+                - [ ] obrigatório -t ou -d
+                - [ ] obrigatório -j ou ao menos 1 argumento em entries
     - [ ] @report
         - [x] @day VALOR: mostra as entradas registradas para o dia VALOR
         - [ ] @mes VALOR): mostra as entradas registradas para o mes VALOR

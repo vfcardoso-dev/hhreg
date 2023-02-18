@@ -3,7 +3,7 @@ using Spectre.Console.Rendering;
 
 public abstract class BaseEntity<T>
 {
-    public virtual TableColumn[] CreateHeaders() 
+    public virtual TableColumn[] RenderColumns() 
     {
         var headers = new List<TableColumn>();
         headers.AddRange(typeof(T).GetProperties().Select(x => 
@@ -11,7 +11,7 @@ public abstract class BaseEntity<T>
         return headers.ToArray();
     }
 
-    public virtual IRenderable[] CreateRenderableRow()
+    public virtual IRenderable[] RenderRow()
     {
         var row = new List<Text>();
 

@@ -86,7 +86,7 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         _timeRepository.CreateTime(dayEntry.Id, settings.Entries);
         
         AnsiConsole.MarkupLineInterpolated($@"Day entry [green]SUCCESSFULLY[/] created!");
-        AnsiConsole.MarkupLineInterpolated($"[yellow]{inputDay}[/]: {string.Join(", ", settings.Entries)}");
+        AnsiConsole.MarkupLineInterpolated($"[yellow]{inputDay}[/]: {string.Join(" / ", settings.Entries)}");
         return 0;
     }
 }

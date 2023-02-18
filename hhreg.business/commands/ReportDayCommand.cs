@@ -8,9 +8,11 @@ namespace hhreg.business;
 public sealed class ReportDayCommand : Command<ReportDayCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
+    private readonly ISettingsRepository _settingsRepository;
 
-    public ReportDayCommand(ITimeRepository timeRepository) {
+    public ReportDayCommand(ITimeRepository timeRepository, ISettingsRepository settingsRepository) {
         _timeRepository = timeRepository;
+        _settingsRepository = settingsRepository;
     }
 
     public sealed class Settings : CommandSettings {
@@ -34,12 +36,14 @@ public sealed class ReportDayCommand : Command<ReportDayCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
+        var cfg = _settingsRepository.Get()!;
+
         var day = DateOnly.Parse(settings.Day!);
         var dayEntry = _timeRepository.GetDayEntry(day.ToString("yyyy-MM-dd"))!;
 
         var table = new Table();
-        table.AddColumns(dayEntry.CreateHeaders());
-        table.AddRow(dayEntry.CreateRenderableRow());
+        table.AddColumns(dayEntry.RenderSummaryHeaders());
+        table.AddRow(dayEntry.RenderSummaryRow(cfg));
         AnsiConsole.Write(table);
         return 0;
     }
