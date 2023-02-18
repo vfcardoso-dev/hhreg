@@ -5,11 +5,11 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace hhreg.business;
 
-public sealed class NewEntryCommand : Command<NewEntryCommand.Settings>
+public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
 
-    public NewEntryCommand(ITimeRepository timeRepository)
+    public EntryNewCommand(ITimeRepository timeRepository)
     {
         _timeRepository = timeRepository;
     }
@@ -40,22 +40,34 @@ public sealed class NewEntryCommand : Command<NewEntryCommand.Settings>
 
         public override ValidationResult Validate()
         {
-            if (!IsToday && Day == null) {
+            if (!IsToday && Day == null) 
+            {
                 return ValidationResult.Error("You should inform a day to log (or set entry as today with -t).");
             }
 
-            if (!IsToday && !DateOnly.TryParse(Day, out var _)) {
+            if (!IsToday && !DateOnly.TryParse(Day, out var _)) 
+            {
                 return ValidationResult.Error($"Could not parse '{Day}' as a valid date format.");
             }
                 
-            if (Entries.Length == 0 && Justification == null) {
+            if (Entries.Length == 0 && Justification == null) 
+            {
                 return ValidationResult.Error("You should inform at least one time entry or set a justification with -j.");
             }
 
-            foreach(var entry in Entries) {
-                if (!TimeSpan.TryParse(entry, out var time)) {
-                    return ValidationResult.Error($"Could not parse '{entry}' as a valid time format.");
+            foreach(var entry in Entries) 
+            {
+                if (TimeSpan.TryParse(entry, out var time)) 
+                {
+                    if (time < TimeSpan.Zero) 
+                    {
+                        return ValidationResult.Error("Entry times must be positives.");
+                    }
                 } 
+                else 
+                {
+                    return ValidationResult.Error($"Could not parse '{entry}' as a valid time format.");
+                }
             }
             
             return ValidationResult.Success();

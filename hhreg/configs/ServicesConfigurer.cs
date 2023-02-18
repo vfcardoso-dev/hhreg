@@ -8,7 +8,7 @@ namespace hhreg;
 public static class ServicesConfigurer {
     public static void Configure(IServiceCollection services) 
     {
-        services.AddSingleton<AppSettings>(ctx => {
+        services.AddSingleton<IAppSettings>(ctx => {
             var appSettings = new AppSettings();
             ctx.GetRequiredService<IConfiguration>().Bind("AppSettings", appSettings);
             return appSettings;
@@ -16,7 +16,7 @@ public static class ServicesConfigurer {
 
         services.AddScoped<IUnitOfWork>(ctx => 
             new UnitOfWorkContext(
-                ctx.GetRequiredService<AppSettings>(), 
+                ctx.GetRequiredService<IAppSettings>(), 
                 ctx.GetRequiredService<ILoggerFactory>())
             .Create());
 

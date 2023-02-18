@@ -10,11 +10,11 @@ public interface IUnitOfWorkContext
 
 public class UnitOfWorkContext : IUnitOfWorkContext {
 
-    private readonly AppSettings _appSettings;
+    private readonly IAppSettings _appSettings;
     private readonly ILogger<UnitOfWork> _logger;
     private IUnitOfWork? _unitOfWork;
 
-    public UnitOfWorkContext(AppSettings appSettings, ILoggerFactory loggerFactory) {
+    public UnitOfWorkContext(IAppSettings appSettings, ILoggerFactory loggerFactory) {
         _logger = loggerFactory.CreateLogger<UnitOfWork>();
         _appSettings = appSettings;
     }

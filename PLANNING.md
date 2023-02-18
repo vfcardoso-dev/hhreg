@@ -7,8 +7,8 @@
             - [ ] antes de cada chamada, verificar se existem dias com quantidade ímpar de entradas.
             - [ ] todos os dias deveriam ter quantidade par de entradas
     - [x] @init
-        - [x] (-s|--saldo VALOR): saldo inicial (obrigatório) 
-        - [x] (-j|--jornada VALOR): jornada (obrigatório)
+        - [x] (-b|--initial-balance): saldo inicial em horas ou minutos
+        - [x] (-w|--workday): jornada em horas ou minutos
         - regras:
             - [x] deve inicializar banco de dados de horas
             - [x] deve persistir o saldo de horas inicial e jornada diária padrão
@@ -20,8 +20,9 @@
     - [x] @config
         - [x] @show: 
         - [x] @change:
-            - [x] (-s|--saldo NOVO_VALOR): altera saldo inicial para NOVO_VALOR
-            - [x] (-j|--jornada NOVO_VALOR): altera jornada para NOVO_VALOR
+            - [x] (-b|--initial-balance): saldo inicial em horas ou minutos
+            - [x] (-w|--workday): jornada em horas ou minutos
+        - [ ] @database: mostra local do banco de dados
     - [x] @new
         - [x] (-h|--hoje): define a data da entrada como hoje (opcional)
         - [x] (-d|--data VALOR): define a data da entrada como VALOR (opcional)

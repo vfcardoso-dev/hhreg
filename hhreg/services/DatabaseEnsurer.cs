@@ -9,14 +9,14 @@ public interface IDatabaseEnsurer {
 
 public class DatabaseEnsurer : IDatabaseEnsurer {
 
-    private readonly AppSettings _appSettings;
+    private readonly IAppSettings _appSettings;
     private readonly ILogger<DatabaseEnsurer> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
     public DatabaseEnsurer(
         IUnitOfWork unitOfWork, 
         ILoggerFactory loggerFactory, 
-        AppSettings appSettings) {
+        IAppSettings appSettings) {
             _unitOfWork = unitOfWork;
             _logger = loggerFactory.CreateLogger<DatabaseEnsurer>();
             _appSettings = appSettings;
