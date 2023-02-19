@@ -3,9 +3,9 @@
 - @hhreg
     - [ ] !alert
         - regras:
-            - [x] antes de cada chamada (exceto init), verificar se banco existe e está inicializado.
-            - [ ] antes de cada chamada, verificar se existem dias com quantidade ímpar de entradas.
-            - [ ] todos os dias deveriam ter quantidade par de entradas
+            - [x] antes de cada chamada (exceto 'init'), verificar se banco existe e está inicializado.
+            - [x] antes de comandos 'report', verificar se existem dias com quantidade ímpar de entradas.
+            - [x] todos os dias deveriam ter quantidade par de entradas
     - [x] @init
         - [x] (-b|--initial-balance): saldo inicial em horas ou minutos
         - [x] (-w|--workday): jornada em horas ou minutos

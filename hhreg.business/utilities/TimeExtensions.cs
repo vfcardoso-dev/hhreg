@@ -14,6 +14,6 @@ public static class TimeExtensions
 
     public static string ToTimeString(this TimeOnly value)
     {
-        return value.ToString("hh\\:mm");
+        return value.ToString("HH\\:mm");
     }
 }

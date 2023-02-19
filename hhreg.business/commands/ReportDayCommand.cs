@@ -5,12 +5,15 @@ using Spectre.Console.Cli;
 
 namespace hhreg.business;
 
-public sealed class ReportDayCommand : Command<ReportDayCommand.Settings>
+public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
     private readonly ISettingsRepository _settingsRepository;
 
-    public ReportDayCommand(ITimeRepository timeRepository, ISettingsRepository settingsRepository) {
+    public ReportDayCommand(
+        ITimeRepository timeRepository, 
+        ISettingsRepository settingsRepository) : base(timeRepository)
+    {
         _timeRepository = timeRepository;
         _settingsRepository = settingsRepository;
     }
@@ -36,6 +39,8 @@ public sealed class ReportDayCommand : Command<ReportDayCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
+        CheckInvalidTimeEntries();
+
         var cfg = _settingsRepository.Get()!;
 
         var day = DateOnly.Parse(settings.Day!);

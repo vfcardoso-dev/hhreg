@@ -15,9 +15,16 @@ static class Program
             .Build();
 
         try {
-            return app.Services.GetRequiredService<AppHost>().Run(args);
+            return AnsiConsole.Status()
+                .Spinner(Spinner.Known.Star2)
+                .SpinnerStyle(Style.Parse("green"))
+                .Start<int>("Calculating...", ctx => 
+                {
+                    Thread.Sleep(1000);
+                    return app.Services.GetRequiredService<AppHost>().Run(args);
+                });
         } catch (Exception ex) {
-            AnsiConsole.MarkupLine($"[red]ERROR:[/] {ex.Message}");
+            AnsiConsole.MarkupLine($"[red]FATAL:[/] {ex.Message}");
             
             if (!app.Services.GetRequiredService<IHostEnvironment>().IsProduction()) {
                 AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
