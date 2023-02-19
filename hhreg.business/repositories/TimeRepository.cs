@@ -4,6 +4,7 @@ using Microsoft.Data.Sqlite;
 
 public interface ITimeRepository {
     DayEntry? GetDayEntry(string day);
+    IList<DayEntry> GetDayEntries(string startDay, string endDay);
     DayEntry GetOrCreateDay(string day, string? justification = null, DayType? dayType = DayType.Work);
     void CreateTime(long dayEntryId, string time);
     void CreateTime(long dayEntryId, params string[] timeList);
@@ -14,8 +15,10 @@ public interface ITimeRepository {
 public class TimeRepository : ITimeRepository
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly string _dayEntryQuery = "select * from DayEntry where Day = @day";
-    private readonly string _timeEntryQuery = "select * from TimeEntry where DayEntryId = @dayEntryId order by Time";
+    private readonly string _singleDayEntryQuery = "select * from DayEntry where Day = @day;";
+    private readonly string _multipleDayEntriesQuery = "select * from DayEntry where Day between @startDay and @endDay order by Day;";
+    private readonly string _singleTimeEntryQuery = "select * from TimeEntry where DayEntryId = @dayEntryId order by Time;";
+    private readonly string _multipleTimeEntriesQuery = "select * from TimeEntry where DayEntryId in @dayEntryIds order by Time;";
 
     public TimeRepository(IUnitOfWork unitOfWork)
     {
@@ -24,13 +27,28 @@ public class TimeRepository : ITimeRepository
 
     public DayEntry? GetDayEntry(string day)
     {
-        var dayEntry = _unitOfWork.QuerySingleOrDefault<DayEntry>(_dayEntryQuery, new { day });
+        var dayEntry = _unitOfWork.QuerySingleOrDefault<DayEntry>(_singleDayEntryQuery, new { day });
         if (dayEntry == null) return null;
 
-        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntryQuery, new { dayEntryId = dayEntry.Id }).ToList();
+        var timeEntries = _unitOfWork.Query<TimeEntry>(_singleTimeEntryQuery, new { dayEntryId = dayEntry.Id }).ToList();
         dayEntry.TimeEntries = timeEntries;
 
         return dayEntry;
+    }
+
+    public IList<DayEntry> GetDayEntries(string startDay, string endDay)
+    {
+        var dayEntries = _unitOfWork.Query<DayEntry>(_multipleDayEntriesQuery, new { startDay, endDay }).ToList();
+        var dayEntryIds = dayEntries.Select(x => x.Id).ToArray();
+
+        var timeEntries = _unitOfWork.Query<TimeEntry>(_multipleTimeEntriesQuery, new { dayEntryIds = dayEntryIds }).ToList();
+
+        foreach(var dayEntry in dayEntries) 
+        {
+            dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id).ToList();
+        }
+
+        return dayEntries;
     }
 
     public DayEntry GetOrCreateDay(string day, string? justification = null, DayType? dayType = DayType.Work)

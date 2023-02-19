@@ -31,8 +31,8 @@ public class DayEntry : BaseEntity<DayEntry>
         return row.ToArray();
     }
 
-    public TimeSpan SummarizeEntries(Settings cfg) {
-        var summary = TimeSpan.Zero;
+    public TimeSpan SummarizeEntries(TimeSpan? currentBalance = null) {
+        var summary = currentBalance ?? TimeSpan.Zero;
 
         for(int i = 0, j = 1; j < (TimeEntries.OrderBy(x => x.Time).Count()); i=j+1, j=j+2) {
             var second = TimeSpan.Parse(TimeEntries[j].Time!);
@@ -56,11 +56,11 @@ public class DayEntry : BaseEntity<DayEntry>
         return headers.ToArray();
     }
 
-    public IRenderable[] RenderSummaryRow(Settings cfg)
+    public IRenderable[] RenderSummaryRow(double workDay, TimeSpan? currentBalance = null)
     {
-        var summary = SummarizeEntries(cfg);
-        var workDay = TimeSpan.FromMinutes(cfg.WorkDay);
-        var balance = summary.Subtract(workDay);
+        var summary = SummarizeEntries(currentBalance);
+        var workDayTs = TimeSpan.FromMinutes(workDay);
+        var balance = summary.Subtract(workDayTs);
         var balanceColor = balance > TimeSpan.Zero ? Color.Green : Color.Red;
         var plusSignal = balance > TimeSpan.Zero ? "+" : "";
         

@@ -42,6 +42,7 @@ public class CommandsConfigurer : ICommandsConfigurer {
             report.SetDescription("Summarize and show time entries");
 
             report.AddCommand<ReportDayCommand>("day").WithDescription("Show time entries for a single day.");
+            report.AddCommand<ReportMonthCommand>("month").WithDescription("Show time entries for a month.");
         });
     }
 }

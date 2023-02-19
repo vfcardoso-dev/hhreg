@@ -43,7 +43,7 @@ public sealed class ReportDayCommand : Command<ReportDayCommand.Settings>
 
         var table = new Table();
         table.AddColumns(dayEntry.RenderSummaryHeaders());
-        table.AddRow(dayEntry.RenderSummaryRow(cfg));
+        table.AddRow(dayEntry.RenderSummaryRow(cfg.WorkDay));
         AnsiConsole.Write(table);
         return 0;
     }

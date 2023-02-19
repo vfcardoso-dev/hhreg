@@ -45,7 +45,7 @@
         - [x] @now: insere uma entrada hoje e agora
     - [ ] @report
         - [x] @day (day): mostra as entradas registradas para o dia
-        - [ ] @mes (mes): mostra as entradas registradas para o mes
+        - [x] @mes (mes): mostra as entradas registradas para o mes
         - [ ] @balance: mostra saldo atual acumulado de horas
             - [ ] (-t|--tail): trazer ultimos N dias (padrão: 5)
         - [ ] @drake: DIA_INICIO, DIA_FIM: exporta base64 para inclusão em lote no drake usando extensão hhreg-chrome. DATA_FIM é opcional. Se não informada, exporta até data de hoje.
