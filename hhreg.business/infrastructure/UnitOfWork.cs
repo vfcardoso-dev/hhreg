@@ -7,8 +7,7 @@ namespace hhreg.business;
 public interface IUnitOfWork : IDisposable
 {
     void Execute(string query, object? param = null);
-    void BulkExecute(string query, IList<object> paramList);
-    void BulkExecute(IList<SqliteCommand> commands);
+    void BulkExecute(IEnumerable<SqliteCommand> commands);
     SqliteCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null);
     IEnumerable<T> Query<T>(string query, object? param = null);
     T QuerySingle<T>(string query, object? param = null);
@@ -45,23 +44,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public void BulkExecute(string query, IList<object> paramList)
-    {
-        var conn = GetConnection();
-        var tx = conn.BeginTransaction();
-        
-        try {
-            foreach(var param in paramList) {
-                conn.Execute(query, param, tx);
-            }
-            tx.Commit();
-        } catch(Exception) {
-            tx.Rollback();
-            throw;
-        }
-    }
-
-    public void BulkExecute(IList<SqliteCommand> commands)
+    public void BulkExecute(IEnumerable<SqliteCommand> commands)
     {
         var conn = GetConnection();
         var tx = conn.BeginTransaction();

@@ -4,8 +4,8 @@ using Microsoft.Data.Sqlite;
 
 public interface ITimeRepository {
     DayEntry? GetDayEntry(string day);
-    IList<DayEntry> GetDayEntries(string startDay, string endDay);
-    IList<DayEntry> GetInvalidDayEntries();
+    IEnumerable<DayEntry> GetDayEntries(string startDay, string endDay);
+    IEnumerable<DayEntry> GetInvalidDayEntries();
     DayEntry GetOrCreateDay(string day, string? justification = null, DayType? dayType = DayType.Work);
     void CreateTime(long dayEntryId, string time);
     void CreateTime(long dayEntryId, params string[] timeList);
@@ -17,8 +17,10 @@ public class TimeRepository : ITimeRepository
 {
     private readonly IUnitOfWork _unitOfWork;
 
-    private readonly string _dayEntryByIdQuery = @"
+    private readonly string _dayEntryByDayQuery = @"
         select * from DayEntry where Day = @day;";
+    private readonly string _dayEntryByIdQuery = @"
+        select * from DayEntry where Id = @dayEntryId;";
     private readonly string _dayEntriesBetweenQuery = @"
         select * from DayEntry where Day between @startDay and @endDay order by Day;";
     private readonly string _dayEntriesByIdsQuery = @"
@@ -27,6 +29,10 @@ public class TimeRepository : ITimeRepository
         select * from TimeEntry where DayEntryId = @dayEntryId order by Time;";
     private readonly string _timeEntriesByDayEntryIdsQuery = @"
         select * from TimeEntry where DayEntryId in @dayEntryIds order by Time;";
+    private readonly string _insertTimeEntryByDateEntryIdCommand = @"
+        insert into TimeEntry (Time, DayEntryId) values (@time, @dayEntryId);";
+    private readonly string _updateDayEntryTotalHoursCommand = @"
+        update DayEntry set TotalHours = @totalHours where Id = @dayEntryId";
     private readonly string _dayEntryIdsWithOddTimeEntriesQuery = @"
         select DayEntryId, count(*) as TimeEntriesCount 
         from TimeEntry 
@@ -40,40 +46,40 @@ public class TimeRepository : ITimeRepository
 
     public DayEntry? GetDayEntry(string day)
     {
-        var dayEntry = _unitOfWork.QuerySingleOrDefault<DayEntry>(_dayEntryByIdQuery, new { day });
+        var dayEntry = _unitOfWork.QuerySingleOrDefault<DayEntry>(_dayEntryByDayQuery, new { day });
         if (dayEntry == null) return null;
 
-        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntryByDayEntryIdQuery, new { dayEntryId = dayEntry.Id }).ToList();
+        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntryByDayEntryIdQuery, new { dayEntryId = dayEntry.Id });
         dayEntry.TimeEntries = timeEntries;
 
         return dayEntry;
     }
 
-    public IList<DayEntry> GetDayEntries(string startDay, string endDay)
+    public IEnumerable<DayEntry> GetDayEntries(string startDay, string endDay)
     {
-        var dayEntries = _unitOfWork.Query<DayEntry>(_dayEntriesBetweenQuery, new { startDay, endDay }).ToList();
-        var dayEntryIds = dayEntries.Select(x => x.Id).ToArray();
+        var dayEntries = _unitOfWork.Query<DayEntry>(_dayEntriesBetweenQuery, new { startDay, endDay });
+        var dayEntryIds = dayEntries.Select(x => x.Id);
 
-        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds = dayEntryIds }).ToList();
+        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds = dayEntryIds });
 
         foreach(var dayEntry in dayEntries) 
         {
-            dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id).ToList();
+            dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id);
         }
 
         return dayEntries;
     }
 
-    public IList<DayEntry> GetInvalidDayEntries()
+    public IEnumerable<DayEntry> GetInvalidDayEntries()
     {
-        var invalidDayEntryIds = _unitOfWork.Query<long>(_dayEntryIdsWithOddTimeEntriesQuery).ToList();
-        var invalidDayEntries = _unitOfWork.Query<DayEntry>(_dayEntriesByIdsQuery, new { ids = invalidDayEntryIds }).ToList();
+        var invalidDayEntryIds = _unitOfWork.Query<long>(_dayEntryIdsWithOddTimeEntriesQuery);
+        var invalidDayEntries = _unitOfWork.Query<DayEntry>(_dayEntriesByIdsQuery, new { ids = invalidDayEntryIds });
 
-        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds = invalidDayEntryIds }).ToList();
+        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds = invalidDayEntryIds });
 
         foreach(var dayEntry in invalidDayEntries) 
         {
-            dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id).ToList();
+            dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id);
         }
 
         return invalidDayEntries;
@@ -95,26 +101,56 @@ public class TimeRepository : ITimeRepository
 
     public void CreateTime(long dayEntryId, string time)
     {
-        var query = @"insert into TimeEntry (Time, DayEntryId) values (@time, @dayEntryId);";
-        var parameters = new { time = time, dayEntryId = dayEntryId };
+        var cmdList = new List<SqliteCommand>{
+            _unitOfWork.CreateSqlCommand(
+                _insertTimeEntryByDateEntryIdCommand,
+                new Dictionary<string, object?> {{"@time",time},{"@dayEntryId",dayEntryId}})
+        };
 
-        _unitOfWork.Execute(query, parameters);
+        var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId = dayEntryId });
+        var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Append(time);
+        var totalHours = CalculateTotalHours(timeStrs);
+
+        cmdList.Add(
+            _unitOfWork.CreateSqlCommand(
+                _updateDayEntryTotalHoursCommand,
+                new Dictionary<string, object?> {{"@totalHours",totalHours},{"@dayEntryId",dayEntryId}}));
+
+        _unitOfWork.BulkExecute(cmdList);
     }
 
     public void CreateTime(long dayEntryId, params string[] timeList)
     {
-        var query = @"insert into TimeEntry (Time, DayEntryId) values (@time, @dayEntryId);";
-        var parameters = timeList.Select(time => new { time, dayEntryId }).ToList<object>();
+        var cmdList = timeList.Select(time => 
+            _unitOfWork.CreateSqlCommand(
+                _insertTimeEntryByDateEntryIdCommand,
+                new Dictionary<string, object?> {{"@time",time},{"@dayEntryId",dayEntryId}}
+            )
+        );
 
-        _unitOfWork.BulkExecute(query, parameters);
+        var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId = dayEntryId });
+        var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Union(timeList);
+        var totalHours = CalculateTotalHours(timeStrs);
+
+        cmdList = cmdList.Append(
+            _unitOfWork.CreateSqlCommand(
+                _updateDayEntryTotalHoursCommand,
+                new Dictionary<string, object?> {{"@totalHours",totalHours},{"@dayEntryId",dayEntryId}}));
+
+        _unitOfWork.BulkExecute(cmdList);
     }
 
     public void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList) 
     {
+        var totalHours = CalculateTotalHours(timeList);
+
         var cmdList = new List<SqliteCommand>{
-            _unitOfWork.CreateSqlCommand(@"update DayEntry set Justification = @justification, DayType = @dayType where Id = @dayEntryId;",
+            _unitOfWork.CreateSqlCommand(@"update DayEntry set Justification = @justification, DayType = @dayType, TotalHours = @totalHours where Id = @dayEntryId;",
                 new Dictionary<string, object?> {
-                    {"@justification", justification}, {"@dayType", dayType}, {"@dayEntryId", dayEntryId}
+                    {"@justification", justification}, 
+                    {"@dayType", dayType}, 
+                    {"@dayEntryId", dayEntryId},
+                    {"@totalHours", totalHours}
                 }
             ),
             _unitOfWork.CreateSqlCommand(@"delete from TimeEntry where DayEntryId = @dayEntryId;",
@@ -124,12 +160,25 @@ public class TimeRepository : ITimeRepository
 
         cmdList.AddRange(
             timeList.Select(time => {
-                return _unitOfWork.CreateSqlCommand(@"insert into TimeEntry (Time, DayEntryId) values (@time, @dayEntryId);",
+                return _unitOfWork.CreateSqlCommand(_insertTimeEntryByDateEntryIdCommand,
                     new Dictionary<string, object?> {{"@time", time},{"@dayEntryId", dayEntryId}}
                 );
             })
         );
 
         _unitOfWork.BulkExecute(cmdList);
+    }
+
+    private double CalculateTotalHours(IEnumerable<string> timeEntries) {
+        var summary = TimeSpan.Zero;
+
+        for(int i = 0, j = 1; j < (timeEntries.OrderBy(x => x).Count()); i=j+1, j=j+2) {
+            var second = TimeSpan.Parse(timeEntries.ElementAt(j));
+            var first = TimeSpan.Parse(timeEntries.ElementAt(i));
+            var diff = second.Subtract(first);
+            summary = summary.Add(diff);
+        }
+
+        return summary.TotalMinutes;
     }
 }

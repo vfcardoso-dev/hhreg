@@ -1,5 +1,6 @@
 using hhreg.business;
 using Microsoft.Extensions.Logging;
+using Spectre.Console;
 
 namespace hhreg;
 
@@ -10,15 +11,12 @@ public interface IDatabaseEnsurer {
 public class DatabaseEnsurer : IDatabaseEnsurer {
 
     private readonly IAppSettings _appSettings;
-    private readonly ILogger<DatabaseEnsurer> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
     public DatabaseEnsurer(
         IUnitOfWork unitOfWork, 
-        ILoggerFactory loggerFactory, 
         IAppSettings appSettings) {
             _unitOfWork = unitOfWork;
-            _logger = loggerFactory.CreateLogger<DatabaseEnsurer>();
             _appSettings = appSettings;
     }
 
@@ -31,7 +29,7 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
         if (!File.Exists(_appSettings.DatabaseFilePath)) 
         {
             var f = File.Create(_appSettings.DatabaseFilePath);
-            _logger.LogInformation("Database file did not exists. Created on '{databaseFile}'", _appSettings.DatabaseFilePath);
+            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Database file did not exists. Created on '[yellow]{_appSettings.DatabaseFilePath}[/]'.");
             f.Close();
         }
 
@@ -41,7 +39,7 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
 
         if (!tableExists) 
         {
-            _logger.LogInformation("Ensuring database tables on '{connectionString}'", _appSettings.ConnectionString);
+            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Ensuring database tables on '[yellow]{_appSettings.ConnectionString}[/]'...");
 
             var sql = $@"
                 PRAGMA foreign_keys = ON;
@@ -50,7 +48,8 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
                         Id INTEGER PRIMARY KEY AUTOINCREMENT,
                         Day TEXT NOT NULL UNIQUE,
                         DayType TEXT NOT NULL,
-                        Justification TEXT NULL
+                        Justification TEXT NULL,
+                        TotalHours DOUBLE NOT NULL DEFAULT (0.0)
                     );
                 
                 CREATE TABLE IF NOT EXISTS TimeEntry (

@@ -15,11 +15,11 @@ public abstract class ReportCommandBase<T> : Command<T> where T : CommandSetting
     protected void CheckInvalidTimeEntries()
     {
         var invalidDays = _timeRepository.GetInvalidDayEntries();
-        if (invalidDays.Count == 0) return;
+        if (invalidDays.Count() == 0) return;
 
         foreach(var dayEntry in invalidDays) {
             var day = DateOnly.Parse(dayEntry.Day!);
-            AnsiConsole.MarkupLineInterpolated($@"[orange1]VALIDATION:[/] Odd number of time entries ([orange1]{dayEntry.TimeEntries.Count}[/]) at [orange1]{day.ToString("dd/MM/yyyy")}[/]! ({string
+            AnsiConsole.MarkupLineInterpolated($@"[orange1]VALIDATION:[/] Odd number of time entries ([orange1]{dayEntry.TimeEntries.Count()}[/]) at [orange1]{day.ToString("dd/MM/yyyy")}[/]! ({string
                 .Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))})");
         }
 

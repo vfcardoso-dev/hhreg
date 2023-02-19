@@ -33,7 +33,7 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
         [CommandOption("-d|--day")]
         public string? Day { get; init; }
 
-        [Description("Defines time entries")]
+        [Description("Defines time entries (format: HH:mm)")]
         [CommandArgument(0, "[entries]")]
         public string[] Entries { get; init; } = new string[]{};
 
