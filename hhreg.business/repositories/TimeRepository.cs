@@ -9,8 +9,8 @@ public interface ITimeRepository {
     DayEntry GetOrCreateDay(string day, string? justification = null, DayType? dayType = DayType.Work);
     void CreateTime(long dayEntryId, string time);
     void CreateTime(long dayEntryId, params string[] timeList);
-    void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, 
-        params string[] timeList);
+    void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList);
+    double GetAccumulatedBalance(double initialBalance, string limitDay);
 }
 
 public class TimeRepository : ITimeRepository
@@ -31,8 +31,8 @@ public class TimeRepository : ITimeRepository
         select * from TimeEntry where DayEntryId in @dayEntryIds order by Time;";
     private readonly string _insertTimeEntryByDateEntryIdCommand = @"
         insert into TimeEntry (Time, DayEntryId) values (@time, @dayEntryId);";
-    private readonly string _updateDayEntryTotalHoursCommand = @"
-        update DayEntry set TotalHours = @totalHours where Id = @dayEntryId";
+    private readonly string _updateDayEntryTotalMinutesCommand = @"
+        update DayEntry set TotalMinutes = @totalMinutes where Id = @dayEntryId";
     private readonly string _dayEntryIdsWithOddTimeEntriesQuery = @"
         select DayEntryId, count(*) as TimeEntriesCount 
         from TimeEntry 
@@ -109,12 +109,12 @@ public class TimeRepository : ITimeRepository
 
         var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId = dayEntryId });
         var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Append(time);
-        var totalHours = CalculateTotalHours(timeStrs);
+        var totalMinutes = CalculateTotalMinutes(timeStrs, dayEntry.DayType);
 
         cmdList.Add(
             _unitOfWork.CreateSqlCommand(
-                _updateDayEntryTotalHoursCommand,
-                new Dictionary<string, object?> {{"@totalHours",totalHours},{"@dayEntryId",dayEntryId}}));
+                _updateDayEntryTotalMinutesCommand,
+                new Dictionary<string, object?> {{"@totalMinutes",totalMinutes},{"@dayEntryId",dayEntryId}}));
 
         _unitOfWork.BulkExecute(cmdList);
     }
@@ -130,27 +130,27 @@ public class TimeRepository : ITimeRepository
 
         var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId = dayEntryId });
         var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Union(timeList);
-        var totalHours = CalculateTotalHours(timeStrs);
+        var totalMinutes = CalculateTotalMinutes(timeStrs, dayEntry.DayType);
 
         cmdList = cmdList.Append(
             _unitOfWork.CreateSqlCommand(
-                _updateDayEntryTotalHoursCommand,
-                new Dictionary<string, object?> {{"@totalHours",totalHours},{"@dayEntryId",dayEntryId}}));
+                _updateDayEntryTotalMinutesCommand,
+                new Dictionary<string, object?> {{"@totalMinutes",totalMinutes},{"@dayEntryId",dayEntryId}}));
 
         _unitOfWork.BulkExecute(cmdList);
     }
 
     public void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList) 
     {
-        var totalHours = CalculateTotalHours(timeList);
+        var totalMinutes = CalculateTotalMinutes(timeList, dayType!.Value);
 
         var cmdList = new List<SqliteCommand>{
-            _unitOfWork.CreateSqlCommand(@"update DayEntry set Justification = @justification, DayType = @dayType, TotalHours = @totalHours where Id = @dayEntryId;",
+            _unitOfWork.CreateSqlCommand(@"update DayEntry set Justification = @justification, DayType = @dayType, TotalMinutes = @totalMinutes where Id = @dayEntryId;",
                 new Dictionary<string, object?> {
-                    {"@justification", justification}, 
+                    {"@justification", justification},
                     {"@dayType", dayType}, 
                     {"@dayEntryId", dayEntryId},
-                    {"@totalHours", totalHours}
+                    {"@totalMinutes", totalMinutes}
                 }
             ),
             _unitOfWork.CreateSqlCommand(@"delete from TimeEntry where DayEntryId = @dayEntryId;",
@@ -169,8 +169,20 @@ public class TimeRepository : ITimeRepository
         _unitOfWork.BulkExecute(cmdList);
     }
 
-    private double CalculateTotalHours(IEnumerable<string> timeEntries) {
+    public double GetAccumulatedBalance(double initialBalance, string limitDay)
+    {
+        var query = "select total(TotalMinutes) from DayEntry where Day <= @limitDay";
+        var balance = _unitOfWork.QuerySingle<double>(query, new { limitDay });
+        return initialBalance + balance;
+    }
+
+    private double CalculateTotalMinutes(IEnumerable<string> timeEntries, DayType dayType) {
         var summary = TimeSpan.Zero;
+
+        if (dayType != DayType.Work) {
+            var workDay = _unitOfWork.QuerySingle<int>("select coalesce(WorkDay, 0) from Settings limit 1");
+            return workDay;
+        }
 
         for(int i = 0, j = 1; j < (timeEntries.OrderBy(x => x).Count()); i=j+1, j=j+2) {
             var second = TimeSpan.Parse(timeEntries.ElementAt(j));

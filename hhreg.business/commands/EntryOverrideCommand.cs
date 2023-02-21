@@ -86,8 +86,9 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
         _timeRepository.OverrideDayEntry(dayEntry.Id, settings.Justification, settings.DayType, 
             settings.Entries);
         
+        var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
         AnsiConsole.MarkupLineInterpolated($@"Day entry [green]SUCCESSFULLY[/] overridden!");
-        AnsiConsole.MarkupLineInterpolated($"[yellow]{inputDay}[/]: {string.Join(" / ", settings.Entries)}");
+        AnsiConsole.MarkupLineInterpolated($"[yellow]{inputDay}[/]: {dayText}");
         return 0;
     }
 }

@@ -43,6 +43,7 @@ public class CommandsConfigurer : ICommandsConfigurer {
 
             report.AddCommand<ReportDayCommand>("day").WithDescription("Show time entries for a single day.");
             report.AddCommand<ReportMonthCommand>("month").WithDescription("Show time entries for a month.");
+            report.AddCommand<ReportBalanceCommand>("balance").WithDescription("Show accumulated hour bank balance.");
         });
     }
 }

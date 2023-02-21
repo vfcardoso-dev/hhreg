@@ -48,4 +48,6 @@
         - [x] @mes (mes): mostra as entradas registradas para o mes
         - [ ] @balance: mostra saldo atual acumulado de horas
             - [ ] (-t|--tail): trazer ultimos N dias (padrão: 5)
+            - regras
+                - [ ] alerta para quando houver dias não registrados
         - [ ] @drake: DIA_INICIO, DIA_FIM: exporta base64 para inclusão em lote no drake usando extensão hhreg-chrome. DATA_FIM é opcional. Se não informada, exporta até data de hoje.

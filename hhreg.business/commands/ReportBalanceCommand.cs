@@ -23,17 +23,33 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
         [CommandOption("-t|--tail")]
         [DefaultValue(5)]
         public int Tail { get; init; }
+
+        public override ValidationResult Validate()
+        {
+            if (Tail < 1) {
+                return ValidationResult.Error("Tail must have a positive value.");
+            }
+            
+            return ValidationResult.Success();
+        }
     }
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         CheckInvalidTimeEntries();
 
+        var offsetDate = DateOnly.FromDateTime(DateTime.Today.AddDays(settings.Tail * -1));
         var cfg = _settingsRepository.Get()!;
-
+        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg.InitialBalance, offsetDate.ToString("yyyy-MM-dd"));
+        var dayEntries = _timeRepository.GetDayEntries(offsetDate.ToString("yyyy-MM-dd"), DateTime.Today.ToString("yyyy-MM-dd"));
         
         var table = new Table();
+        table.AddColumns(SpectreConsoleUtils.GetDayEntryBalanceHeaders());
         
+        foreach(var dayEntry in dayEntries)
+        {
+            table.AddRow(SpectreConsoleUtils.GetDayEntryBalanceRow(dayEntry, cfg.WorkDay, ref offsetAccumulatedBalance));
+        }
         
         AnsiConsole.Write(table);
         return 0;

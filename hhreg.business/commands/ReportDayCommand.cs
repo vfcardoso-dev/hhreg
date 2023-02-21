@@ -47,8 +47,8 @@ public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settin
         var dayEntry = _timeRepository.GetDayEntry(day.ToString("yyyy-MM-dd"))!;
 
         var table = new Table();
-        table.AddColumns(dayEntry.RenderSummaryHeaders());
-        table.AddRow(dayEntry.RenderSummaryRow(cfg.WorkDay));
+        table.AddColumns(SpectreConsoleUtils.GetDayEntrySummaryHeaders());
+        table.AddRow(SpectreConsoleUtils.GetDayEntrySummaryRow(dayEntry, cfg.WorkDay));
         AnsiConsole.Write(table);
         return 0;
     }

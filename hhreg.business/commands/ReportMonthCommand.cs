@@ -50,11 +50,11 @@ public sealed class ReportMonthCommand : ReportCommandBase<ReportMonthCommand.Se
         var dayEntries = _timeRepository.GetDayEntries(start.ToString("yyyy-MM-dd"), end.ToString("yyyy-MM-dd"))!;
 
         var table = new Table();
-        table.AddColumns(dayEntries.First().RenderSummaryHeaders());
+        table.AddColumns(SpectreConsoleUtils.GetDayEntrySummaryHeaders());
         
         foreach(var day in dayEntries)
         {
-            table.AddRow(day.RenderSummaryRow(cfg.WorkDay));
+            table.AddRow(SpectreConsoleUtils.GetDayEntrySummaryRow(day, cfg.WorkDay));
         }
         
         AnsiConsole.Write(table);
