@@ -171,8 +171,11 @@ public class TimeRepository : ITimeRepository
 
     public double GetAccumulatedBalance(double initialBalance, string limitDay)
     {
-        var query = "select total(TotalMinutes) from DayEntry where Day <= @limitDay";
-        var balance = _unitOfWork.QuerySingle<double>(query, new { limitDay });
+        var startDayQuery = "select StartCalculationsAt from Settings limit 1";
+        var balanceQuery = "select total(TotalMinutes) from DayEntry where Day between @startDay and @limitDay";
+        
+        var startDay = _unitOfWork.QuerySingle<string>(startDayQuery);
+        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, new { startDay, limitDay });
         return initialBalance + balance;
     }
 

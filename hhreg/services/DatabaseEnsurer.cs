@@ -49,7 +49,7 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
                         Day TEXT NOT NULL UNIQUE,
                         DayType TEXT NOT NULL,
                         Justification TEXT NULL,
-                        TotalMinutes INTEGER NOT NULL DEFAULT (0.0)
+                        TotalMinutes INTEGER NOT NULL DEFAULT (0)
                     );
                 
                 CREATE TABLE IF NOT EXISTS TimeEntry (
@@ -61,7 +61,8 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
                     
                 CREATE TABLE IF NOT EXISTS Settings (
                         InitialBalance INTEGER NOT NULL,
-                        WorkDay INTEGER NOT NULL
+                        WorkDay INTEGER NOT NULL,
+                        StartCalculationsAt TEXT NOT NULL
                     );";
 
             _unitOfWork.Execute(sql);

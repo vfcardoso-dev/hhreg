@@ -1,7 +1,7 @@
 # hhreg - registering working hours
 
 - @hhreg
-    - [ ] !alert
+    - [x] !alert
         - regras:
             - [x] antes de cada chamada (exceto 'init'), verificar se banco existe e está inicializado.
             - [x] antes de comandos 'report', verificar se existem dias com quantidade ímpar de entradas.
@@ -9,19 +9,18 @@
     - [x] @init
         - [x] (-b|--initial-balance): saldo inicial em horas ou minutos
         - [x] (-w|--workday): jornada em horas ou minutos
+        - [x] (-s|--start-calculations-at): data de início dos cálculos de saldo
         - regras:
             - [x] deve inicializar banco de dados de horas
-            - [x] deve persistir o saldo de horas inicial e jornada diária padrão
+            - [x] deve persistir os valores passados
             - [x] não deve permitir inicializar mais de uma vez.
-    - [ ] @reset
-        - regras:
-            - [ ] zera o saldo de horas
     - [x] @config
         - [x] @show: 
         - [x] @change:
             - [x] (-b|--initial-balance): saldo inicial em horas ou minutos
             - [x] (-w|--workday): jornada em horas ou minutos
-            - [x] @database: mostra local do banco de dados
+            - [x] (-s|--start-calculations-at): data de início dos cálculos de saldo
+        - [x] @database: mostra local do banco de dados
     - @entry
         - [x] @new
             - [x] (-t|--today): define a data da entrada como hoje
@@ -46,8 +45,6 @@
     - [ ] @report
         - [x] @day (day): mostra as entradas registradas para o dia
         - [x] @mes (mes): mostra as entradas registradas para o mes
-        - [ ] @balance: mostra saldo atual acumulado de horas
-            - [ ] (-t|--tail): trazer ultimos N dias (padrão: 5)
-            - regras
-                - [ ] alerta para quando houver dias não registrados
+        - [x] @balance: mostra saldo atual acumulado de horas
+            - [x] (-t|--tail): trazer ultimos N dias (padrão: 5)
         - [ ] @drake: DIA_INICIO, DIA_FIM: exporta base64 para inclusão em lote no drake usando extensão hhreg-chrome. DATA_FIM é opcional. Se não informada, exporta até data de hoje.

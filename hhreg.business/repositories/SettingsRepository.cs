@@ -1,9 +1,10 @@
 using hhreg.business;
 using hhreg.business.domain;
+using Microsoft.Data.Sqlite;
 
 public interface ISettingsRepository {
-    void Create(double initialBalance, double workDay);
-    void Update(double newInitialBalance, double newWorkDay);
+    void Create(double initialBalance, double workDay, string startCalculationsAt);
+    void Update(double? newInitialBalance, double? newWorkDay, string? newStartCalculationsAt);
     Settings GetOrDefault();
     Settings Get();
     bool IsAlreadyInitialized();
@@ -18,18 +19,36 @@ public class SettingsRepository : ISettingsRepository
         _unitOfWork = unitOfWork;
     }
 
-    public void Create(double initialBalance, double workDay)
+    public void Create(double initialBalance, double workDay, string startCalculationsAt)
     {
         _unitOfWork.Execute(
-                @"insert into Settings (InitialBalance, WorkDay) 
-                    values (@initialBalance, @workDay);", new { initialBalance, workDay });
+                @"insert into Settings (InitialBalance, WorkDay, StartCalculationsAt) 
+                    values (@initialBalance, @workDay, @startCalculationsAt);", new { initialBalance, workDay, startCalculationsAt });
     }
 
-    public void Update(double newInitialBalance, double newWorkDay)
+    public void Update(double? newInitialBalance, double? newWorkDay, string? newStartCalculationsAt)
     {
-        _unitOfWork.Execute(
-                @"update Settings set InitialBalance = @newInitialBalance, WorkDay = @newWorkDay limit 1;", 
-                    new { newInitialBalance, newWorkDay });
+        var cmdList = new List<SqliteCommand>();
+        
+        if (newInitialBalance != null) {
+            cmdList.Add(_unitOfWork.CreateSqlCommand(
+                @"update Settings set InitialBalance = @initialBalance limit 1;", 
+                    new Dictionary<string, object?> {{"@workDay", newWorkDay}}));
+        }
+
+        if (newWorkDay != null) {
+            cmdList.Add(_unitOfWork.CreateSqlCommand(
+                @"update Settings set WorkDay = @workDay limit 1;", 
+                    new Dictionary<string, object?> {{"@workDay", newWorkDay}}));
+        }
+
+        if (newStartCalculationsAt != null) {
+            cmdList.Add(_unitOfWork.CreateSqlCommand(
+                @"update Settings set StartCalculationsAt = @startCalculationsAt limit 1;", 
+                    new Dictionary<string, object?> {{"@startCalculationsAt", newStartCalculationsAt}}));
+        }
+
+        _unitOfWork.BulkExecute(cmdList);
     }
 
     public Settings Get() => 

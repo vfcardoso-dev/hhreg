@@ -38,8 +38,14 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
     {
         CheckInvalidTimeEntries();
 
-        var offsetDate = DateOnly.FromDateTime(DateTime.Today.AddDays(settings.Tail * -1));
         var cfg = _settingsRepository.Get()!;
+        var offsetDate = DateOnly.FromDateTime(DateTime.Today.AddDays(settings.Tail * -1));
+        var startCalculationsAt = DateOnly.Parse(cfg.StartCalculationsAt);
+
+        if (startCalculationsAt > offsetDate) {
+            throw new HhregException($"Configuration is set to start balance calculations after the offset date. StartCalculationsAt: {startCalculationsAt}; OffsetDate: {offsetDate}");
+        }
+        
         var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg.InitialBalance, offsetDate.ToString("yyyy-MM-dd"));
         var dayEntries = _timeRepository.GetDayEntries(offsetDate.ToString("yyyy-MM-dd"), DateTime.Today.ToString("yyyy-MM-dd"));
         

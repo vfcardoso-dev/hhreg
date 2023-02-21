@@ -31,6 +31,10 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         [CommandOption("-w|--workday-in-hours")]
         public string? WorkDayHours { get; init; }
 
+        [Description("Start calculations at (format: dd/MM/yyyy)")]
+        [CommandOption("-s|--start-calculations-at")]
+        public string? StartCalculationsAt { get; init; }
+
         public override ValidationResult Validate()
         {
             if (InitialBalanceMinutes == null && InitialBalanceHours == null) {
@@ -47,17 +51,20 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var initialBalance = settings.InitialBalanceMinutes ?? ExtractMinutes(settings.InitialBalanceHours!);
-        var workDay = settings.WorkDayMinutes ?? ExtractMinutes(settings.WorkDayHours!);
+        var initialBalance = settings.InitialBalanceMinutes ?? ExtractMinutes(settings.InitialBalanceHours);
+        var workDay = settings.WorkDayMinutes ?? ExtractMinutes(settings.WorkDayHours);
+        var startCalculationsAt =settings.StartCalculationsAt != null 
+            ? DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd")
+            : null;
 
-        _settingsRepository.Update(initialBalance, workDay);
+        _settingsRepository.Update(initialBalance, workDay, startCalculationsAt);
         
         AnsiConsole.MarkupLineInterpolated($@"Settings [green]SUCCESSFULLY[/] updated!");
         return 0;
     }
 
-    private double ExtractMinutes(string time) {
-        return TimeSpan.Parse(time).TotalMinutes;
+    private double? ExtractMinutes(string? time) {
+        return time != null ? TimeSpan.Parse(time).TotalMinutes : null;
     }
 }
 

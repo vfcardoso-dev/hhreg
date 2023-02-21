@@ -31,6 +31,10 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         [CommandOption("-w|--workday-in-hours")]
         public string? WorkDayHours { get; init; }
 
+        [Description("Start calculations at (format: dd/MM/yyyy)")]
+        [CommandOption("-s|--start-calculations-at")]
+        public string? StartCalculationsAt { get; init; }
+
         public override ValidationResult Validate()
         {
             if (InitialBalanceMinutes == null && InitialBalanceHours == null) {
@@ -39,6 +43,10 @@ public sealed class InitCommand : Command<InitCommand.Settings>
                 
             if (WorkDayMinutes == null && WorkDayHours == null) {
                 return ValidationResult.Error("You should inform your workday (in minutes or hours).");
+            }
+
+            if (StartCalculationsAt == null) {
+                return ValidationResult.Error("You should inform your a date to start balance calculations.");
             }
             
             return ValidationResult.Success();
@@ -53,8 +61,9 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         
         var initialBalance = settings.InitialBalanceMinutes ?? ExtractMinutes(settings.InitialBalanceHours!);
         var workDay = settings.WorkDayMinutes ?? ExtractMinutes(settings.WorkDayHours!);
+        var startCalculationsAt = DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd");
 
-        _settingsRepository.Create(initialBalance, workDay);
+        _settingsRepository.Create(initialBalance, workDay, startCalculationsAt);
         
         AnsiConsole.MarkupLineInterpolated($@"Settings [green]SUCCESSFULLY[/] initialized!");
         return 0;
