@@ -5,6 +5,7 @@ using Microsoft.Data.Sqlite;
 public interface ITimeRepository {
     DayEntry? GetDayEntry(string day);
     IEnumerable<DayEntry> GetDayEntries(string startDay, string endDay);
+    IEnumerable<DayEntry> GetDayEntriesByType(string startDay, string endDay, DayType dayType);
     IEnumerable<DayEntry> GetInvalidDayEntries();
     DayEntry GetOrCreateDay(string day, string? justification = null, DayType? dayType = DayType.Work);
     void CreateTime(long dayEntryId, string time);
@@ -21,8 +22,6 @@ public class TimeRepository : ITimeRepository
         select * from DayEntry where Day = @day;";
     private readonly string _dayEntryByIdQuery = @"
         select * from DayEntry where Id = @dayEntryId;";
-    private readonly string _dayEntriesBetweenQuery = @"
-        select * from DayEntry where Day between @startDay and @endDay order by Day;";
     private readonly string _dayEntriesByIdsQuery = @"
         select * from DayEntry where Id in @ids order by Day;";
     private readonly string _timeEntryByDayEntryIdQuery = @"
@@ -57,17 +56,16 @@ public class TimeRepository : ITimeRepository
 
     public IEnumerable<DayEntry> GetDayEntries(string startDay, string endDay)
     {
-        var dayEntries = _unitOfWork.Query<DayEntry>(_dayEntriesBetweenQuery, new { startDay, endDay });
-        var dayEntryIds = dayEntries.Select(x => x.Id);
+        var query = "select * from DayEntry where Day between @startDay and @endDay order by Day;";
+        var dayEntries = _unitOfWork.Query<DayEntry>(query, new { startDay, endDay });
+        return FillTimeEntries(dayEntries);
+    }
 
-        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds = dayEntryIds });
-
-        foreach(var dayEntry in dayEntries) 
-        {
-            dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id);
-        }
-
-        return dayEntries;
+    public IEnumerable<DayEntry> GetDayEntriesByType(string startDay, string endDay, DayType dayType)
+    {
+        var query = "select * from DayEntry where DayType = @dayType and Day between @startDay and @endDay order by Day;";
+        var dayEntries = _unitOfWork.Query<DayEntry>(query, new { startDay, endDay, dayType });
+        return FillTimeEntries(dayEntries);
     }
 
     public IEnumerable<DayEntry> GetInvalidDayEntries()
@@ -179,7 +177,8 @@ public class TimeRepository : ITimeRepository
         return initialBalance + balance;
     }
 
-    private double CalculateTotalMinutes(IEnumerable<string> timeEntries, DayType dayType) {
+    private double CalculateTotalMinutes(IEnumerable<string> timeEntries, DayType dayType) 
+    {
         var summary = TimeSpan.Zero;
 
         if (dayType != DayType.Work) {
@@ -195,5 +194,19 @@ public class TimeRepository : ITimeRepository
         }
 
         return summary.TotalMinutes;
+    }
+
+    private IEnumerable<DayEntry> FillTimeEntries(IEnumerable<DayEntry> dayEntries)
+    {
+        var dayEntryIds = dayEntries.Select(x => x.Id);
+
+        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds = dayEntryIds });
+
+        foreach(var dayEntry in dayEntries) 
+        {
+            dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id);
+        }
+
+        return dayEntries;
     }
 }
