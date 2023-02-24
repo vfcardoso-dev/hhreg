@@ -11,7 +11,7 @@ public interface ITimeRepository {
     void CreateTime(long dayEntryId, string time);
     void CreateTime(long dayEntryId, params string[] timeList);
     void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList);
-    double GetAccumulatedBalance(double initialBalance, string limitDay);
+    double GetAccumulatedBalance(Settings cfg, string limitDay);
 }
 
 public class TimeRepository : ITimeRepository
@@ -167,14 +167,14 @@ public class TimeRepository : ITimeRepository
         _unitOfWork.BulkExecute(cmdList);
     }
 
-    public double GetAccumulatedBalance(double initialBalance, string limitDay)
+    public double GetAccumulatedBalance(Settings cfg, string limitDay)
     {
         var startDayQuery = "select StartCalculationsAt from Settings limit 1";
-        var balanceQuery = "select total(TotalMinutes) from DayEntry where Day between @startDay and @limitDay";
+        var balanceQuery = "select total(TotalMinutes - @workDay) from DayEntry where Day between @startDay and @limitDay";
         
         var startDay = _unitOfWork.QuerySingle<string>(startDayQuery);
-        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, new { startDay, limitDay });
-        return initialBalance + balance;
+        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, new { startDay, limitDay, workDay = cfg.WorkDay });
+        return cfg.InitialBalance + balance;
     }
 
     private double CalculateTotalMinutes(IEnumerable<string> timeEntries, DayType dayType) 

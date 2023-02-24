@@ -46,9 +46,9 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
             throw new HhregException($"Configuration is set to start balance calculations after the offset date. StartCalculationsAt: {startCalculationsAt}; OffsetDate: {offsetDate}");
         }
         
-        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg.InitialBalance, offsetDate.ToString("yyyy-MM-dd"));
+        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1).ToString("yyyy-MM-dd"));
         var dayEntries = _timeRepository.GetDayEntries(offsetDate.ToString("yyyy-MM-dd"), DateTime.Today.ToString("yyyy-MM-dd"));
-        
+
         var table = new Table();
         table.AddColumns(SpectreConsoleUtils.GetDayEntryBalanceHeaders());
         

@@ -32,19 +32,19 @@ public class SettingsRepository : ISettingsRepository
         
         if (newInitialBalance != null) {
             cmdList.Add(_unitOfWork.CreateSqlCommand(
-                @"update Settings set InitialBalance = @initialBalance limit 1;", 
+                @"update Settings set InitialBalance = @initialBalance;", 
                     new Dictionary<string, object?> {{"@workDay", newWorkDay}}));
         }
 
         if (newWorkDay != null) {
             cmdList.Add(_unitOfWork.CreateSqlCommand(
-                @"update Settings set WorkDay = @workDay limit 1;", 
+                @"update Settings set WorkDay = @workDay;", 
                     new Dictionary<string, object?> {{"@workDay", newWorkDay}}));
         }
 
         if (newStartCalculationsAt != null) {
             cmdList.Add(_unitOfWork.CreateSqlCommand(
-                @"update Settings set StartCalculationsAt = @startCalculationsAt limit 1;", 
+                @"update Settings set StartCalculationsAt = @startCalculationsAt;", 
                     new Dictionary<string, object?> {{"@startCalculationsAt", newStartCalculationsAt}}));
         }
 

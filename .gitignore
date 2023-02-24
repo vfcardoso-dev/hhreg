@@ -11,6 +11,7 @@
 *.sln.docstates
 hhreg.db
 *.session.db
+PLANNING.md
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
