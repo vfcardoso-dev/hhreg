@@ -6,6 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,16 +16,19 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.3" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
     <PackageReference Include="Spectre.Console" Version="0.46.0" />
     <PackageReference Include="Spectre.Console.Cli" Version="0.46.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\hhreg.business\hhreg.business.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\appsettings.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

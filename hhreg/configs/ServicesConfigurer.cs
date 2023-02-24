@@ -1,7 +1,6 @@
 using hhreg.business;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 
 namespace hhreg;
@@ -16,8 +15,7 @@ public static class ServicesConfigurer {
 
         services.AddScoped<IUnitOfWork>(ctx => 
             new UnitOfWorkContext(
-                ctx.GetRequiredService<IAppSettings>(), 
-                ctx.GetRequiredService<ILoggerFactory>())
+                ctx.GetRequiredService<IAppSettings>())
             .Create());
 
         services.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();

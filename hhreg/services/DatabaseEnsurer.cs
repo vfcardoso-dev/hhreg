@@ -1,5 +1,4 @@
 using hhreg.business;
-using Microsoft.Extensions.Logging;
 using Spectre.Console;
 
 namespace hhreg;

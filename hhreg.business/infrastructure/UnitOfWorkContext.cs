@@ -1,5 +1,4 @@
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Logging;
 
 namespace hhreg.business;
 
@@ -11,11 +10,9 @@ public interface IUnitOfWorkContext
 public class UnitOfWorkContext : IUnitOfWorkContext {
 
     private readonly IAppSettings _appSettings;
-    private readonly ILogger<UnitOfWork> _logger;
     private IUnitOfWork? _unitOfWork;
 
-    public UnitOfWorkContext(IAppSettings appSettings, ILoggerFactory loggerFactory) {
-        _logger = loggerFactory.CreateLogger<UnitOfWork>();
+    public UnitOfWorkContext(IAppSettings appSettings) {
         _appSettings = appSettings;
     }
 

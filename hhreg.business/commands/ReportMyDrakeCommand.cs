@@ -12,8 +12,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
     private readonly ITimeRepository _timeRepository;
     private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
     {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        WriteIndented = true
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
     public ReportMyDrakeCommand(ITimeRepository timeRepository) : base(timeRepository) 

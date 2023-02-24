@@ -9,7 +9,6 @@ static class Program
     {
         var app = Host.CreateDefaultBuilder(args)
             .ConfigureHostConfiguration(builder => HostConfigurer.Configure(builder, args))
-            .ConfigureLogging(LoggingConfigurer.Configure)
             .ConfigureServices(ServicesConfigurer.Configure)
             .ConfigureAppConfiguration(AppConfigurer.Configure)
             .Build();
