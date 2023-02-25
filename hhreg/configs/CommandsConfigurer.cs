@@ -44,17 +44,27 @@ public class CommandsConfigurer : ICommandsConfigurer {
                 .WithExample(new string[]{"entry","new","--day","23/02/2023","08:23","12:01","13:44","19:37"})
                 .WithExample(new string[]{"entry","new","-d","12/01/2023","-y","Sick","-j","\"This is a justification\""});
 
-            entry.AddCommand<EntryOverrideCommand>("override").WithDescription("Override entry logs.");
+            entry.AddCommand<EntryOverrideCommand>("override")
+                .WithDescription("Override entry logs.")
+                .WithExample(new string[]{"entry","override","--day","23/02/2023","08:23","12:01","13:44","19:37"})
+                .WithExample(new string[]{"entry","override","-d","12/01/2023","-y","Sick","-j","\"This is a justification\""});
+
             entry.AddCommand<EntryNowCommand>("now").WithDescription("Log an entry now.");
         });
 
         cmd.AddBranch("report", report => {
             report.SetDescription("Summarize and show time entries");
 
-            report.AddCommand<ReportDayCommand>("day").WithDescription("Show time entries for a single day.");
-            report.AddCommand<ReportMonthCommand>("month").WithDescription("Show time entries for a month.");
-            report.AddCommand<ReportBalanceCommand>("balance").WithDescription("Show accumulated hour bank balance.");
-            report.AddCommand<ReportMyDrakeCommand>("mydrake").WithDescription("Export time entries to bulk insert on MyDrake.");
+            report.AddCommand<ReportDayCommand>("day").WithDescription("Show time entries for a single day.")
+                .WithExample(new string[]{"report","day","23/02/2023"});
+            report.AddCommand<ReportMonthCommand>("month").WithDescription("Show time entries for a month.")
+                .WithExample(new string[]{"report","month","02/2023"});
+            report.AddCommand<ReportBalanceCommand>("balance").WithDescription("Show accumulated hour bank balance.")
+                .WithExample(new string[]{"report","balance"})
+                .WithExample(new string[]{"report","balance","--tail","30"});
+            report.AddCommand<ReportMyDrakeCommand>("mydrake").WithDescription("Export time entries to bulk insert on MyDrake.")
+                .WithExample(new string[]{"report","mydrake","01/07/2023"})
+                .WithExample(new string[]{"report","mydrake","01/03/2023","31/03/2023"});
         });
     }
 }

@@ -24,7 +24,7 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         public string? WorkDay { get; init; }
 
         [Description("Time input mode (minutes or HH:mm)")]
-        [CommandOption("-f|--time-input-mode")]
+        [CommandOption("-m|--time-input-mode")]
         [DefaultValue(TimeInputMode.Hours)]
         public TimeInputMode TimeInputMode { get; init; }
 
