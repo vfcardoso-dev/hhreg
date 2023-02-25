@@ -14,14 +14,22 @@ static class Program
             .Build();
 
         try {
+            var appHost = app.Services.GetRequiredService<AppHost>();
+            var notCalculatedArgs = new string[]{"-h","-v","--help","--version"};
+            
+            if (args.Any(arg => notCalculatedArgs.Contains(arg))) {
+                return appHost.Run(args);
+            }
+
             return AnsiConsole.Status()
                 .Spinner(Spinner.Known.Star2)
                 .SpinnerStyle(Style.Parse("green"))
                 .Start<int>("Calculating...", ctx => 
                 {
                     Thread.Sleep(1000);
-                    return app.Services.GetRequiredService<AppHost>().Run(args);
+                    return appHost.Run(args);
                 });
+                
         } catch (Exception ex) {
             AnsiConsole.MarkupLine($"[red]FATAL:[/] {ex.Message}");
             

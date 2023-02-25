@@ -10,8 +10,8 @@
 *.userosscache
 *.sln.docstates
 hhreg.db
-*.session.db
 PLANNING.md
+dist/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

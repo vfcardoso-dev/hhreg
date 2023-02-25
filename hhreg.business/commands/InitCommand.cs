@@ -15,21 +15,18 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
     public sealed class Settings : CommandSettings 
     {
-        [Description("Time bank initial balance (in minutes)")]
-        [CommandOption("--initial-balance-in-minutes")]
-        public double? InitialBalanceMinutes { get; init; }
+        [Description("Time bank initial balance")]
+        [CommandOption("-b|--initial-balance")]
+        public string? InitialBalance { get; init; }
 
-        [Description("Workday (in minutes)")]
-        [CommandOption("--workday-in-minutes")]
-        public double? WorkDayMinutes { get; init; }
+        [Description("Workday")]
+        [CommandOption("-w|--workday")]
+        public string? WorkDay { get; init; }
 
-        [Description("Time bank initial balance (in hours)")]
-        [CommandOption("-b|--initial-balance-in-hours")]
-        public string? InitialBalanceHours { get; init; }
-
-        [Description("Workday (in hours)")]
-        [CommandOption("-w|--workday-in-hours")]
-        public string? WorkDayHours { get; init; }
+        [Description("Time input mode: Hours (HH:mm) or Minutes (0..99+)")]
+        [CommandOption("-m|--time-input-mode")]
+        [DefaultValue(TimeInputMode.Hours)]
+        public TimeInputMode TimeInputMode { get; init; }
 
         [Description("Start calculations at (format: dd/MM/yyyy)")]
         [CommandOption("-s|--start-calculations-at")]
@@ -37,17 +34,21 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
         public override ValidationResult Validate()
         {
-            if (InitialBalanceMinutes == null && InitialBalanceHours == null) {
-                return ValidationResult.Error("You should inform an initial balance for the hour bank (in minutes or hours).");
-            }
-                
-            if (WorkDayMinutes == null && WorkDayHours == null) {
-                return ValidationResult.Error("You should inform your workday (in minutes or hours).");
-            }
-
-            if (StartCalculationsAt == null) {
-                return ValidationResult.Error("You should inform your a date to start balance calculations.");
-            }
+            if (InitialBalance == null) return ValidationResult.Error("You should inform initial balance");
+            if (WorkDay == null) return ValidationResult.Error("You should inform workday.");
+            if (StartCalculationsAt == null) return ValidationResult.Error("You should inform your a date to start balance calculations.");
+            
+            if (TimeInputMode == TimeInputMode.Hours && !TimeSpan.TryParse(InitialBalance, out var _))
+                return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid time format.");
+            
+            if (TimeInputMode == TimeInputMode.Minutes && !int.TryParse(InitialBalance, out var _))
+                return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid integer format.");
+            
+            if (TimeInputMode == TimeInputMode.Hours && !int.TryParse(WorkDay, out var _))
+                return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid time format.");
+            
+            if (TimeInputMode == TimeInputMode.Minutes && !int.TryParse(WorkDay, out var _))
+                return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid integer format.");
             
             return ValidationResult.Success();
         }
@@ -59,8 +60,8 @@ public sealed class InitCommand : Command<InitCommand.Settings>
             throw new HhregException("Settings already initialized. You can change it with 'config edit'");
         }
         
-        var initialBalance = settings.InitialBalanceMinutes ?? ExtractMinutes(settings.InitialBalanceHours!);
-        var workDay = settings.WorkDayMinutes ?? ExtractMinutes(settings.WorkDayHours!);
+        var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance!);
+        var workDay = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay!);
         var startCalculationsAt = DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd");
 
         _settingsRepository.Create(initialBalance, workDay, startCalculationsAt);
@@ -69,7 +70,13 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         return 0;
     }
 
-    private double ExtractMinutes(string time) {
-        return TimeSpan.Parse(time).TotalMinutes;
+    private double GetTimeInputValue(TimeInputMode mode, string value)
+    {
+        return mode switch
+        {
+            TimeInputMode.Hours => TimeSpan.Parse(value).TotalMinutes,
+            TimeInputMode.Minutes => int.Parse(value),
+            _ => throw new HhregException($"Invalid input format on value '{value}'")
+        };
     }
 }
