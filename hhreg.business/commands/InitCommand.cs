@@ -8,9 +8,11 @@ namespace hhreg.business;
 public sealed class InitCommand : Command<InitCommand.Settings>
 {
     private readonly ISettingsRepository _settingsRepository;
+    private readonly ILogger _logger;
 
-    public InitCommand(ISettingsRepository settingsRepository) {
+    public InitCommand(ISettingsRepository settingsRepository, ILogger logger) {
         _settingsRepository = settingsRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings 
@@ -66,7 +68,7 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
         _settingsRepository.Create(initialBalance, workDay, startCalculationsAt);
         
-        AnsiConsole.MarkupLineInterpolated($@"Settings [green]SUCCESSFULLY[/] initialized!");
+        _logger.WriteLine($@"Settings [green]SUCCESSFULLY[/] initialized!");
         return 0;
     }
 

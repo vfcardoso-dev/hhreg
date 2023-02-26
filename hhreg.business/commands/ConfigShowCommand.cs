@@ -7,9 +7,11 @@ namespace hhreg.business;
 public sealed class ConfigShowCommand : Command<ConfigShowCommand.Settings>
 {
     private readonly ISettingsRepository _settingsRepository;
+    private readonly ILogger _logger;
 
-    public ConfigShowCommand(ISettingsRepository settingsRepository) {
+    public ConfigShowCommand(ISettingsRepository settingsRepository, ILogger logger) {
         _settingsRepository = settingsRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings {}
@@ -18,10 +20,7 @@ public sealed class ConfigShowCommand : Command<ConfigShowCommand.Settings>
     {
         var cfg = _settingsRepository.Get()!;
 
-        var table = new Table();
-        table.AddColumns(cfg.RenderColumns());
-        table.AddRow(cfg.RenderRow());
-        AnsiConsole.Write(table);
+        _logger.WriteTable(cfg.ExtractColumns(), new List<string[]>{{cfg.ExtractRow()}});
         return 0;
     }
 }

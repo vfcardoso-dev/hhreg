@@ -26,6 +26,7 @@ public static class ServicesConfigurer {
         // ...
 
         services.AddSingleton<AppHost>();
+        services.AddSingleton<ILogger, Logger>();
         services.AddScoped<IEnsureInitInterceptor, EnsureInitInterceptor>();
         services.AddScoped<ICommandsConfigurer, CommandsConfigurer>();
         services.AddSingleton<ITypeRegistrar>(new TypeRegistrar(services));

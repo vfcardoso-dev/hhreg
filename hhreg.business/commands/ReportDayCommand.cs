@@ -9,13 +9,16 @@ public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settin
 {
     private readonly ITimeRepository _timeRepository;
     private readonly ISettingsRepository _settingsRepository;
+    private readonly ILogger _logger;
 
     public ReportDayCommand(
         ITimeRepository timeRepository, 
-        ISettingsRepository settingsRepository) : base(timeRepository)
+        ISettingsRepository settingsRepository,
+        ILogger logger) : base(timeRepository, logger)
     {
         _timeRepository = timeRepository;
         _settingsRepository = settingsRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings {
@@ -46,10 +49,8 @@ public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settin
         var day = DateOnly.Parse(settings.Day!);
         var dayEntry = _timeRepository.GetDayEntry(day.ToString("yyyy-MM-dd"))!;
 
-        var table = new Table();
-        table.AddColumns(SpectreConsoleUtils.GetDayEntrySummaryHeaders());
-        table.AddRow(SpectreConsoleUtils.GetDayEntrySummaryRow(dayEntry, cfg.WorkDay));
-        AnsiConsole.Write(table);
+        _logger.WriteTable(SpectreConsoleUtils.GetDayEntrySummaryHeaders(), 
+            new List<Text[]>{{SpectreConsoleUtils.GetDayEntrySummaryRow(dayEntry, cfg.WorkDay)}});
         return 0;
     }
 }

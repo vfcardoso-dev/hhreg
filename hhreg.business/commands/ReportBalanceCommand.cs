@@ -9,13 +9,16 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
 {
     private readonly ITimeRepository _timeRepository;
     private readonly ISettingsRepository _settingsRepository;
+    private readonly ILogger _logger;
 
     public ReportBalanceCommand(
         ITimeRepository timeRepository, 
-        ISettingsRepository settingsRepository) : base(timeRepository) 
+        ISettingsRepository settingsRepository,
+        ILogger logger) : base(timeRepository, logger) 
     {
         _timeRepository = timeRepository;
         _settingsRepository = settingsRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings {
@@ -49,15 +52,14 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
         var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1).ToString("yyyy-MM-dd"));
         var dayEntries = _timeRepository.GetDayEntries(offsetDate.ToString("yyyy-MM-dd"), DateTime.Today.ToString("yyyy-MM-dd"));
 
-        var table = new Table();
-        table.AddColumns(SpectreConsoleUtils.GetDayEntryBalanceHeaders());
+        var rows = new List<Text[]>();
         
         foreach(var dayEntry in dayEntries)
         {
-            table.AddRow(SpectreConsoleUtils.GetDayEntryBalanceRow(dayEntry, cfg.WorkDay, ref offsetAccumulatedBalance));
+            rows.Add(SpectreConsoleUtils.GetDayEntryBalanceRow(dayEntry, cfg.WorkDay, ref offsetAccumulatedBalance));
         }
-        
-        AnsiConsole.Write(table);
+
+        _logger.WriteTable(SpectreConsoleUtils.GetDayEntryBalanceHeaders(), rows);
         return 0;
     }
 }

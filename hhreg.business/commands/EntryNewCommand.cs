@@ -8,10 +8,12 @@ namespace hhreg.business;
 public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
+    private readonly ILogger _logger;
 
-    public EntryNewCommand(ITimeRepository timeRepository)
+    public EntryNewCommand(ITimeRepository timeRepository, ILogger logger)
     {
         _timeRepository = timeRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings 
@@ -86,8 +88,8 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         _timeRepository.CreateTime(dayEntry.Id, settings.Entries);
         
         var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
-        AnsiConsole.MarkupLineInterpolated($@"Day entry [green]SUCCESSFULLY[/] created!");
-        AnsiConsole.MarkupLineInterpolated($"[yellow]{inputDay}[/]: {dayText}");
+        _logger.WriteLine($@"Day entry [green]SUCCESSFULLY[/] created!");
+        _logger.WriteLine($"[yellow]{inputDay}[/]: {dayText}");
         return 0;
     }
 }

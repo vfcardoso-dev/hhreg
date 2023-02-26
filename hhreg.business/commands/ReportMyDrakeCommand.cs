@@ -10,14 +10,16 @@ namespace hhreg.business;
 public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
-    private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions
+    private readonly ILogger _logger;
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public ReportMyDrakeCommand(ITimeRepository timeRepository) : base(timeRepository) 
+    public ReportMyDrakeCommand(ITimeRepository timeRepository, ILogger logger) : base(timeRepository, logger) 
     {
         _timeRepository = timeRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings {
@@ -50,7 +52,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         var startDate = DateOnly.Parse(settings.Start);
         var endDate = settings.End != null ? DateOnly.Parse(settings.Start) : DateOnly.FromDateTime(DateTime.Today);
 
-        AnsiConsole.MarkupInterpolated($"Exporting entries from {startDate.ToString("dd/MM/yyyy")} to {endDate.ToString("dd/MM/yyyy")}...");
+        _logger.WriteLine($"Exporting entries from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}...");
 
         var dayEntries = _timeRepository.GetDayEntriesByType(startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"), DayType.Work);
         var myDrakeEvents = new List<MyDrakeEvent>();
@@ -59,7 +61,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         {
             if (dayEntry.DayType != DayType.Work) {
                 var day = DateOnly.Parse(dayEntry.Day!).ToString("dd/MM/yyyy");
-                AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Bypassing day [yellow]{day}[/] because it's not a work day. Type: {dayEntry.DayType}. Justification: {dayEntry.Justification}");
+                _logger.WriteLine($"[darkblue]INFO:[/] Bypassing day [yellow]{day}[/] because it's not a work day. Type: {dayEntry.DayType}. Justification: {dayEntry.Justification}");
                 continue;
             }
 
@@ -92,9 +94,9 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         var encoded = Convert.ToBase64String(bytes);
         
         var panel = new Panel("Copy the code below and paste on [green]hhreg.chrome[/] extension");
-        AnsiConsole.Write(panel);
+        _logger.Write(panel);
 
-        AnsiConsole.WriteLine(encoded);
+        _logger.WriteLine(encoded);
 
         return 0;
     }

@@ -4,31 +4,31 @@ using Spectre.Console.Rendering;
 
 public static class SpectreConsoleUtils
 {
-    public static TableColumn[] GetDayEntrySummaryHeaders() 
+    public static string[] GetDayEntrySummaryHeaders() 
     {
-        var headers = new List<TableColumn>();
-        headers.Add(new TableColumn(new Text("Day", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Day Type", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Time entries", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Total", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Balance", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Justification", new Style(Color.Blue, Color.Black))));
-        return headers.ToArray();
+        return new string[]{
+            "Day",
+            "Day Type",
+            "Time entries",
+            "Total",
+            "Balance",
+            "Justification"
+        };
     }
 
-    public static TableColumn[] GetDayEntryBalanceHeaders() 
+    public static string[] GetDayEntryBalanceHeaders() 
     {
-        var headers = new List<TableColumn>();
-        headers.Add(new TableColumn(new Text("Day", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Day Type", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Time entries / Justification", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Total", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Balance", new Style(Color.Blue, Color.Black))));
-        headers.Add(new TableColumn(new Text("Accumulated", new Style(Color.Blue, Color.Black))));
-        return headers.ToArray();
+        return new string[]{
+            "Day",
+            "Day Type",
+            "Time entries / Justification",
+            "Total",
+            "Balance",
+            "Accumulated"
+        };
     }
 
-    public static IRenderable[] GetDayEntrySummaryRow(DayEntry dayEntry, double workDay)
+    public static Text[] GetDayEntrySummaryRow(DayEntry dayEntry, double workDay, Style? defaultRowStyle = null)
     {
         var workDayTs = TimeSpan.FromMinutes(workDay);
         var totalMinutesTs = TimeSpan.FromMinutes(dayEntry.TotalMinutes);
@@ -36,17 +36,17 @@ public static class SpectreConsoleUtils
         var balanceColor = balance > TimeSpan.Zero ? Color.Green : Color.Red;
         var balanceSignal = balance > TimeSpan.Zero ? "+" : "";
         
-        var row = new List<Text>();
-        row.Add(new Text(DateOnly.Parse(dayEntry.Day!).ToString()));
-        row.Add(new Text(dayEntry.DayType.ToString()));
-        row.Add(new Text(string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))));
-        row.Add(new Text(totalMinutesTs.ToTimeString())); // Total hours
-        row.Add(new Text($"{balanceSignal}{balance.ToTimeString()}", new Style(balanceColor, Color.Black))); // balance
-        row.Add(new Text(dayEntry.Justification ?? "-")); // justification
-        return row.ToArray();
+        return new Text[]{
+            new Text(DateOnly.Parse(dayEntry.Day!).ToString(), defaultRowStyle),
+            new Text(dayEntry.DayType.ToString(), defaultRowStyle),
+            new Text(string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time)), defaultRowStyle),
+            new Text(totalMinutesTs.ToTimeString(), defaultRowStyle), // Total hours
+            new Text($"{balanceSignal}{balance.ToTimeString()}", new Style(balanceColor, Color.Black)), // balance
+            new Text(dayEntry.Justification ?? "-", defaultRowStyle) // justification
+        };
     }
 
-    public static IRenderable[] GetDayEntryBalanceRow(DayEntry dayEntry, double workDay, ref double accumulated)
+    public static Text[] GetDayEntryBalanceRow(DayEntry dayEntry, double workDay, ref double accumulated, Style? defaultRowStyle = null)
     {
         var workDayTs = TimeSpan.FromMinutes(workDay);
         var totalMinutesTs = TimeSpan.FromMinutes(dayEntry.TotalMinutes);
@@ -54,7 +54,7 @@ public static class SpectreConsoleUtils
         var balanceColor = balance >= TimeSpan.Zero ? Color.Green : Color.Red;
         var balanceSignal = balance > TimeSpan.Zero ? "+" : "";
 
-        accumulated = accumulated + balance.TotalMinutes;
+        accumulated += balance.TotalMinutes;
         var accumulatedTs = TimeSpan.FromMinutes(accumulated);
         var accumulatedColor = accumulatedTs > TimeSpan.Zero ? Color.Green : Color.Red;
         var accumulatedSignal = accumulatedTs > TimeSpan.Zero ? "+" : "";
@@ -62,14 +62,13 @@ public static class SpectreConsoleUtils
             ? string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time)) 
             : dayEntry.Justification!;
         
-        var row = new List<Text>();
-        row.Add(new Text(DateOnly.Parse(dayEntry.Day!).ToString()));
-        row.Add(new Text(dayEntry.DayType.ToString()));
-        row.Add(new Text(timeEntries));
-        row.Add(new Text(totalMinutesTs.ToTimeString())); // Total Minutes
-        row.Add(new Text($"{balanceSignal}{balance.ToTimeString()}", new Style(balanceColor, Color.Black))); // balance
-        row.Add(new Text($"{accumulatedSignal}{accumulatedTs.ToTimeString()}", new Style(accumulatedColor, Color.Black))); // balance
-
-        return row.ToArray();
+        return new Text[] {
+            new Text(DateOnly.Parse(dayEntry.Day!).ToString(), defaultRowStyle),
+            new Text(dayEntry.DayType.ToString(), defaultRowStyle),
+            new Text(timeEntries, defaultRowStyle),
+            new Text(totalMinutesTs.ToTimeString(), defaultRowStyle), // Total Minutes
+            new Text($"{balanceSignal}{balance.ToTimeString()}", new Style(balanceColor, Color.Black)), // balance
+            new Text($"{accumulatedSignal}{accumulatedTs.ToTimeString()}", new Style(accumulatedColor, Color.Black)) // balance
+        };
     }
 }

@@ -9,13 +9,16 @@ public sealed class ReportMonthCommand : ReportCommandBase<ReportMonthCommand.Se
 {
     private readonly ITimeRepository _timeRepository;
     private readonly ISettingsRepository _settingsRepository;
+    private readonly ILogger _logger;
 
     public ReportMonthCommand(
         ITimeRepository timeRepository, 
-        ISettingsRepository settingsRepository) : base(timeRepository) 
+        ISettingsRepository settingsRepository,
+        ILogger logger) : base(timeRepository, logger) 
     {
         _timeRepository = timeRepository;
         _settingsRepository = settingsRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings {
@@ -49,15 +52,13 @@ public sealed class ReportMonthCommand : ReportCommandBase<ReportMonthCommand.Se
 
         var dayEntries = _timeRepository.GetDayEntries(start.ToString("yyyy-MM-dd"), end.ToString("yyyy-MM-dd"))!;
 
-        var table = new Table();
-        table.AddColumns(SpectreConsoleUtils.GetDayEntrySummaryHeaders());
-        
+        var rows = new List<Text[]>();
         foreach(var day in dayEntries)
         {
-            table.AddRow(SpectreConsoleUtils.GetDayEntrySummaryRow(day, cfg.WorkDay));
+            rows.Add(SpectreConsoleUtils.GetDayEntrySummaryRow(day, cfg.WorkDay));
         }
-        
-        AnsiConsole.Write(table);
+
+        _logger.WriteTable(SpectreConsoleUtils.GetDayEntrySummaryHeaders(), rows);
         return 0;
     }
 }

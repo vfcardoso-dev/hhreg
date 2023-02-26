@@ -8,10 +8,12 @@ namespace hhreg.business;
 public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
+    private readonly ILogger _logger;
 
-    public EntryOverrideCommand(ITimeRepository timeRepository)
+    public EntryOverrideCommand(ITimeRepository timeRepository, ILogger logger)
     {
         _timeRepository = timeRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings 
@@ -87,8 +89,8 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
             settings.Entries);
         
         var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
-        AnsiConsole.MarkupLineInterpolated($@"Day entry [green]SUCCESSFULLY[/] overridden!");
-        AnsiConsole.MarkupLineInterpolated($"[yellow]{inputDay}[/]: {dayText}");
+        _logger.WriteLine($@"Day entry [green]SUCCESSFULLY[/] overridden!");
+        _logger.WriteLine($"[yellow]{inputDay}[/]: {dayText}");
         return 0;
     }
 }

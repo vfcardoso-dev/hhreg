@@ -8,10 +8,12 @@ namespace hhreg.business;
 public sealed class EntryNowCommand : Command<EntryNowCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
+    private readonly ILogger _logger;
 
-    public EntryNowCommand(ITimeRepository timeRepository)
+    public EntryNowCommand(ITimeRepository timeRepository, ILogger logger)
     {
         _timeRepository = timeRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings {}
@@ -26,8 +28,8 @@ public sealed class EntryNowCommand : Command<EntryNowCommand.Settings>
 
         _timeRepository.CreateTime(dayEntry.Id, time.ToTimeString());
         
-        AnsiConsole.MarkupLineInterpolated($@"Day entry [green]SUCCESSFULLY[/] created!");
-        AnsiConsole.MarkupLineInterpolated($"[yellow]{date}[/]: {time.ToTimeString()}");
+        _logger.WriteLine($@"Day entry [green]SUCCESSFULLY[/] created!");
+        _logger.WriteLine($"[yellow]{date}[/]: {time.ToTimeString()}");
         return 0;
     }
 }

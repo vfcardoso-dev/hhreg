@@ -3,22 +3,13 @@ using Spectre.Console.Rendering;
 
 public abstract class BaseEntity<T>
 {
-    public virtual TableColumn[] RenderColumns() 
+    public virtual string[] ExtractColumns() 
     {
-        var headers = new List<TableColumn>();
-        headers.AddRange(typeof(T).GetProperties().Select(x => 
-            new TableColumn(new Text(x.Name, new Style(Color.Green, Color.Black)))));
-        return headers.ToArray();
+        return typeof(T).GetProperties().Select(x => x.Name).ToArray();
     }
 
-    public virtual IRenderable[] RenderRow()
+    public virtual string[] ExtractRow()
     {
-        var row = new List<Text>();
-
-        row.AddRange(typeof(T).GetProperties()
-            .Select(x => 
-                new Text(x.GetValue(this)?.ToString() ?? "")));
-
-        return row.ToArray();
+        return typeof(T).GetProperties().Select(x => x.GetValue(this)?.ToString() ?? "").ToArray();
     }
 }

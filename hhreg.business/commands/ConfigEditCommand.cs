@@ -8,9 +8,11 @@ namespace hhreg.business;
 public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
 {
     private readonly ISettingsRepository _settingsRepository;
+    private readonly ILogger _logger;
 
-    public ConfigEditCommand(ISettingsRepository settingsRepository) {
+    public ConfigEditCommand(ISettingsRepository settingsRepository, ILogger logger) {
         _settingsRepository = settingsRepository;
+        _logger = logger;
     }
 
     public sealed class Settings : CommandSettings
@@ -62,7 +64,7 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
 
         _settingsRepository.Update(initialBalance, workDay, startCalculationsAt);
         
-        AnsiConsole.MarkupLineInterpolated($@"Settings [green]SUCCESSFULLY[/] updated!");
+        _logger.WriteLine($@"Settings [green]SUCCESSFULLY[/] updated!");
         return 0;
     }
 
