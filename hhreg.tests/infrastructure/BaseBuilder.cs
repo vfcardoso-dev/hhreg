@@ -6,7 +6,7 @@ public abstract class BaseBuilder<T> : ISpecimenBuilder
 {
     public object Create(object request, ISpecimenContext context)
     {
-        if (request is Type && ((Type)request) == typeof(T)) {
+        if (request is Type type && type == typeof(T)) {
             return (object)DoCreate(context)!;
         }
 

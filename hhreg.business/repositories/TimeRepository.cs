@@ -1,6 +1,7 @@
-using hhreg.business;
 using hhreg.business.domain;
 using Microsoft.Data.Sqlite;
+
+namespace hhreg.business;
 
 public interface ITimeRepository {
     DayEntry? GetDayEntry(string day);
@@ -105,7 +106,7 @@ public class TimeRepository : ITimeRepository
                 new Dictionary<string, object?> {{"@time",time},{"@dayEntryId",dayEntryId}})
         };
 
-        var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId = dayEntryId });
+        var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId });
         var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Append(time);
         var totalMinutes = CalculateTotalMinutes(timeStrs, dayEntry.DayType);
 
@@ -126,7 +127,7 @@ public class TimeRepository : ITimeRepository
             )
         );
 
-        var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId = dayEntryId });
+        var dayEntry = _unitOfWork.QuerySingle<DayEntry>(_dayEntryByIdQuery, new { dayEntryId });
         var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Union(timeList);
         var totalMinutes = CalculateTotalMinutes(timeStrs, dayEntry.DayType);
 
@@ -186,7 +187,7 @@ public class TimeRepository : ITimeRepository
             return workDay;
         }
 
-        for(int i = 0, j = 1; j < (timeEntries.OrderBy(x => x).Count()); i=j+1, j=j+2) {
+        for(int i = 0, j = 1; j < (timeEntries.OrderBy(x => x).Count()); i=j+1, j+=2) {
             var second = TimeSpan.Parse(timeEntries.ElementAt(j));
             var first = TimeSpan.Parse(timeEntries.ElementAt(i));
             var diff = second.Subtract(first);
@@ -200,7 +201,7 @@ public class TimeRepository : ITimeRepository
     {
         var dayEntryIds = dayEntries.Select(x => x.Id);
 
-        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds = dayEntryIds });
+        var timeEntries = _unitOfWork.Query<TimeEntry>(_timeEntriesByDayEntryIdsQuery, new { dayEntryIds });
 
         foreach(var dayEntry in dayEntries) 
         {

@@ -36,20 +36,20 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
 
         public override ValidationResult Validate()
         {
-            if (InitialBalance == null) return ValidationResult.Error("You should inform initial balance");
-            if (WorkDay == null) return ValidationResult.Error("You should inform workday.");
-            
-            if (TimeInputMode == TimeInputMode.Hours && !TimeSpan.TryParse(InitialBalance, out var _))
+            if (TimeInputMode == TimeInputMode.Hours && InitialBalance?.IsTime() == false)
                 return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid time format.");
             
-            if (TimeInputMode == TimeInputMode.Minutes && !int.TryParse(InitialBalance, out var _))
+            if (TimeInputMode == TimeInputMode.Minutes && InitialBalance?.IsInteger() == false)
                 return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid integer format.");
             
-            if (TimeInputMode == TimeInputMode.Hours && !int.TryParse(WorkDay, out var _))
+            if (TimeInputMode == TimeInputMode.Hours && WorkDay?.IsTime() == false)
                 return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid time format.");
             
-            if (TimeInputMode == TimeInputMode.Minutes && !int.TryParse(WorkDay, out var _))
+            if (TimeInputMode == TimeInputMode.Minutes && WorkDay?.IsInteger() == false)
                 return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid integer format.");
+
+            if (StartCalculationsAt != null && !DateOnly.TryParse(StartCalculationsAt, out var _))
+                return ValidationResult.Error($"Could not parse '{StartCalculationsAt}' as a valid date format.");
             
             return ValidationResult.Success();
         }
@@ -57,8 +57,8 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance!);
-        var workDay = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay!);
+        var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance);
+        var workDay = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay);
         var startCalculationsAt = settings.StartCalculationsAt != null 
             ? DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd") : null;
 
@@ -68,8 +68,10 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         return 0;
     }
 
-    private double GetTimeInputValue(TimeInputMode mode, string value)
+    private static double? GetTimeInputValue(TimeInputMode mode, string? value)
     {
+        if (value == null) return null;
+
         return mode switch
         {
             TimeInputMode.Hours => TimeSpan.Parse(value).TotalMinutes,

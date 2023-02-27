@@ -65,7 +65,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
                 continue;
             }
 
-            for(int i=0,j=1; j < dayEntry.TimeEntries.OrderBy(x => x.Time).Count(); i=j+1,j=j+2)
+            for(int i=0,j=1; j < dayEntry.TimeEntries.OrderBy(x => x.Time).Count(); i=j+1,j+=2)
             {
                 var first = TimeSpan.Parse(dayEntry.TimeEntries.ElementAt(i).Time!).ToTimeString();
                 var second = TimeSpan.Parse(dayEntry.TimeEntries.ElementAt(j).Time!).ToTimeString();

@@ -1,5 +1,6 @@
 using AutoFixture;
 using AutoFixture.Kernel;
+using hhreg.business;
 using hhreg.business.domain;
 
 namespace hhreg.tests;

@@ -37,7 +37,7 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
 
         [Description("Defines time entries (format: HH:mm)")]
         [CommandArgument(0, "[entries]")]
-        public string[] Entries { get; init; } = new string[]{};
+        public string[] Entries { get; init; } = Array.Empty<string>();
 
 
         public override ValidationResult Validate()
@@ -83,7 +83,7 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
             : DateOnly.Parse(settings.Day!);
 
         var dayEntry = _timeRepository.GetDayEntry(inputDay.ToString("yyyy-MM-dd"));
-        if (dayEntry == null) throw new HhregException($"Cannot override a not yet created day '{inputDay.ToString("yyyy-MM-dd")}'");
+        if (dayEntry == null) throw new HhregException($"Cannot override a not yet created day '{inputDay:yyyy-MM-dd}'");
 
         _timeRepository.OverrideDayEntry(dayEntry.Id, settings.Justification, settings.DayType, 
             settings.Entries);

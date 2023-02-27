@@ -1,6 +1,7 @@
 using hhreg.business.domain;
 using Spectre.Console;
-using Spectre.Console.Rendering;
+
+namespace hhreg.business;
 
 public static class SpectreConsoleUtils
 {

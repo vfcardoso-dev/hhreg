@@ -18,11 +18,15 @@ public class CommandsConfigurer : ICommandsConfigurer {
     public void Configure(IConfigurator cmd) 
     {
         cmd.PropagateExceptions();
+        cmd.SetApplicationName("hhreg");
+        cmd.CaseSensitivity(CaseSensitivity.None);
+        cmd.ValidateExamples();
+
         cmd.SetInterceptor(_ensureInitInterceptor);
 
         cmd.AddCommand<InitCommand>("init")
             .WithDescription("Initializes CLI settings.")
-            .WithExample(new string[]{"init","--initial-balance","-0:40","--work-day","8:00","--start-calculations-at","01/12/2022"})
+            .WithExample(new string[]{"init","--initial-balance","-0:40","--workday","8:00","--start-calculations-at","01/12/2022"})
             .WithExample(new string[]{"init","-m","Minutes","-b","-20","-w","480","-s","01/12/2022"});
         
         cmd.AddBranch("config", config => {

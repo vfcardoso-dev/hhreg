@@ -1,28 +1,22 @@
 using hhreg.business;
-using NSubstitute;
-using Spectre.Console.Cli;
 using FluentAssertions;
+using Spectre.Console.Cli;
 
 namespace hhreg.tests;
 
 public class ConfigDatabaseCommandTests : UnitTestsBase
 {
-    private readonly IRemainingArguments _remainingArgs = Substitute.For<IRemainingArguments>();
-    private ConfigDatabaseCommand? _sut;
-
-    [SetUp]
-    public void ConfigDatabaseCommand_SetUp() {
-        _sut = new ConfigDatabaseCommand(AppSettings, Logger);
-    }
-
     [Test]
-    public void should_be_able_to_show_database_location()
+    public void Should_be_able_to_show_database_location()
     {
         // Given
-        var context = new CommandContext(_remainingArgs, "database", null);
+        AddSingleton<IAppSettings>(AppSettings);
+        AddSingleton<ILogger>(Logger);
+
+        var app = CreateCommandApp((config) => config.AddCommand<ConfigDatabaseCommand>("database"));
 
         // When
-        var output = _sut!.Execute(context, new ConfigDatabaseCommand.Settings());
+        var output = app.Run(new []{"database"});
 
         // Then
         output.Should().Be(0);

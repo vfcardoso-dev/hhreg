@@ -37,7 +37,7 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
 
         [Description("Defines time entries (format: HH:mm)")]
         [CommandArgument(0, "[entries]")]
-        public string[] Entries { get; init; } = new string[]{};
+        public string[] Entries { get; init; } = Array.Empty<string>();
 
 
         public override ValidationResult Validate()

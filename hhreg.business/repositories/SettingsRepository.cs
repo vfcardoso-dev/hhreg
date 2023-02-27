@@ -1,6 +1,7 @@
-using hhreg.business;
 using hhreg.business.domain;
 using Microsoft.Data.Sqlite;
+
+namespace hhreg.business;
 
 public interface ISettingsRepository {
     void Create(double initialBalance, double workDay, string startCalculationsAt);

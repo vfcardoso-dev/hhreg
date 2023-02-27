@@ -13,7 +13,7 @@ public static class ServicesConfigurer {
             return appSettings;
         });
 
-        services.AddScoped<IUnitOfWork>(ctx => 
+        services.AddScoped(ctx => 
             new UnitOfWorkContext(
                 ctx.GetRequiredService<IAppSettings>())
             .Create());

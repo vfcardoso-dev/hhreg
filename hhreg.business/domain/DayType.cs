@@ -1,3 +1,5 @@
+namespace hhreg.business;
+
 public enum DayType
 {
     Work,

@@ -9,25 +9,27 @@ namespace hhreg.tests;
 
 public class ConfigShowCommandTests : UnitTestsBase
 {
-    private readonly ISettingsRepository _settingsRepository = Substitute.For<ISettingsRepository>();
-    private readonly IRemainingArguments _remainingArgs = Substitute.For<IRemainingArguments>();
-    private ConfigShowCommand? _sut;
+    private ISettingsRepository? _settingsRepository;
 
     [SetUp]
     public void ConfigShowCommandTests_SetUp() {
-        _sut = new ConfigShowCommand(_settingsRepository, Logger);
+        _settingsRepository = Substitute.For<ISettingsRepository>();
     }
 
     [Test]
-    public void should_be_able_to_show_settings()
+    public void Should_be_able_to_show_settings()
     {
         // Given
-        var context = new CommandContext(_remainingArgs, "show", null);
+        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ILogger>(Logger);
+
         var settings = Fixture.Create<Settings>();
-        _settingsRepository.Get().Returns(settings);
+        _settingsRepository!.Get().Returns(settings);
+
+        var app = CreateCommandApp((config) => config.AddCommand<ConfigShowCommand>("show"));
 
         // When
-        var output = _sut!.Execute(context, new ConfigShowCommand.Settings());
+        var output = app.Run(new []{"show"});
 
         // Then
         output.Should().Be(0);

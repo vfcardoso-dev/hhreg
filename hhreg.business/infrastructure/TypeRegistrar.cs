@@ -1,7 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace hhreg;
+namespace hhreg.business;
+
 public sealed class TypeRegistrar : ITypeRegistrar
 {
     private readonly IServiceCollection _builder;

@@ -106,5 +106,9 @@ public class UnitOfWork : IUnitOfWork
         return GetConnection().QueryFirstOrDefault<T>(query, param);
     }
 
-    public void Dispose() => _connection?.Close();
+    public void Dispose()
+    {
+        _connection?.Close();
+        GC.SuppressFinalize(this);
+    }
 }

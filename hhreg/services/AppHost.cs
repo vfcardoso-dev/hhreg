@@ -1,5 +1,3 @@
-using hhreg.business;
-using Spectre.Console;
 using Spectre.Console.Cli;
 
 namespace hhreg;
@@ -20,7 +18,7 @@ public class AppHost {
     public int Run(string[] args) {
         _databaseEnsurer.Ensure();
 
-        var app = new CommandApp(_typeRegistrar);        
+        var app = new CommandApp(_typeRegistrar);
         app.Configure(_commandsConfigurer.Configure);
         
         return app.Run(args);

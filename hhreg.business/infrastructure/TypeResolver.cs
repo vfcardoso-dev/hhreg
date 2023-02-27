@@ -1,6 +1,7 @@
 using Spectre.Console.Cli;
 
-namespace hhreg;
+namespace hhreg.business;
+
 public sealed class TypeResolver : ITypeResolver, IDisposable
 {
     private readonly IServiceProvider _provider;
