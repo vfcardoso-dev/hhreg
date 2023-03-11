@@ -17,7 +17,7 @@ public sealed class ConfigDatabaseCommand : Command<ConfigDatabaseCommand.Settin
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        _logger.WriteFilePath(HhregMessages.Config.Database.DatabaseLocationTitle, _appSettings.DatabaseFilePath);
+        _logger.WriteFilePath(HhregMessages.DatabaseLocationTitle, _appSettings.DatabaseFilePath);
         return 0;
     }
 }

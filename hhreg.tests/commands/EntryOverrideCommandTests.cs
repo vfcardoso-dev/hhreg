@@ -6,12 +6,12 @@ using hhreg.business.domain;
 
 namespace hhreg.tests;
 
-public class EntryNewCommandTests : UnitTestsBase
+public class EntryOverrideCommandTests : UnitTestsBase
 {
     private ITimeRepository? _timeRepository;
 
     [SetUp]
-    public void EntryNewCommandTests_SetUp() {
+    public void EntryOverrideCommandTests_SetUp() {
         _timeRepository = Substitute.For<ITimeRepository>();
     }
 
@@ -24,10 +24,10 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
         // When
-        Action action = () => app.Run(new []{"new", "-y", dayType.ToString(), entry});
+        Action action = () => app.Run(new []{"override", "-y", dayType.ToString(), entry});
         
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
@@ -43,11 +43,11 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
         // When
         var entryDate = invalidDates[Fixture.CreateBetween(0, 2)];
-        Action action = () => app.Run(new []{"new", "-d", entryDate, entry});
+        Action action = () => app.Run(new []{"override", "-d", entryDate, entry});
         
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
@@ -61,10 +61,10 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
         // When
-        Action action = () => app.Run(new []{"new", "-t"});
+        Action action = () => app.Run(new []{"override", "-t"});
         
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
@@ -79,10 +79,10 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
         // When
-        Action action = () => app.Run(new []{"new", "-t", badEntry});
+        Action action = () => app.Run(new []{"override", "-t", badEntry});
         
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
@@ -97,15 +97,32 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
         // When
         var badEntry = badEntries[Fixture.CreateBetween(0, 3)];
-        Action action = () => app.Run(new []{"new", "-t", badEntry});
+        Action action = () => app.Run(new []{"override", "-t", badEntry});
         
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
         action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, badEntry));
+    }
+
+    [Test]
+    public void deve_falhar_ao_tentar_sobrescrever_entradas_de_uma_data_nao_criada()
+    {
+        // Given
+        AddSingleton<ITimeRepository>(_timeRepository!);
+        AddSingleton<ILogger>(Logger);
+
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
+
+        // When
+        Action action = () => app.Run(new []{"override", "-t", "08:00"});
+        
+        // Then
+        _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
+        action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CannotOverrideANotYetCreatedDay, DateTime.Today.ToString("dd/MM/yyyy")));
     }
 
     [Test]
@@ -120,19 +137,19 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetOrCreateDay(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
+        _timeRepository!.GetDayEntry(Arg.Any<string>()).Returns(dayEntry);
 
-        var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
         // When
-        var output = app.Run(new []{"new", "-t", entry1, entry2, entry3, entry4});
+        var output = app.Run(new []{"override", "-t", entry1, entry2, entry3, entry4});
         
         // Then
         output.Should().Be(0);
-        _timeRepository!.Received().CreateTime(dayEntry.Id, Arg.Is<string[]>(x =>
-            x.Contains(entry1) && x.Contains(entry2) && x.Contains(entry3) && x.Contains(entry4)));
+        _timeRepository!.Received().OverrideDayEntry(dayEntry.Id, Arg.Any<string>(), Arg.Any<DayType>(),
+            Arg.Is<string[]>(x => x.Contains(entry1) && x.Contains(entry2) && x.Contains(entry3) && x.Contains(entry4)));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(2);
-        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] created!");
+        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] overridden!");
         Logger.Lines.Should().Contain($"[yellow]{DateTime.Today:dd/MM/yyyy}[/]: {entry1} / {entry2} / {entry3} / {entry4}");
     }
 
@@ -141,23 +158,24 @@ public class EntryNewCommandTests : UnitTestsBase
     {
         // Given
         var justificative = Fixture.Create<string>();
-        var dayType = Fixture.CreateAnyBut(DayType.Work).ToString();
+        var dayType = Fixture.CreateAnyBut(DayType.Work);
         var dayEntry = Fixture.Create<DayEntry>();
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetOrCreateDay(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
+        _timeRepository!.GetDayEntry(Arg.Any<string>()).Returns(dayEntry);
 
-        var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
+        var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
         // When
-        var output = app.Run(new []{"new", "-t", "-y", dayType, "-j", justificative});
+        var output = app.Run(new []{"override", "-t", "-y", dayType.ToString(), "-j", justificative});
         
         // Then
         output.Should().Be(0);
-        _timeRepository!.Received().CreateTime(dayEntry.Id, Arg.Any<string[]>());
+        _timeRepository!.Received().OverrideDayEntry(dayEntry.Id, justificative, dayType, Arg.Any<string[]>());
+
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(2);
-        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] created!");
+        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] overridden!");
         Logger.Lines.Should().Contain($"[yellow]{DateTime.Today:dd/MM/yyyy}[/]: {justificative}");
     }
 }

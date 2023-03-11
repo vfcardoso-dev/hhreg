@@ -44,17 +44,17 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         {
             if (!IsToday && Day == null) 
             {
-                return ValidationResult.Error(HhregMessages.Entry.New.YouShouldInformADayToLog);
+                return ValidationResult.Error(HhregMessages.YouShouldInformADayToLog);
             }
 
             if (!IsToday && !DateOnly.TryParse(Day, out var _)) 
             {
-                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidDateFormat, Day));
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, Day));
             }
                 
             if (Entries.Length == 0 && Justification == null) 
             {
-                return ValidationResult.Error(HhregMessages.Entry.New.YouShouldInformAtLeastOneTimeEntryOrSetAJustificative);
+                return ValidationResult.Error(HhregMessages.YouShouldInformAtLeastOneTimeEntryOrSetAJustificative);
             }
 
             foreach(var entry in Entries) 
@@ -63,12 +63,12 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
                 {
                     if (time < TimeSpan.Zero) 
                     {
-                        return ValidationResult.Error(HhregMessages.Entry.New.EntryTimesMustBePositive);
+                        return ValidationResult.Error(HhregMessages.EntryTimesMustBePositive);
                     }
                 } 
                 else 
                 {
-                    return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidTimeFormat, entry));
+                    return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, entry));
                 }
             }
             

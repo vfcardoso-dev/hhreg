@@ -14,12 +14,12 @@ public class ConfigEditCommandTests : UnitTestsBase
         _settingsRepository = Substitute.For<ISettingsRepository>();
     }
 
-    [TestCase(TimeInputMode.Hours, "70", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
-    [TestCase(TimeInputMode.Hours, "-10", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
-    [TestCase(TimeInputMode.Hours, "banana", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
-    [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
-    [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
-    [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Hours, "70", HhregMessages.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "-10", HhregMessages.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "banana", HhregMessages.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     public void Should_throw_validation_error_for_initial_balance_on_invalid_situations(TimeInputMode mode, 
         string? initialBalance, string expectedValidationErrorMessage)
     {
@@ -37,12 +37,12 @@ public class ConfigEditCommandTests : UnitTestsBase
         action.Should().Throw<Exception>().WithMessage(string.Format(expectedValidationErrorMessage, initialBalance));
     }
 
-    [TestCase(TimeInputMode.Hours, "70", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
-    [TestCase(TimeInputMode.Hours, "-10", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
-    [TestCase(TimeInputMode.Hours, "banana", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
-    [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
-    [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
-    [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Hours, "70", HhregMessages.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "-10", HhregMessages.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "banana", HhregMessages.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     public void Should_throw_validation_error_for_workday_on_invalid_situations(TimeInputMode mode, 
         string? workDay, string expectedValidationErrorMessage)
     {
@@ -79,7 +79,7 @@ public class ConfigEditCommandTests : UnitTestsBase
         // Then
         _settingsRepository!.DidNotReceive().Update(Arg.Any<double?>(), Arg.Any<double?>(), Arg.Any<string?>());
         
-        var expectedValidationErrorMessage = string.Format(HhregMessages.Common.CouldNotParseAsAValidDateFormat, startCalculationsAt);
+        var expectedValidationErrorMessage = string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, startCalculationsAt);
         action.Should().Throw<Exception>().WithMessage(expectedValidationErrorMessage);
     }
 

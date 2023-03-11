@@ -37,19 +37,19 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         public override ValidationResult Validate()
         {
             if (TimeInputMode == TimeInputMode.Hours && InitialBalance?.IsTime() == false)
-                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidTimeFormat, InitialBalance));
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, InitialBalance));
             
             if (TimeInputMode == TimeInputMode.Minutes && InitialBalance?.IsInteger() == false)
-                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidIntegerFormat, InitialBalance));
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, InitialBalance));
             
             if (TimeInputMode == TimeInputMode.Hours && WorkDay?.IsTime() == false)
-                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidTimeFormat, WorkDay));
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, WorkDay));
             
             if (TimeInputMode == TimeInputMode.Minutes && WorkDay?.IsInteger() == false)
-                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidIntegerFormat, WorkDay));
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, WorkDay));
 
             if (StartCalculationsAt != null && !DateOnly.TryParse(StartCalculationsAt, out var _))
-                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
             
             return ValidationResult.Success();
         }
@@ -76,7 +76,7 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         {
             TimeInputMode.Hours => TimeSpan.Parse(value).TotalMinutes,
             TimeInputMode.Minutes => int.Parse(value),
-            _ => throw new HhregException(string.Format(HhregMessages.Common.InvalidInputFormatOnValue, value))
+            _ => throw new HhregException(string.Format(HhregMessages.InvalidInputFormatOnValue, value))
         };
     }
 }

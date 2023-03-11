@@ -44,17 +44,17 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
         {
             if (!IsToday && Day == null) 
             {
-                return ValidationResult.Error("You should inform a day to log (or set entry as today with -t).");
+                return ValidationResult.Error(HhregMessages.YouShouldInformADayToLog);
             }
 
             if (!IsToday && !DateOnly.TryParse(Day, out var _)) 
             {
-                return ValidationResult.Error($"Could not parse '{Day}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, Day));
             }
                 
             if (Entries.Length == 0 && Justification == null) 
             {
-                return ValidationResult.Error("You should inform at least one time entry or set a justification with -j.");
+                return ValidationResult.Error(HhregMessages.YouShouldInformAtLeastOneTimeEntryOrSetAJustificative);
             }
 
             foreach(var entry in Entries) 
@@ -63,12 +63,12 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
                 {
                     if (time < TimeSpan.Zero) 
                     {
-                        return ValidationResult.Error("Entry times must be positives.");
+                        return ValidationResult.Error(HhregMessages.EntryTimesMustBePositive);
                     }
                 } 
                 else 
                 {
-                    return ValidationResult.Error($"Could not parse '{entry}' as a valid time format.");
+                    return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, entry));
                 }
             }
             
@@ -83,7 +83,7 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
             : DateOnly.Parse(settings.Day!);
 
         var dayEntry = _timeRepository.GetDayEntry(inputDay.ToString("yyyy-MM-dd"));
-        if (dayEntry == null) throw new HhregException($"Cannot override a not yet created day '{inputDay:yyyy-MM-dd}'");
+        if (dayEntry == null) throw new HhregException(string.Format(HhregMessages.CannotOverrideANotYetCreatedDay, inputDay.ToString("dd/MM/yyyy")));
 
         _timeRepository.OverrideDayEntry(dayEntry.Id, settings.Justification, settings.DayType, 
             settings.Entries);

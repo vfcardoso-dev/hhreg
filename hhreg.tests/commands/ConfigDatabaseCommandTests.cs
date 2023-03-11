@@ -21,7 +21,7 @@ public class ConfigDatabaseCommandTests : UnitTestsBase
         // Then
         output.Should().Be(0);
         Logger.MethodHits.Should().ContainSingle("WriteFilePath");
-        Logger.Headers.Should().ContainSingle(HhregMessages.Config.Database.DatabaseLocationTitle);
+        Logger.Headers.Should().ContainSingle(HhregMessages.DatabaseLocationTitle);
         Logger.Rows.Should().HaveCount(1);
         Logger.Rows.First().Should().ContainSingle(AppSettings.DatabaseFilePath);
     }
