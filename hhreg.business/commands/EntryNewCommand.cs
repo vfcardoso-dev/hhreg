@@ -44,17 +44,17 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         {
             if (!IsToday && Day == null) 
             {
-                return ValidationResult.Error("You should inform a day to log (or set entry as today with -t).");
+                return ValidationResult.Error(HhregMessages.Entry.New.YouShouldInformADayToLog);
             }
 
             if (!IsToday && !DateOnly.TryParse(Day, out var _)) 
             {
-                return ValidationResult.Error($"Could not parse '{Day}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidDateFormat, Day));
             }
                 
             if (Entries.Length == 0 && Justification == null) 
             {
-                return ValidationResult.Error("You should inform at least one time entry or set a justification with -j.");
+                return ValidationResult.Error(HhregMessages.Entry.New.YouShouldInformAtLeastOneTimeEntryOrSetAJustificative);
             }
 
             foreach(var entry in Entries) 
@@ -63,12 +63,12 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
                 {
                     if (time < TimeSpan.Zero) 
                     {
-                        return ValidationResult.Error("Entry times must be positives.");
+                        return ValidationResult.Error(HhregMessages.Entry.New.EntryTimesMustBePositive);
                     }
                 } 
                 else 
                 {
-                    return ValidationResult.Error($"Could not parse '{entry}' as a valid time format.");
+                    return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidTimeFormat, entry));
                 }
             }
             

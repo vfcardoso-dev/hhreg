@@ -32,6 +32,7 @@ public abstract class UnitTestsBase
     {
         _serviceCollection.Clear();
         InitializeTypeRegistrar();
+        Logger.Clear();
     }
 
     private void InitializeTypeRegistrar()

@@ -2,7 +2,6 @@ using AutoFixture;
 using hhreg.business;
 using hhreg.business.domain;
 using NSubstitute;
-using Spectre.Console.Cli;
 using FluentAssertions;
 
 namespace hhreg.tests;

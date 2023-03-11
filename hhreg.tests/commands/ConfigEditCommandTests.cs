@@ -14,12 +14,12 @@ public class ConfigEditCommandTests : UnitTestsBase
         _settingsRepository = Substitute.For<ISettingsRepository>();
     }
 
-    [TestCase(TimeInputMode.Hours, "70", "Could not parse '70' as a valid time format.")]
-    [TestCase(TimeInputMode.Hours, "-10", "Could not parse '-10' as a valid time format.")]
-    [TestCase(TimeInputMode.Hours, "banana", "Could not parse 'banana' as a valid time format.")]
-    [TestCase(TimeInputMode.Minutes, "banana", "Could not parse 'banana' as a valid integer format.")]
-    [TestCase(TimeInputMode.Minutes, "01:00", "Could not parse '01:00' as a valid integer format.")]
-    [TestCase(TimeInputMode.Minutes, "-01:00", "Could not parse '-01:00' as a valid integer format.")]
+    [TestCase(TimeInputMode.Hours, "70", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "-10", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "banana", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
     public void Should_throw_validation_error_for_initial_balance_on_invalid_situations(TimeInputMode mode, 
         string? initialBalance, string expectedValidationErrorMessage)
     {
@@ -34,15 +34,15 @@ public class ConfigEditCommandTests : UnitTestsBase
         
         // Then
         _settingsRepository!.DidNotReceive().Update(Arg.Any<double?>(), Arg.Any<double?>(), Arg.Any<string?>());
-        action.Should().Throw<Exception>().WithMessage(expectedValidationErrorMessage);
+        action.Should().Throw<Exception>().WithMessage(string.Format(expectedValidationErrorMessage, initialBalance));
     }
 
-    [TestCase(TimeInputMode.Hours, "70", "Could not parse '70' as a valid time format.")]
-    [TestCase(TimeInputMode.Hours, "-10", "Could not parse '-10' as a valid time format.")]
-    [TestCase(TimeInputMode.Hours, "banana", "Could not parse 'banana' as a valid time format.")]
-    [TestCase(TimeInputMode.Minutes, "banana", "Could not parse 'banana' as a valid integer format.")]
-    [TestCase(TimeInputMode.Minutes, "01:00", "Could not parse '01:00' as a valid integer format.")]
-    [TestCase(TimeInputMode.Minutes, "-01:00", "Could not parse '-01:00' as a valid integer format.")]
+    [TestCase(TimeInputMode.Hours, "70", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "-10", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Hours, "banana", HhregMessages.Common.CouldNotParseAsAValidTimeFormat)]
+    [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
+    [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.Common.CouldNotParseAsAValidIntegerFormat)]
     public void Should_throw_validation_error_for_workday_on_invalid_situations(TimeInputMode mode, 
         string? workDay, string expectedValidationErrorMessage)
     {
@@ -57,16 +57,15 @@ public class ConfigEditCommandTests : UnitTestsBase
         
         // Then
         _settingsRepository!.DidNotReceive().Update(Arg.Any<double?>(), Arg.Any<double?>(), Arg.Any<string?>());
-        action.Should().Throw<Exception>().WithMessage(expectedValidationErrorMessage);
+        action.Should().Throw<Exception>().WithMessage(string.Format(expectedValidationErrorMessage, workDay));
     }
 
-    [TestCase("70", "Could not parse '70' as a valid date format.")]
-    [TestCase("-10", "Could not parse '-10' as a valid date format.")]
-    [TestCase("banana", "Could not parse 'banana' as a valid date format.")]
-    [TestCase("01:00", "Could not parse '01:00' as a valid date format.")]
-    [TestCase("-01:00", "Could not parse '-01:00' as a valid date format.")]
-    public void Should_throw_validation_error_if_start_calculations_at_is_invalid(
-        string? startCalculationsAt, string expectedValidationErrorMessage)
+    [TestCase("70")]
+    [TestCase("-10")]
+    [TestCase("banana")]
+    [TestCase("01:00")]
+    [TestCase("-01:00")]
+    public void Should_throw_validation_error_if_start_calculations_at_is_invalid(string? startCalculationsAt)
     {
         // Given
         AddSingleton<ISettingsRepository>(_settingsRepository!);
@@ -79,6 +78,8 @@ public class ConfigEditCommandTests : UnitTestsBase
         
         // Then
         _settingsRepository!.DidNotReceive().Update(Arg.Any<double?>(), Arg.Any<double?>(), Arg.Any<string?>());
+        
+        var expectedValidationErrorMessage = string.Format(HhregMessages.Common.CouldNotParseAsAValidDateFormat, startCalculationsAt);
         action.Should().Throw<Exception>().WithMessage(expectedValidationErrorMessage);
     }
 

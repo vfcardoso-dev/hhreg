@@ -79,4 +79,12 @@ public class LoggerStub : ILogger
 
         MethodHits.Add("WriteTable");
     }
+
+    public void Clear()
+    {
+        Lines.Clear(); 
+        Headers.Clear(); 
+        Rows.Clear(); 
+        MethodHits.Clear(); 
+    }
 }

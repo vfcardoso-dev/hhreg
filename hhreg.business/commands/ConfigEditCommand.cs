@@ -37,19 +37,19 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         public override ValidationResult Validate()
         {
             if (TimeInputMode == TimeInputMode.Hours && InitialBalance?.IsTime() == false)
-                return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid time format.");
+                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidTimeFormat, InitialBalance));
             
             if (TimeInputMode == TimeInputMode.Minutes && InitialBalance?.IsInteger() == false)
-                return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid integer format.");
+                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidIntegerFormat, InitialBalance));
             
             if (TimeInputMode == TimeInputMode.Hours && WorkDay?.IsTime() == false)
-                return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid time format.");
+                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidTimeFormat, WorkDay));
             
             if (TimeInputMode == TimeInputMode.Minutes && WorkDay?.IsInteger() == false)
-                return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid integer format.");
+                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidIntegerFormat, WorkDay));
 
             if (StartCalculationsAt != null && !DateOnly.TryParse(StartCalculationsAt, out var _))
-                return ValidationResult.Error($"Could not parse '{StartCalculationsAt}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.Common.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
             
             return ValidationResult.Success();
         }
@@ -76,7 +76,7 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         {
             TimeInputMode.Hours => TimeSpan.Parse(value).TotalMinutes,
             TimeInputMode.Minutes => int.Parse(value),
-            _ => throw new HhregException($"Invalid input format on value '{value}'")
+            _ => throw new HhregException(string.Format(HhregMessages.Common.InvalidInputFormatOnValue, value))
         };
     }
 }

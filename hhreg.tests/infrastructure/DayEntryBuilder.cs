@@ -14,7 +14,7 @@ public class DayEntryBuilder : BaseBuilder<DayEntry>
         var dayEntry = new DayEntry
         {
             Id = dayEntryId,
-            Day = context.Create<DateOnly>().ToString("yyyy-MM-dd"),
+            Day = context.Create<DateTime>().ToString("yyyy-MM-dd"),
             DayType = DayType.Work,
             Justification = null,
             TimeEntries = context.CreateMany<TimeEntry>(4)
