@@ -25,7 +25,7 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         [CommandOption("-w|--workday")]
         public string? WorkDay { get; init; }
 
-        [Description("Time input mode: Hours (HH:mm) or Minutes (0..99+)")]
+        [Description("Time input mode: Hours (HH:mm) or Minutes (1..999+)")]
         [CommandOption("-m|--time-input-mode")]
         [DefaultValue(TimeInputMode.Hours)]
         public TimeInputMode TimeInputMode { get; init; }
@@ -36,24 +36,24 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
         public override ValidationResult Validate()
         {
-            if (InitialBalance == null) return ValidationResult.Error("You should inform initial balance");
-            if (WorkDay == null) return ValidationResult.Error("You should inform workday.");
-            if (StartCalculationsAt == null) return ValidationResult.Error("You should inform your a date to start balance calculations.");
+            if (InitialBalance == null) return ValidationResult.Error(HhregMessages.YouShouldInformInitialBalance);
+            if (WorkDay == null) return ValidationResult.Error(HhregMessages.YouShouldInformWorkday);
+            if (StartCalculationsAt == null) return ValidationResult.Error(HhregMessages.YouShouldInformStartCalculationsAt);
             
             if (TimeInputMode == TimeInputMode.Hours && InitialBalance?.IsTime() == false)
-                return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid time format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, InitialBalance));
             
             if (TimeInputMode == TimeInputMode.Minutes && InitialBalance?.IsInteger() == false)
-                return ValidationResult.Error($"Could not parse '{InitialBalance}' as a valid integer format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, InitialBalance));
             
             if (TimeInputMode == TimeInputMode.Hours && WorkDay?.IsTime() == false)
-                return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid time format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, WorkDay));
             
             if (TimeInputMode == TimeInputMode.Minutes && WorkDay?.IsInteger() == false)
-                return ValidationResult.Error($"Could not parse '{WorkDay}' as a valid integer format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, WorkDay));
 
             if (!DateOnly.TryParse(StartCalculationsAt, out var _))
-                return ValidationResult.Error($"Could not parse '{StartCalculationsAt}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
             
             return ValidationResult.Success();
         }
@@ -62,7 +62,7 @@ public sealed class InitCommand : Command<InitCommand.Settings>
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         if (_settingsRepository.IsAlreadyInitialized()) {
-            throw new HhregException("Settings already initialized. You can change it with 'config edit'");
+            throw new HhregException(HhregMessages.SettingsAlreadyInitialized);
         }
         
         var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance!);
@@ -81,7 +81,7 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         {
             TimeInputMode.Hours => TimeSpan.Parse(value).TotalMinutes,
             TimeInputMode.Minutes => int.Parse(value),
-            _ => throw new HhregException($"Invalid input format on value '{value}'")
+            _ => throw new HhregException(string.Format(HhregMessages.InvalidInputFormatOnValue, value))
         };
     }
 }

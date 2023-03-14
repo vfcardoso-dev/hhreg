@@ -16,4 +16,10 @@ public static class HhregMessages
     public const string YouShouldInformAtLeastOneTimeEntryOrSetAJustificative = "You should inform at least one time entry or set a justification with -j.";
     public const string EntryTimesMustBePositive = "Entry times must be positives.";
     public const string CannotOverrideANotYetCreatedDay = "Cannot override a not yet created day '{0}'";
+
+    // Init
+    public const string YouShouldInformInitialBalance = "You should inform initial balance.";
+    public const string YouShouldInformWorkday = "You should inform workday.";
+    public const string YouShouldInformStartCalculationsAt = "You should inform your a date to start balance calculations.";
+    public const string SettingsAlreadyInitialized = "Settings already initialized. You can change it with 'config edit'";
 }
