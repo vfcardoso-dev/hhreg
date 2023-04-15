@@ -50,10 +50,10 @@ public sealed class ReportMonthCommand : ReportCommandBase<ReportMonthCommand.Se
         var cfg = _settingsRepository.Get()!;
 
         var inputMonth = DateTime.Parse(settings.Month!);
-        var start = new DateTime(inputMonth.Year, inputMonth.Month, 1);
-        var end = new DateTime(inputMonth.Year, inputMonth.Month, DateTime.DaysInMonth(inputMonth.Year, inputMonth.Month));
+        var start = new DateOnly(inputMonth.Year, inputMonth.Month, 1);
+        var end = new DateOnly(inputMonth.Year, inputMonth.Month, DateTime.DaysInMonth(inputMonth.Year, inputMonth.Month));
 
-        var dayEntries = _timeRepository.GetDayEntries(start.ToString("yyyy-MM-dd"), end.ToString("yyyy-MM-dd"))!;
+        var dayEntries = _timeRepository.GetDayEntries(start, end)!;
 
         var rows = new List<Text[]>();
         foreach(var day in dayEntries)

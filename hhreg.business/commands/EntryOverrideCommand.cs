@@ -86,11 +86,10 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
             ? DateOnly.FromDateTime(DateTime.Today) 
             : DateOnly.Parse(settings.Day!);
 
-        var dayEntry = _timeRepository.GetDayEntry(inputDay.ToString("yyyy-MM-dd"));
+        var dayEntry = _timeRepository.GetDayEntry(inputDay);
         if (dayEntry == null) throw new HhregException(string.Format(HhregMessages.CannotOverrideANotYetCreatedDay, inputDay.ToString("dd/MM/yyyy")));
 
-        _timeRepository.OverrideDayEntry(dayEntry.Id, settings.Justification, settings.DayType, 
-            settings.Entries);
+        _timeRepository.OverrideDayEntry(dayEntry.Id, settings.Justification, settings.DayType, settings.Entries);
         
         var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
         _logger.WriteLine($@"Day entry [green]SUCCESSFULLY[/] overridden!");

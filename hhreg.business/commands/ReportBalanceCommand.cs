@@ -45,16 +45,16 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
     {
         CheckInvalidTimeEntries();
 
-        var cfg = _settingsRepository.Get()!;
-        var offsetDate = DateOnly.FromDateTime(DateTime.Today.AddDays(settings.Tail * -1));
-        var startCalculationsAt = DateOnly.Parse(cfg.StartCalculationsAt);
+        var cfg = _settingsRepository.Get();
+        var offsetDate = DateTime.Today.AddDays(settings.Tail * -1).ToDateOnly();
+        var startCalculationsAt = cfg.StartCalculationsAt.ToDateOnly();
 
         if (startCalculationsAt > offsetDate) {
             throw new HhregException($"Configuration is set to start balance calculations after the offset date. StartCalculationsAt: {startCalculationsAt}; OffsetDate: {offsetDate}");
         }
         
-        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1).ToString("yyyy-MM-dd"));
-        var dayEntries = _timeRepository.GetDayEntries(offsetDate.ToString("yyyy-MM-dd"), DateTime.Today.ToString("yyyy-MM-dd"));
+        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1));
+        var dayEntries = _timeRepository.GetDayEntries(offsetDate, DateTime.Today.ToDateOnly());
 
         var rows = new List<Text[]>();
         

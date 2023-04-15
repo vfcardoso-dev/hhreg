@@ -126,7 +126,7 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetOrCreateDay(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
+        _timeRepository!.GetOrCreateDay(Arg.Any<DateOnly>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 
@@ -152,7 +152,7 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetOrCreateDay(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
+        _timeRepository!.GetOrCreateDay(Arg.Any<DateOnly>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 

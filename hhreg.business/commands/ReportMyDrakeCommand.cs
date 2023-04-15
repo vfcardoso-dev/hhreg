@@ -54,12 +54,12 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
     {
         CheckInvalidTimeEntries();
 
-        var startDate = DateOnly.Parse(settings.Start);
-        var endDate = settings.End != null ? DateOnly.Parse(settings.Start) : DateOnly.FromDateTime(DateTime.Today);
+        var startDate = settings.Start.ToDateOnly();
+        var endDate = settings.End?.ToDateOnly() ?? DateTime.Today.ToDateOnly();
 
         _logger.WriteLine($"Exporting entries from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}...");
 
-        var dayEntries = _timeRepository.GetDayEntriesByType(startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"), DayType.Work);
+        var dayEntries = _timeRepository.GetDayEntriesByType(startDate, endDate, DayType.Work);
         var myDrakeEvents = new List<MyDrakeEvent>();
 
         foreach(var dayEntry in dayEntries)

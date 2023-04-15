@@ -143,7 +143,7 @@ public class EntryOverrideCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetDayEntry(Arg.Any<string>()).Returns(dayEntry);
+        _timeRepository!.GetDayEntry(Arg.Any<DateOnly>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
@@ -169,7 +169,7 @@ public class EntryOverrideCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetDayEntry(Arg.Any<string>()).Returns(dayEntry);
+        _timeRepository!.GetDayEntry(Arg.Any<DateOnly>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 

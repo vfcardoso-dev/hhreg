@@ -22,10 +22,10 @@ public sealed class EntryNowCommand : Command<EntryNowCommand.Settings>
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         var inputNow = DateTime.Now;
-        var date = DateOnly.FromDateTime(inputNow);
-        var time = TimeOnly.FromDateTime(inputNow);
+        var date = inputNow.ToDateOnly();
+        var time = inputNow.ToTimeOnly();
 
-        var dayEntry = _timeRepository.GetOrCreateDay(date.ToString("yyyy-MM-dd"));
+        var dayEntry = _timeRepository.GetOrCreateDay(date);
 
         _timeRepository.CreateTime(dayEntry.Id, time.ToTimeString());
         

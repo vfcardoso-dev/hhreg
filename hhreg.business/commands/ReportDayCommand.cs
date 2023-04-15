@@ -50,7 +50,7 @@ public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settin
         var cfg = _settingsRepository.Get()!;
 
         var day = DateOnly.Parse(settings.Day!);
-        var dayEntry = _timeRepository.GetDayEntry(day.ToString("yyyy-MM-dd"))!;
+        var dayEntry = _timeRepository.GetDayEntry(day)!;
 
         _logger.WriteTable(SpectreConsoleUtils.GetDayEntrySummaryHeaders(), 
             new List<Text[]>{{SpectreConsoleUtils.GetDayEntrySummaryRow(dayEntry, cfg.WorkDay)}});

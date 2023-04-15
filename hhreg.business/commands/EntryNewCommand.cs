@@ -4,6 +4,7 @@ using hhreg.business.domain;
 using hhreg.business.exceptions;
 using hhreg.business.infrastructure;
 using hhreg.business.repositories;
+using hhreg.business.utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -82,12 +83,9 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        var inputDay = settings.IsToday 
-            ? DateOnly.FromDateTime(DateTime.Today) 
-            : DateOnly.Parse(settings.Day!);
+        var inputDay = settings.IsToday ? DateTime.Today.ToDateOnly() : settings.Day!.ToDateOnly();
 
-        var dayEntry = _timeRepository.GetOrCreateDay(inputDay.ToString("yyyy-MM-dd"), 
-            settings.Justification, settings.DayType);
+        var dayEntry = _timeRepository.GetOrCreateDay(inputDay, settings.Justification, settings.DayType);
 
         _timeRepository.CreateTime(dayEntry.Id, settings.Entries);
         

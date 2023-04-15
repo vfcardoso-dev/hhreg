@@ -38,7 +38,7 @@ public static class SpectreConsoleUtils
         var balanceSignal = balance > TimeSpan.Zero ? "+" : "";
         
         return new Text[]{
-            new Text(DateOnly.Parse(dayEntry.Day!).ToString(), defaultRowStyle),
+            new Text(dayEntry.Day!.ToDateOnly().ToString(), defaultRowStyle),
             new Text(dayEntry.DayType.ToString(), defaultRowStyle),
             new Text(string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time)), defaultRowStyle),
             new Text(totalMinutesTs.ToTimeString(), defaultRowStyle), // Total hours
@@ -64,7 +64,7 @@ public static class SpectreConsoleUtils
             : dayEntry.Justification!;
         
         return new Text[] {
-            new Text(DateOnly.Parse(dayEntry.Day!).ToString(), defaultRowStyle),
+            new Text(dayEntry.Day!.ToDateOnly().ToString(), defaultRowStyle),
             new Text(dayEntry.DayType.ToString(), defaultRowStyle),
             new Text(timeEntries, defaultRowStyle),
             new Text(totalMinutesTs.ToTimeString(), defaultRowStyle), // Total Minutes
