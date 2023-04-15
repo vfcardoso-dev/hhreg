@@ -10,3 +10,9 @@
 - Execute `hhreg.exe --help` to list internal options
 
 ![](https://github.com/vfcardoso-dev/hhreg/blob/main/screenshot.png?raw=true)
+
+### How to contribute
+- Make sure you have installed dotnet 6.0 or greater.
+- Clone the project on your machine
+- Navigate to cloned directory
+- Run `dotnet run --project .\hhreg\hhreg.csproj -- <<command>> <<options>>`
