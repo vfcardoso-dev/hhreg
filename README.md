@@ -16,3 +16,4 @@
 - Clone the project on your machine
 - Navigate to cloned directory
 - Run `dotnet run --project .\hhreg\hhreg.csproj -- <<command>> <<options>>`
+- Make your changes and create a pull request. Piece of cake!
