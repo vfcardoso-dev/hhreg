@@ -1,9 +1,13 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceCommand.Settings>
 {

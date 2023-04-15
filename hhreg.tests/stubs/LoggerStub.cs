@@ -1,8 +1,8 @@
-using hhreg.business;
+using hhreg.business.infrastructure;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace hhreg.tests;
+namespace hhreg.tests.stubs;
 
 public class LoggerStub : ILogger
 {

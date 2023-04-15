@@ -1,3 +1,5 @@
+using hhreg.business.domain.common;
+
 namespace hhreg.business.domain;
 
 public class TimeEntry : BaseEntity<TimeEntry>

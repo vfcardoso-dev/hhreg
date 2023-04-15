@@ -1,9 +1,13 @@
 using System.ComponentModel;
-using Spectre.Console.Cli;
-using Spectre.Console;
 using System.Diagnostics.CodeAnalysis;
+using hhreg.business.domain;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings>
 {

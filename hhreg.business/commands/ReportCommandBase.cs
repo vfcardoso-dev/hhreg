@@ -1,7 +1,9 @@
-using Spectre.Console;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public abstract class ReportCommandBase<T> : Command<T> where T : CommandSettings
 {

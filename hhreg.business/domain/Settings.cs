@@ -1,3 +1,6 @@
+using hhreg.business.domain.common;
+using hhreg.business.utilities;
+
 namespace hhreg.business.domain;
 
 public class Settings : BaseEntity<Settings>

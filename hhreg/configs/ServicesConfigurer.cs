@@ -1,9 +1,14 @@
 using hhreg.business;
+using hhreg.business.infrastructure;
+using hhreg.business.interceptors;
+using hhreg.business.repositories;
+using hhreg.services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace hhreg;
+namespace hhreg.configs;
+
 public static class ServicesConfigurer {
     public static void Configure(IServiceCollection services) 
     {
@@ -23,7 +28,6 @@ public static class ServicesConfigurer {
         services.AddScoped<ITimeRepository, TimeRepository>();
         
         // resto das dependencias....
-        // ...
 
         services.AddSingleton<AppHost>();
         services.AddSingleton<ILogger, Logger>();

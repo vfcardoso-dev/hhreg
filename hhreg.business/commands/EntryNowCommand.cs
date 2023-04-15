@@ -1,9 +1,10 @@
-using System.ComponentModel;
-using Spectre.Console.Cli;
-using Spectre.Console;
 using System.Diagnostics.CodeAnalysis;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
+using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class EntryNowCommand : Command<EntryNowCommand.Settings>
 {

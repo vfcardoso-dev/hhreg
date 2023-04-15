@@ -1,10 +1,14 @@
-using hhreg.business;
-using NSubstitute;
-using FluentAssertions;
 using AutoFixture;
+using FluentAssertions;
+using hhreg.business.commands;
 using hhreg.business.domain;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
+using hhreg.tests.infrastructure;
+using NSubstitute;
 
-namespace hhreg.tests;
+namespace hhreg.tests.commands;
 
 public class EntryNowCommandTests : UnitTestsBase
 {

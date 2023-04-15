@@ -1,8 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
-using Spectre.Console;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class ConfigShowCommand : Command<ConfigShowCommand.Settings>
 {

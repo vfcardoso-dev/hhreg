@@ -1,7 +1,8 @@
-using Dapper;
+using hhreg.business.exceptions;
+using hhreg.business.repositories;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.interceptors;
 
 public interface IEnsureInitInterceptor : ICommandInterceptor {}
 

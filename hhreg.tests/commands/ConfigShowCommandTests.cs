@@ -1,10 +1,13 @@
 using AutoFixture;
-using hhreg.business;
-using hhreg.business.domain;
-using NSubstitute;
 using FluentAssertions;
+using hhreg.business.commands;
+using hhreg.business.domain;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.tests.infrastructure;
+using NSubstitute;
 
-namespace hhreg.tests;
+namespace hhreg.tests.commands;
 
 public class ConfigShowCommandTests : UnitTestsBase
 {

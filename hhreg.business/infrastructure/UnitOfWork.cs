@@ -1,8 +1,7 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
-using Spectre.Console;
 
-namespace hhreg.business;
+namespace hhreg.business.infrastructure;
 
 public interface IUnitOfWork : IDisposable
 {

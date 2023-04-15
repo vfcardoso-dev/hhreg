@@ -1,4 +1,4 @@
-namespace hhreg.business;
+namespace hhreg.business.utilities;
 
 public static class TimeExtensions
 {

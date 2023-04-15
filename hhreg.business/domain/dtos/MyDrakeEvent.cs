@@ -1,4 +1,4 @@
-namespace hhreg.business;
+namespace hhreg.business.domain.dtos;
 
 public class MyDrakeEvent {
     public Guid Id { get; set; }

@@ -1,6 +1,6 @@
 using static System.Environment;
 
-namespace hhreg.business;
+namespace hhreg.business.infrastructure;
 
 public interface IAppSettings {
     string DatabaseName { get; }
