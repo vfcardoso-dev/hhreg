@@ -12,7 +12,7 @@ public static class SpectreConsoleUtils
             "Day Type",
             "Time entries",
             "Total",
-            "Balance",
+            "Day Balance",
             "Justification"
         };
     }
@@ -24,7 +24,7 @@ public static class SpectreConsoleUtils
             "Day Type",
             "Time entries / Justification",
             "Total",
-            "Balance",
+            "Day Balance",
             "Accumulated"
         };
     }

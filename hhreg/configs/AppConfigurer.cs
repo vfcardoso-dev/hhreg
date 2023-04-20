@@ -8,7 +8,7 @@ public static class AppConfigurer
     public static void Configure(HostBuilderContext context, IConfigurationBuilder builder) 
     {
         builder
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.json", optional: false)
             .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
     }
