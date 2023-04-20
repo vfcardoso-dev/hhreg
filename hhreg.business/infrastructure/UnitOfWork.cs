@@ -1,3 +1,4 @@
+using System.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
 
@@ -6,8 +7,8 @@ namespace hhreg.business.infrastructure;
 public interface IUnitOfWork : IDisposable
 {
     void Execute(string query, object? param = null);
-    void BulkExecute(IEnumerable<SqliteCommand> commands);
-    SqliteCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null);
+    void BulkExecute(IEnumerable<IDbCommand> commands);
+    IDbCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null);
     IEnumerable<T> Query<T>(string query, object? param = null);
     T QuerySingle<T>(string query, object? param = null);
     T QuerySingleOrDefault<T>(string query, object? param = null);
@@ -43,7 +44,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public void BulkExecute(IEnumerable<SqliteCommand> commands)
+    public void BulkExecute(IEnumerable<IDbCommand> commands)
     {
         var conn = GetConnection();
         var tx = conn.BeginTransaction();
@@ -62,7 +63,7 @@ public class UnitOfWork : IUnitOfWork
         }
     }
 
-    public SqliteCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null) 
+    public IDbCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null) 
     {
         var cmd = new SqliteCommand(query);
 

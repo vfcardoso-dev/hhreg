@@ -46,7 +46,7 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
         CheckInvalidTimeEntries();
 
         var cfg = _settingsRepository.Get();
-        var offsetDate = DateTime.Today.AddDays(settings.Tail * -1).ToDateOnly();
+        var offsetDate = DateTime.Today.AddDays((settings.Tail + 1) * -1).ToDateOnly();
         var startCalculationsAt = cfg.StartCalculationsAt.ToDateOnly();
 
         if (startCalculationsAt > offsetDate) {

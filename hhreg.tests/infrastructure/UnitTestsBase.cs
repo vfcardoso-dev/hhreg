@@ -1,6 +1,6 @@
 using AutoFixture;
 using hhreg.business.infrastructure;
-using hhreg.tests.stubs;
+using hhreg.tests.infrastructure.stubs;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
