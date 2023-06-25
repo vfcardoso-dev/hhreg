@@ -38,7 +38,7 @@ jobs:
           release_name="hhreg-$tag-${{ matrix.target }}"
           
           # Build everything
-          dotnet publish hhreg -c Release -r win-x64 --self-contained true --output "./dist/" -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          dotnet publish hhreg -c Release --runtime "${{ matrix.target }}" --self-contained true --output "./dist/" -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
           
           # Pack files
           if [ "${{ matrix.target }}" == "win-x64" ]; then
