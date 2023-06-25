@@ -1,6 +1,4 @@
-using Spectre.Console;
-
-namespace hhreg.business;
+namespace hhreg.business.domain.common;
 
 public abstract class BaseEntity<T>
 {

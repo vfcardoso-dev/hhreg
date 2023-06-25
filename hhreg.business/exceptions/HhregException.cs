@@ -1,4 +1,4 @@
-namespace hhreg.business;
+namespace hhreg.business.exceptions;
 
 public class HhregException : Exception
 {

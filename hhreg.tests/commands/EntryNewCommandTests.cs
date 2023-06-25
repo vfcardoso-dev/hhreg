@@ -1,10 +1,16 @@
-using hhreg.business;
-using NSubstitute;
-using FluentAssertions;
 using AutoFixture;
+using FluentAssertions;
+using hhreg.business.commands;
 using hhreg.business.domain;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
+using hhreg.tests.infrastructure;
+using hhreg.tests.utilities;
+using NSubstitute;
 
-namespace hhreg.tests;
+namespace hhreg.tests.commands;
 
 public class EntryNewCommandTests : UnitTestsBase
 {
@@ -120,7 +126,7 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetOrCreateDay(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
+        _timeRepository!.GetOrCreateDay(Arg.Any<DateOnly>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 
@@ -146,7 +152,7 @@ public class EntryNewCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetOrCreateDay(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
+        _timeRepository!.GetOrCreateDay(Arg.Any<DateOnly>(), Arg.Any<string>(), Arg.Any<DayType>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 

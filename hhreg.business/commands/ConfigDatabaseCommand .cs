@@ -1,7 +1,9 @@
 using System.Diagnostics.CodeAnalysis;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class ConfigDatabaseCommand : Command<ConfigDatabaseCommand.Settings>
 {

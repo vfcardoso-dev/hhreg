@@ -1,7 +1,9 @@
 using hhreg.business;
+using hhreg.business.commands;
+using hhreg.business.interceptors;
 using Spectre.Console.Cli;
 
-namespace hhreg;
+namespace hhreg.configs;
 
 public interface ICommandsConfigurer {
     void Configure(IConfigurator config);

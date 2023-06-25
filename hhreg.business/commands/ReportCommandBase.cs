@@ -1,7 +1,10 @@
-using Spectre.Console;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public abstract class ReportCommandBase<T> : Command<T> where T : CommandSettings
 {
@@ -16,11 +19,11 @@ public abstract class ReportCommandBase<T> : Command<T> where T : CommandSetting
 
     protected void CheckInvalidTimeEntries()
     {
-        var invalidDays = _timeRepository.GetInvalidDayEntries();
+        var invalidDays = _timeRepository.GetInvalidDayEntries().ToList();
         if (!invalidDays.Any()) return;
 
         foreach(var dayEntry in invalidDays) {
-            var day = DateOnly.Parse(dayEntry.Day!);
+            var day = dayEntry.Day!.ToDateOnly();
             _logger.WriteLine($@"[orange1]VALIDATION:[/] Odd number of time entries ([orange1]{dayEntry.TimeEntries.Count()}[/]) at [orange1]{day:dd/MM/yyyy}[/]! ({string
                 .Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))})");
         }

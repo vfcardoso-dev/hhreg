@@ -1,10 +1,16 @@
-using hhreg.business;
-using NSubstitute;
-using FluentAssertions;
 using AutoFixture;
+using FluentAssertions;
+using hhreg.business.commands;
 using hhreg.business.domain;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
+using hhreg.tests.infrastructure;
+using hhreg.tests.utilities;
+using NSubstitute;
 
-namespace hhreg.tests;
+namespace hhreg.tests.commands;
 
 public class EntryOverrideCommandTests : UnitTestsBase
 {
@@ -137,7 +143,7 @@ public class EntryOverrideCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetDayEntry(Arg.Any<string>()).Returns(dayEntry);
+        _timeRepository!.GetDayEntry(Arg.Any<DateOnly>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 
@@ -163,7 +169,7 @@ public class EntryOverrideCommandTests : UnitTestsBase
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
-        _timeRepository!.GetDayEntry(Arg.Any<string>()).Returns(dayEntry);
+        _timeRepository!.GetDayEntry(Arg.Any<DateOnly>()).Returns(dayEntry);
 
         var app = CreateCommandApp((config) => config.AddCommand<EntryOverrideCommand>("override"));
 

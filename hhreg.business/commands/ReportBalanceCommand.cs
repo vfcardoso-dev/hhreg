@@ -1,9 +1,13 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceCommand.Settings>
 {
@@ -41,16 +45,16 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
     {
         CheckInvalidTimeEntries();
 
-        var cfg = _settingsRepository.Get()!;
-        var offsetDate = DateOnly.FromDateTime(DateTime.Today.AddDays(settings.Tail * -1));
-        var startCalculationsAt = DateOnly.Parse(cfg.StartCalculationsAt);
+        var cfg = _settingsRepository.Get();
+        var offsetDate = DateTime.Today.AddDays((settings.Tail + 1) * -1).ToDateOnly();
+        var startCalculationsAt = cfg.StartCalculationsAt.ToDateOnly();
 
         if (startCalculationsAt > offsetDate) {
             throw new HhregException(string.Format(HhregMessages.ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate, startCalculationsAt, offsetDate));
         }
         
-        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1).ToString("yyyy-MM-dd"));
-        var dayEntries = _timeRepository.GetDayEntries(offsetDate.ToString("yyyy-MM-dd"), DateTime.Today.ToString("yyyy-MM-dd"));
+        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1));
+        var dayEntries = _timeRepository.GetDayEntries(offsetDate, DateTime.Today.ToDateOnly());
 
         var rows = new List<Text[]>();
         

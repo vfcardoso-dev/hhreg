@@ -2,7 +2,7 @@ using AutoFixture;
 using AutoFixture.Kernel;
 using hhreg.business.domain;
 
-namespace hhreg.tests;
+namespace hhreg.tests.infrastructure;
 
 public class SettingsBuilder : BaseBuilder<Settings>
 {

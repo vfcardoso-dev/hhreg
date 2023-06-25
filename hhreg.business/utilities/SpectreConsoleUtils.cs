@@ -1,7 +1,7 @@
 using hhreg.business.domain;
 using Spectre.Console;
 
-namespace hhreg.business;
+namespace hhreg.business.utilities;
 
 public static class SpectreConsoleUtils
 {
@@ -12,7 +12,7 @@ public static class SpectreConsoleUtils
             "Day Type",
             "Time entries",
             "Total",
-            "Balance",
+            "Day Balance",
             "Justification"
         };
     }
@@ -24,7 +24,7 @@ public static class SpectreConsoleUtils
             "Day Type",
             "Time entries / Justification",
             "Total",
-            "Balance",
+            "Day Balance",
             "Accumulated"
         };
     }
@@ -43,7 +43,7 @@ public static class SpectreConsoleUtils
         var balanceResult = evenTimeEntries ? $"{balanceSignal}{balance.ToTimeString()}" : "";
 
         return new Text[]{
-            new Text(DateOnly.Parse(dayEntry.Day!).ToString(), defaultRowStyle),
+            new Text(dayEntry.Day!.ToDateOnly().ToString(), defaultRowStyle),
             new Text(dayEntry.DayType.ToString(), defaultRowStyle),
             new Text(string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time)), defaultRowStyle),
             new Text(totalMinutesResult, defaultRowStyle), // Total hours
@@ -75,7 +75,7 @@ public static class SpectreConsoleUtils
         var accumulatedResult = evenTimeEntries ? $"{accumulatedSignal}{accumulatedTs.ToTimeString()}" : "";
         
         return new Text[] {
-            new Text(DateOnly.Parse(dayEntry.Day!).ToString(), defaultRowStyle),
+            new Text(dayEntry.Day!.ToDateOnly().ToString(), defaultRowStyle),
             new Text(dayEntry.DayType.ToString(), defaultRowStyle),
             new Text(timeEntries, defaultRowStyle),
             new Text(totalMinutesResult, defaultRowStyle), // Total Minutes

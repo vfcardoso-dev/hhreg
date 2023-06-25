@@ -1,7 +1,8 @@
 using hhreg.business;
+using hhreg.business.infrastructure;
 using Spectre.Console;
 
-namespace hhreg;
+namespace hhreg.services;
 
 public interface IDatabaseEnsurer {
     void Ensure();
@@ -33,8 +34,10 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
         }
 
         var tableExists = _unitOfWork.QuerySingle<bool>(
-            @"SELECT case when count(*) == 0 then false else true end 
-            FROM sqlite_master WHERE type='table' AND name='Settings';");
+            @"SELECT 
+                case when count(*) == 0 then false else true end 
+              FROM sqlite_master 
+              WHERE type='table' AND name='Settings';");
 
         if (!tableExists) 
         {

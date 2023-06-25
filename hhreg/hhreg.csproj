@@ -28,7 +28,8 @@
 
   <ItemGroup>
     <Content Include="..\appsettings.json">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

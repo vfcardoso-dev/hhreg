@@ -1,6 +1,6 @@
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.infrastructure;
 
 public sealed class TypeResolver : ITypeResolver, IDisposable
 {

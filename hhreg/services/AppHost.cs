@@ -1,6 +1,8 @@
+using hhreg.configs;
 using Spectre.Console.Cli;
 
-namespace hhreg;
+namespace hhreg.services;
+
 public class AppHost {
     private readonly IDatabaseEnsurer _databaseEnsurer;
     private readonly ICommandsConfigurer _commandsConfigurer;

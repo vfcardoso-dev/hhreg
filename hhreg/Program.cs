@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using hhreg.configs;
+using hhreg.services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Spectre.Console;
 
@@ -24,11 +26,7 @@ static class Program
             return AnsiConsole.Status()
                 .Spinner(Spinner.Known.Star2)
                 .SpinnerStyle(Style.Parse("green"))
-                .Start<int>("Calculating...", ctx => 
-                {
-                    Thread.Sleep(1000);
-                    return appHost.Run(args);
-                });
+                .Start("Calculating...", ctx => appHost.Run(args));
                 
         } catch (Exception ex) {
             AnsiConsole.MarkupLine($"[red]FATAL:[/] {ex.Message}");

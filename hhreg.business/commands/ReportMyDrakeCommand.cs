@@ -2,11 +2,17 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
+using hhreg.business.domain;
+using hhreg.business.domain.dtos;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 using TextCopy;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeCommand.Settings>
 {
@@ -59,12 +65,12 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
     {
         CheckInvalidTimeEntries();
 
-        var startDate = DateOnly.Parse(settings.Start);
-        var endDate = settings.End != null ? DateOnly.Parse(settings.Start) : DateOnly.FromDateTime(DateTime.Today);
+        var startDate = settings.Start.ToDateOnly();
+        var endDate = settings.End?.ToDateOnly() ?? DateTime.Today.ToDateOnly();
 
         _logger.WriteLine($"Exporting entries from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}...");
 
-        var dayEntries = _timeRepository.GetDayEntriesByType(startDate.ToString("yyyy-MM-dd"), endDate.ToString("yyyy-MM-dd"), DayType.Work);
+        var dayEntries = _timeRepository.GetDayEntriesByType(startDate, endDate, DayType.Work);
         var myDrakeEvents = new List<MyDrakeEvent>();
 
         foreach(var dayEntry in dayEntries)

@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 
-namespace hhreg.business;
+namespace hhreg.business.infrastructure;
 
 public interface IUnitOfWorkContext
 {

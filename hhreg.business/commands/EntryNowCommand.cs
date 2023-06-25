@@ -1,9 +1,10 @@
-using System.ComponentModel;
-using Spectre.Console.Cli;
-using Spectre.Console;
 using System.Diagnostics.CodeAnalysis;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
+using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class EntryNowCommand : Command<EntryNowCommand.Settings>
 {
@@ -21,10 +22,10 @@ public sealed class EntryNowCommand : Command<EntryNowCommand.Settings>
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
         var inputNow = DateTime.Now;
-        var date = DateOnly.FromDateTime(inputNow);
-        var time = TimeOnly.FromDateTime(inputNow);
+        var date = inputNow.ToDateOnly();
+        var time = inputNow.ToTimeOnly();
 
-        var dayEntry = _timeRepository.GetOrCreateDay(date.ToString("yyyy-MM-dd"));
+        var dayEntry = _timeRepository.GetOrCreateDay(date);
 
         _timeRepository.CreateTime(dayEntry.Id, time.ToTimeString());
         

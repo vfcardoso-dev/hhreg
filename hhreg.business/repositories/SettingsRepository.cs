@@ -1,7 +1,8 @@
+using System.Data;
 using hhreg.business.domain;
-using Microsoft.Data.Sqlite;
+using hhreg.business.infrastructure;
 
-namespace hhreg.business;
+namespace hhreg.business.repositories;
 
 public interface ISettingsRepository {
     void Create(double initialBalance, double workDay, string startCalculationsAt);
@@ -29,7 +30,7 @@ public class SettingsRepository : ISettingsRepository
 
     public void Update(double? newInitialBalance, double? newWorkDay, string? newStartCalculationsAt)
     {
-        var cmdList = new List<SqliteCommand>();
+        var cmdList = new List<IDbCommand>();
         
         if (newInitialBalance != null) {
             cmdList.Add(_unitOfWork.CreateSqlCommand(

@@ -1,9 +1,9 @@
 using AutoFixture;
 using AutoFixture.Kernel;
-using hhreg.business;
 using hhreg.business.domain;
+using hhreg.business.utilities;
 
-namespace hhreg.tests;
+namespace hhreg.tests.infrastructure;
 
 public class TimeEntryBuilder : BaseBuilder<TimeEntry>
 {

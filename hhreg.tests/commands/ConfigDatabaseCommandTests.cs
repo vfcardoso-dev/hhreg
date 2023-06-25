@@ -1,8 +1,10 @@
-using hhreg.business;
 using FluentAssertions;
-using Spectre.Console.Cli;
+using hhreg.business.commands;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.tests.infrastructure;
 
-namespace hhreg.tests;
+namespace hhreg.tests.commands;
 
 public class ConfigDatabaseCommandTests : UnitTestsBase
 {

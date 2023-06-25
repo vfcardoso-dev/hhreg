@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 
-namespace hhreg;
+namespace hhreg.configs;
 
 public static class HostConfigurer
 {

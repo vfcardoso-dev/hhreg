@@ -1,9 +1,13 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using hhreg.business.exceptions;
+using hhreg.business.infrastructure;
+using hhreg.business.repositories;
+using hhreg.business.utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace hhreg.business;
+namespace hhreg.business.commands;
 
 public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settings>
 {
@@ -47,12 +51,13 @@ public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settin
         var cfg = _settingsRepository.Get()!;
 
         var day = DateOnly.Parse(settings.Day!);
-        var dayEntry = _timeRepository.GetDayEntry(day.ToString("yyyy-MM-dd"));
+        var dayEntry = _timeRepository.GetDayEntry(day)!;
 
         if (dayEntry == null) 
         {
             throw new HhregException(HhregMessages.InformedDayIsNotRegistered);
         }
+        
 
         _logger.WriteTable(SpectreConsoleUtils.GetDayEntrySummaryHeaders(), 
             new List<Text[]>{{SpectreConsoleUtils.GetDayEntrySummaryRow(dayEntry, cfg.WorkDay)}});

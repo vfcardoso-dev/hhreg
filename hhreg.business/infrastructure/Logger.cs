@@ -1,7 +1,7 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace hhreg.business;
+namespace hhreg.business.infrastructure;
 
 public interface ILogger
 {

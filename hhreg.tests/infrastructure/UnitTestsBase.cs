@@ -1,10 +1,10 @@
-using System.Diagnostics.CodeAnalysis;
 using AutoFixture;
-using hhreg.business;
-using Spectre.Console.Cli;
+using hhreg.business.infrastructure;
+using hhreg.tests.infrastructure.stubs;
 using Microsoft.Extensions.DependencyInjection;
+using Spectre.Console.Cli;
 
-namespace hhreg.tests;
+namespace hhreg.tests.infrastructure;
 
 public abstract class UnitTestsBase
 {

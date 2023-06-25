@@ -1,7 +1,7 @@
 using AutoFixture;
 using AutoFixture.Kernel;
 
-namespace hhreg.tests;
+namespace hhreg.tests.utilities;
 
 public static class FixtureExtensions
 {
@@ -12,6 +12,6 @@ public static class FixtureExtensions
 
     public static T CreateAnyBut<T>(this ISpecimenBuilder builder, T itemToExcept)
     {
-        return builder.Create<Generator<T>>().Where(x => x!.Equals(itemToExcept) == false).First();
+        return builder.Create<Generator<T>>().First(x => x!.Equals(itemToExcept) == false);
     }
 }
