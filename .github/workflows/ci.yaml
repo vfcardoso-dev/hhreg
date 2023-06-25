@@ -12,7 +12,7 @@ jobs:
         kind: ['linux', 'windows', 'macOS']
         include:
           - kind: linux
-            os: ubuntu-latest
+            os: ubuntu-la
             target: linux-x64
           - kind: windows
             os: windows-latest
@@ -20,9 +20,9 @@ jobs:
           - kind: macOS
             os: macos-latest
             target: osx-x64
-      runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
       
-      steps:
+    steps:
       - name: Checkout
         uses: actions/checkout@v1
 
