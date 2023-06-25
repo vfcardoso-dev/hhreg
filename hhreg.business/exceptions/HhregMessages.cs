@@ -22,4 +22,13 @@ public static class HhregMessages
     public const string YouShouldInformWorkday = "You should inform workday.";
     public const string YouShouldInformStartCalculationsAt = "You should inform your a date to start balance calculations.";
     public const string SettingsAlreadyInitialized = "Settings already initialized. You can change it with 'config edit'";
+
+    // Report
+    public const string YouShouldInformADay = "You should inform a day.";
+    public const string YouShouldInformAMonth = "You should inform a month (MM/yyyy).";
+    public const string TailMustHaveAPositiveValue = "Tail must have a positive value.";
+    public const string ThereAreDayEntriesWithAnOddCountOfTimeEntries = "[purple_1]DISCLAIMER:[/] There are day entries with an odd count of time entries, whose count should have been even.";
+    public const string PleaseFixTheseDaysBeforeGeneratingNewReports = "Please fix these days before generating new reports.";
+    public const string ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate = "Configuration is set to start balance calculations after the offset date. StartCalculationsAt: {0}; OffsetDate: {1}";
+    public const string InformedDayIsNotRegistered = "Informed day is not registered.";
 }

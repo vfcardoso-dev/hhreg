@@ -30,7 +30,7 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
         public override ValidationResult Validate()
         {
             if (Tail < 1) {
-                return ValidationResult.Error("Tail must have a positive value.");
+                return ValidationResult.Error(HhregMessages.TailMustHaveAPositiveValue);
             }
             
             return ValidationResult.Success();
@@ -46,7 +46,7 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
         var startCalculationsAt = DateOnly.Parse(cfg.StartCalculationsAt);
 
         if (startCalculationsAt > offsetDate) {
-            throw new HhregException($"Configuration is set to start balance calculations after the offset date. StartCalculationsAt: {startCalculationsAt}; OffsetDate: {offsetDate}");
+            throw new HhregException(string.Format(HhregMessages.ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate, startCalculationsAt, offsetDate));
         }
         
         var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1).ToString("yyyy-MM-dd"));

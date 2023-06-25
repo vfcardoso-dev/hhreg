@@ -29,11 +29,11 @@ public sealed class ReportMonthCommand : ReportCommandBase<ReportMonthCommand.Se
         public override ValidationResult Validate()
         {
             if (Month == null) {
-                return ValidationResult.Error("You should inform a month (MM/yyyy).");
+                return ValidationResult.Error(HhregMessages.YouShouldInformAMonth);
             }
 
             if (!DateOnly.TryParse(Month, out var _)) {
-                return ValidationResult.Error($"Could not parse '{Month}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, Month));
             }
             
             return ValidationResult.Success();

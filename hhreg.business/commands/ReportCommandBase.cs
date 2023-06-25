@@ -25,8 +25,8 @@ public abstract class ReportCommandBase<T> : Command<T> where T : CommandSetting
                 .Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))})");
         }
 
-        _logger.WriteLine("[purple_1]DISCLAIMER:[/] There are day entries with an odd count of time entries, whose count should've been even.");
+        _logger.WriteLine(HhregMessages.ThereAreDayEntriesWithAnOddCountOfTimeEntries);
 
-        throw new HhregException("Please fix these days before generating new reports.");
+        // throw new HhregException(HhregMessages.PleaseFixTheseDaysBeforeGeneratingNewReports);
     }
 }

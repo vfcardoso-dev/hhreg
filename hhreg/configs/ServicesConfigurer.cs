@@ -2,6 +2,7 @@ using hhreg.business;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
+using TextCopy;
 
 namespace hhreg;
 public static class ServicesConfigurer {
@@ -21,6 +22,7 @@ public static class ServicesConfigurer {
         services.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
         services.AddScoped<ITimeRepository, TimeRepository>();
+        services.AddScoped<IClipboard, Clipboard>();
         
         // resto das dependencias....
         // ...

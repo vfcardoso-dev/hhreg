@@ -4,21 +4,27 @@ using System.Text;
 using System.Text.Json;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using TextCopy;
 
 namespace hhreg.business;
 
 public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
+    private readonly IClipboard _clipboard;
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public ReportMyDrakeCommand(ITimeRepository timeRepository, ILogger logger) : base(timeRepository, logger) 
+    public ReportMyDrakeCommand(
+        ITimeRepository timeRepository, 
+        IClipboard clipboard,
+        ILogger logger) : base(timeRepository, logger) 
     {
         _timeRepository = timeRepository;
+        _clipboard = clipboard;
         _logger = logger;
     }
 
@@ -31,14 +37,18 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         [CommandArgument(1, "[end]")]
         public string? End { get; init; }
 
+        [Description("Last day on export period (format: dd/MM/yyyy). Optional.")]
+        [CommandOption("-v|--verbose")]
+        public bool Verbose { get; init; }
+
         public override ValidationResult Validate()
         {
             if (!DateOnly.TryParse(Start, out var _)) {
-                return ValidationResult.Error($"Could not parse '{Start}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, Start));
             }
 
             if (End != null && !DateOnly.TryParse(End, out var _)) {
-                return ValidationResult.Error($"Could not parse '{End}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, End));
             }
             
             return ValidationResult.Success();
@@ -93,10 +103,18 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         var bytes = Encoding.UTF8.GetBytes(json);
         var encoded = Convert.ToBase64String(bytes);
         
-        var panel = new Panel("Copy the code below and paste on [green]hhreg.chrome[/] extension");
-        _logger.Write(panel);
+        if (settings.Verbose) {
+            var panel = new Panel("Copy the code below and paste on [green]hhreg.chrome[/] extension");
+            _logger.Write(panel);
 
-        _logger.WriteLine(encoded);
+            _logger.WriteLine(encoded);
+        } else {
+            _clipboard.SetText(encoded);            
+
+            var panel = new Panel("Code generated and copied to clipboard. You can now paste it on [green]hhreg.chrome[/] extension");
+            _logger.Write(panel);
+        }
+        
 
         return 0;
     }

@@ -29,11 +29,11 @@ public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settin
         public override ValidationResult Validate()
         {
             if (Day == null) {
-                return ValidationResult.Error("You should inform a day.");
+                return ValidationResult.Error(HhregMessages.YouShouldInformADay);
             }
 
             if (!DateOnly.TryParse(Day, out var _)) {
-                return ValidationResult.Error($"Could not parse '{Day}' as a valid date format.");
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, Day));
             }
             
             return ValidationResult.Success();
@@ -47,7 +47,12 @@ public sealed class ReportDayCommand : ReportCommandBase<ReportDayCommand.Settin
         var cfg = _settingsRepository.Get()!;
 
         var day = DateOnly.Parse(settings.Day!);
-        var dayEntry = _timeRepository.GetDayEntry(day.ToString("yyyy-MM-dd"))!;
+        var dayEntry = _timeRepository.GetDayEntry(day.ToString("yyyy-MM-dd"));
+
+        if (dayEntry == null) 
+        {
+            throw new HhregException(HhregMessages.InformedDayIsNotRegistered);
+        }
 
         _logger.WriteTable(SpectreConsoleUtils.GetDayEntrySummaryHeaders(), 
             new List<Text[]>{{SpectreConsoleUtils.GetDayEntrySummaryRow(dayEntry, cfg.WorkDay)}});
