@@ -38,18 +38,18 @@ jobs:
           release_name="hhreg-$tag-${{ matrix.target }}"
           
           # Build everything
-          dotnet publish hhreg -c Release --runtime "${{ matrix.target }}" --self-contained true --output "./dist/" -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          dotnet publish hhreg -c Release --runtime "${{ matrix.target }}" --self-contained true --output "./dist/${release_name}" -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
           
           # Pack files
           if [ "${{ matrix.target }}" == "win-x64" ]; then
             # Pack to zip for Windows
-            7z a -tzip "${release_name}.zip" "./${release_name}/*"
+            7z a -tzip "${release_name}.zip" "./dist/${release_name}/*"
           else
-            tar czvf "${release_name}.tar.gz" "$release_name"
+            tar czvf "${release_name}.tar.gz" "dist/${release_name}"
           fi
 
           # Delete output directory
-          rm -r "$release_name"
+          rm -r "dist/${release_name}"
 
       - name: Publish
         uses: softprops/action-gh-release@v1
