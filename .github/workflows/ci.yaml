@@ -12,7 +12,7 @@ jobs:
         kind: ['linux', 'windows', 'macOS']
         include:
           - kind: linux
-            os: ubuntu-la
+            os: ubuntu-latest
             target: linux-x64
           - kind: windows
             os: windows-latest
