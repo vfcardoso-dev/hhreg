@@ -37,6 +37,7 @@ jobs:
         run: |
           tag=$(git describe --tags --abbrev=0)
           release_name="hhreg-$tag-${{ matrix.target }}"
+          version=$(cut -c 2- <<< $tag)
           
           # Build everything
           dotnet publish hhreg -c Release --runtime "${{ matrix.target }}" --self-contained true --output "./dist/${release_name}" -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
