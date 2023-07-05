@@ -17,7 +17,7 @@ static class Program
 
         try {
             var appHost = app.Services.GetRequiredService<AppHost>();
-            var notCalculatedArgs = new string[]{"-h","-v","--help","--version"};
+            var notCalculatedArgs = new string[]{"-h","-v","--help","--version", "update"};
             
             if (args.Any(arg => notCalculatedArgs.Contains(arg))) {
                 return appHost.Run(args);

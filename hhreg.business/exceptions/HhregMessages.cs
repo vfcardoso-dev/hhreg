@@ -10,6 +10,11 @@ public static class HhregMessages
     
     // Config
     public const string DatabaseLocationTitle = "Database location";
+
+    // Update
+    public const string UnknownPlatform = "UnknownPlatform";
+    public const string LastestReleaseUnavailable = "LastestReleaseUnavailable";
+    public const string UpdateArtifactNotFound = "UpdateArtifactNotFound";
     
     // Entry
     public const string YouShouldInformADayToLog = "You should inform a day to log (or set entry as today with -t).";
