@@ -56,7 +56,7 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
                 AnsiConsole.WriteLine();
                 AnsiConsole.MarkupLine("Launching updater...");
 
-                RunUpdateCommand();
+                RunUpdateCommand(platform);
 
                 Thread.Sleep(6000);
 
@@ -73,11 +73,17 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
             });
     }
 
-    private void RunUpdateCommand() {
+    private void RunUpdateCommand(string platform) {
         var origin = GetDestinationFolder();
         var destination = AppDomain.CurrentDomain.BaseDirectory;
+        string cmdStr;
 
-        var cmdStr = $"/c start cmd.exe /c copy /b {origin} {destination}";
+        if (platform.StartsWith("win")) {
+            cmdStr = $"/c start cmd.exe /c copy /b {origin} {destination}";
+        } else {
+            cmdStr = $"-c bash -c cp -r {origin} {destination}";
+        }
+        
         System.Diagnostics.Process.Start("cmd.exe", cmdStr);
     }
 
