@@ -11,12 +11,12 @@ namespace hhreg.business.commands;
 
 public sealed class UpdateCommand : Command<UpdateCommand.Settings>
 {
-    private readonly IAppSettings _appSettings;
+    private readonly IDbSettings _appSettings;
     private readonly ILogger _logger;
 
     private const string RepositoryUrl = "https://github.com/vfcardoso-dev/hhreg";
 
-    public UpdateCommand(IAppSettings appSettings, ILogger logger) {
+    public UpdateCommand(IDbSettings appSettings, ILogger logger) {
         _appSettings = appSettings;
         _logger = logger;
     }

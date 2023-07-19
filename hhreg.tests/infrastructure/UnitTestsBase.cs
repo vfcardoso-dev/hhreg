@@ -9,7 +9,7 @@ namespace hhreg.tests.infrastructure;
 public abstract class UnitTestsBase
 {
     protected readonly Fixture Fixture = CreateFixture();
-    protected readonly IAppSettings AppSettings;
+    protected readonly IDbSettings AppSettings;
     protected readonly LoggerStub Logger;
     protected ITypeRegistrar? TypeRegistrar;
     
@@ -65,9 +65,9 @@ public abstract class UnitTestsBase
         return fixture;
     }
 
-    private IAppSettings GetAppSettings()
+    private IDbSettings GetAppSettings()
     {
-        var appSettings = Fixture.Create<AppSettings>();
+        var appSettings = Fixture.Create<DbSettings>();
         appSettings.DatabaseName = Guid.NewGuid().ToString().Split("-")[0];
         return appSettings;
     }

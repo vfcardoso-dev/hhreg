@@ -1,4 +1,5 @@
-﻿using hhreg.configs;
+﻿using hhreg.business.utilities;
+using hhreg.configs;
 using hhreg.services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,7 +20,7 @@ static class Program
             var appHost = app.Services.GetRequiredService<AppHost>();
             var notCalculatedArgs = new string[]{"-h","-v","--help","--version", "update"};
             
-            if (args.Any(arg => notCalculatedArgs.Contains(arg))) {
+            if (args.IsEmpty() || args.Any(arg => notCalculatedArgs.Contains(arg))) {
                 return appHost.Run(args);
             }
 

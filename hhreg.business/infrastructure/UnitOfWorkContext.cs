@@ -9,10 +9,10 @@ public interface IUnitOfWorkContext
 
 public class UnitOfWorkContext : IUnitOfWorkContext {
 
-    private readonly IAppSettings _appSettings;
+    private readonly IDbSettings _appSettings;
     private IUnitOfWork? _unitOfWork;
 
-    public UnitOfWorkContext(IAppSettings appSettings) {
+    public UnitOfWorkContext(IDbSettings appSettings) {
         _appSettings = appSettings;
     }
 

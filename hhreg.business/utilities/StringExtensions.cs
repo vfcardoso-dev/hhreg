@@ -16,4 +16,9 @@ public static class StringExtensions
     {
         return IntegerMatch.IsMatch(value);
     }
+
+    public static bool IsEmpty(this string[] value)
+    {
+        return value == null || value.Any() == false;
+    }
 }

@@ -1,3 +1,4 @@
+using System.Reflection;
 using hhreg.business;
 using hhreg.business.infrastructure;
 using Spectre.Console;
@@ -10,12 +11,12 @@ public interface IDatabaseEnsurer {
 
 public class DatabaseEnsurer : IDatabaseEnsurer {
 
-    private readonly IAppSettings _appSettings;
+    private readonly IDbSettings _appSettings;
     private readonly IUnitOfWork _unitOfWork;
 
     public DatabaseEnsurer(
         IUnitOfWork unitOfWork, 
-        IAppSettings appSettings) {
+        IDbSettings appSettings) {
             _unitOfWork = unitOfWork;
             _appSettings = appSettings;
     }

@@ -1,6 +1,6 @@
-using hhreg.business;
 using hhreg.business.commands;
 using hhreg.business.interceptors;
+using hhreg.resources;
 using Spectre.Console.Cli;
 
 namespace hhreg.configs;
@@ -11,10 +11,14 @@ public interface ICommandsConfigurer {
 
 public class CommandsConfigurer : ICommandsConfigurer {
     private readonly IEnsureInitInterceptor _ensureInitInterceptor;
+    private readonly ILocalizer _localizer;
 
-    public CommandsConfigurer(IEnsureInitInterceptor ensureInitInterceptor)
+    public CommandsConfigurer(
+        IEnsureInitInterceptor ensureInitInterceptor,
+        ILocalizer localizer)
     {
         _ensureInitInterceptor = ensureInitInterceptor;
+        _localizer = localizer;
     }
 
     public void Configure(IConfigurator cmd) 
@@ -27,7 +31,7 @@ public class CommandsConfigurer : ICommandsConfigurer {
         cmd.SetInterceptor(_ensureInitInterceptor);
 
         cmd.AddCommand<InitCommand>("init")
-            .WithDescription("Initializes CLI settings.")
+            .WithDescription(_localizer.Get("InitCliSettings"))
             .WithExample(new string[]{"init","--initial-balance","-0:40","--workday","8:00","--start-calculations-at","01/12/2022"})
             .WithExample(new string[]{"init","-m","Minutes","-b","-20","-w","480","-s","01/12/2022"});
 

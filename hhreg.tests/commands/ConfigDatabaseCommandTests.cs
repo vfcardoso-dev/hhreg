@@ -12,7 +12,7 @@ public class ConfigDatabaseCommandTests : UnitTestsBase
     public void Should_be_able_to_show_database_location()
     {
         // Given
-        AddSingleton<IAppSettings>(AppSettings);
+        AddSingleton<IDbSettings>(AppSettings);
         AddSingleton<ILogger>(Logger);
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigDatabaseCommand>("database"));

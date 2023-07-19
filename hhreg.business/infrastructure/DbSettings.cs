@@ -2,14 +2,14 @@ using static System.Environment;
 
 namespace hhreg.business.infrastructure;
 
-public interface IAppSettings {
+public interface IDbSettings {
     string DatabaseName { get; }
     string AppDataFolder { get; }
     string DatabaseFilePath { get; }
     string ConnectionString { get; }
 }
 
-public class AppSettings : IAppSettings
+public class DbSettings : IDbSettings
 {
     private readonly string _appName = "hhreg";
 
