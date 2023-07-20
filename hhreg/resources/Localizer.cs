@@ -21,7 +21,7 @@ public sealed class Localizer : ILocalizer {
         ILocaleSettings localeSettings)
     {
         _localizer = localizer;
-
+        
         SetCulture(localeSettings.Language ?? "en");
     }
 

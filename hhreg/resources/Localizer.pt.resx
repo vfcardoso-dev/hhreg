@@ -117,12 +117,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InitCliSettings" xml:space="preserve">
-    <value>Initialize CLI settings</value>
+  <data name="InitCommandDescription" xml:space="preserve">
+    <value>Inicializa as configurações do CLI.</value>
     <comment/>
   </data>
-  <data name="Test" xml:space="preserve">
-    <value>Testando</value>
+  <data name="UpdateCommandDescription" xml:space="preserve">
+    <value>Atualiza o app se houver uma nova versão disponível.</value>
+    <comment/>
+  </data>
+  <data name="ConfigCommandDescription" xml:space="preserve">
+    <value>Gerencia as configurações do CLI.</value>
+    <comment/>
+  </data>
+  <data name="ConfigShowCommandDescription" xml:space="preserve">
+    <value>Exibe as configurações atuais.</value>
+    <comment/>
+  </data>
+  <data name="ConfigDatabaseCommandDescription" xml:space="preserve">
+    <value>Imprime o local atual do arquivo do banco de dados.</value>
+    <comment/>
+  </data>
+  <data name="ConfigEditCommandDescription" xml:space="preserve">
+    <value>Altera as configurações atuais.</value>
+    <comment/>
+  </data>
+  <data name="EntryCommandDescription" xml:space="preserve">
+    <value>Gerencia as entradas no registro.</value>
+    <comment/>
+  </data>
+  <data name="EntryNewCommandDescription" xml:space="preserve">
+    <value>Registra novas entradas.</value>
+    <comment/>
+  </data>
+  <data name="EntryOverrideCommandDescription" xml:space="preserve">
+    <value>Sobrescreve entradas no registro.</value>
+    <comment/>
+  </data>
+  <data name="EntryNowCommandDescription" xml:space="preserve">
+    <value>Escreve uma nova entrada no registro agora.</value>
+    <comment/>
+  </data>
+  <data name="ReportCommandDescription" xml:space="preserve">
+    <value>Consolida e exibe as entradas no registro.</value>
+    <comment/>
+  </data>
+  <data name="ReportDayCommandDescription" xml:space="preserve">
+    <value>Exibe as entradas no registro para um único dia.</value>
+    <comment/>
+  </data>
+  <data name="ReportMonthCommandDescription" xml:space="preserve">
+    <value>Exibe as entradas no registro para um determinado mês.</value>
+    <comment/>
+  </data>
+  <data name="ReportBalanceCommandDescription" xml:space="preserve">
+    <value>Exibe o saldo acumulado do banco de horas.</value>
+    <comment/>
+  </data>
+  <data name="ReportMyDrakeCommandDescription" xml:space="preserve">
+    <value>Exporta as entradas do registro para inclusão em lote no MyDrake.</value>
+    <comment/>
+  </data>
+  <data name="CalculatingLabel" xml:space="preserve">
+    <value>Calculando</value>
+    <comment/>
+  </data>
+  <data name="DatabaseFileDidNotExists" xml:space="preserve">
+    <value>Arquivo de banco de dados não existe. Foi criado em</value>
+    <comment/>
+  </data>
+  <data name="EnsuringDatabaseTablesExistsOn" xml:space="preserve">
+    <value>Garantindo que tabelas existem em</value>
     <comment/>
   </data>
 </root>

@@ -1,6 +1,7 @@
 using System.Reflection;
 using hhreg.business;
 using hhreg.business.infrastructure;
+using hhreg.resources;
 using Spectre.Console;
 
 namespace hhreg.services;
@@ -11,26 +12,29 @@ public interface IDatabaseEnsurer {
 
 public class DatabaseEnsurer : IDatabaseEnsurer {
 
-    private readonly IDbSettings _appSettings;
+    private readonly IDbSettings _dbSettings;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILocalizer _localizer;
 
     public DatabaseEnsurer(
         IUnitOfWork unitOfWork, 
-        IDbSettings appSettings) {
+        IDbSettings dbSettings,
+        ILocalizer localizer) {
             _unitOfWork = unitOfWork;
-            _appSettings = appSettings;
+            _dbSettings = dbSettings;
+            _localizer = localizer;
     }
 
     public void Ensure() {
-        if (!Directory.Exists(_appSettings.AppDataFolder)) 
+        if (!Directory.Exists(_dbSettings.AppDataFolder)) 
         {
-            Directory.CreateDirectory(_appSettings.AppDataFolder);
+            Directory.CreateDirectory(_dbSettings.AppDataFolder);
         }
         
-        if (!File.Exists(_appSettings.DatabaseFilePath)) 
+        if (!File.Exists(_dbSettings.DatabaseFilePath)) 
         {
-            var f = File.Create(_appSettings.DatabaseFilePath);
-            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Database file did not exists. Created on '[yellow]{_appSettings.DatabaseFilePath}[/]'.");
+            var f = File.Create(_dbSettings.DatabaseFilePath);
+            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] {_localizer.Get("DatabaseFileDidNotExists")} '[yellow]{_dbSettings.DatabaseFilePath}[/]'.");
             f.Close();
         }
 
@@ -42,7 +46,7 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
 
         if (!tableExists) 
         {
-            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Ensuring database tables on '[yellow]{_appSettings.ConnectionString}[/]'...");
+            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] {_localizer.Get("EnsuringDatabaseTablesExistsOn")} '[yellow]{_dbSettings.ConnectionString}[/]'...");
 
             var sql = $@"
                 PRAGMA foreign_keys = ON;

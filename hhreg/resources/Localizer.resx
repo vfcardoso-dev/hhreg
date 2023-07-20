@@ -117,12 +117,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="InitCliSettings" xml:space="preserve">
-    <value>Inicializa as configurações do CLI</value>
+  <data name="InitCommandDescription" xml:space="preserve">
+    <value>Initialize CLI settings.</value>
     <comment/>
   </data>
-  <data name="Test" xml:space="preserve">
-    <value>Testing</value>
+  <data name="UpdateCommandDescription" xml:space="preserve">
+    <value>Update app if new version is available.</value>
+    <comment/>
+  </data>
+  <data name="ConfigCommandDescription" xml:space="preserve">
+    <value>Manage CLI settings.</value>
+    <comment/>
+  </data>
+  <data name="ConfigShowCommandDescription" xml:space="preserve">
+    <value>Shows current settings.</value>
+    <comment/>
+  </data>
+  <data name="ConfigDatabaseCommandDescription" xml:space="preserve">
+    <value>Prints database location.</value>
+    <comment/>
+  </data>
+  <data name="ConfigEditCommandDescription" xml:space="preserve">
+    <value>Changes current settings.</value>
+    <comment/>
+  </data>
+  <data name="EntryCommandDescription" xml:space="preserve">
+    <value>Manage entry logs.</value>
+    <comment/>
+  </data>
+  <data name="EntryNewCommandDescription" xml:space="preserve">
+    <value>Logs new entries.</value>
+    <comment/>
+  </data>
+  <data name="EntryOverrideCommandDescription" xml:space="preserve">
+    <value>Override entry logs.</value>
+    <comment/>
+  </data>
+  <data name="EntryNowCommandDescription" xml:space="preserve">
+    <value>Log an entry now.</value>
+    <comment/>
+  </data>
+  <data name="ReportCommandDescription" xml:space="preserve">
+    <value>Summarize and show time entries.</value>
+    <comment/>
+  </data>
+  <data name="ReportDayCommandDescription" xml:space="preserve">
+    <value>Show time entries for a single day.</value>
+    <comment/>
+  </data>
+  <data name="ReportMonthCommandDescription" xml:space="preserve">
+    <value>Show time entries for a month.</value>
+    <comment/>
+  </data>
+  <data name="ReportBalanceCommandDescription" xml:space="preserve">
+    <value>Show accumulated hour bank balance.</value>
+    <comment/>
+  </data>
+  <data name="ReportMyDrakeCommandDescription" xml:space="preserve">
+    <value>Export time entries to bulk insert on MyDrake.</value>
+    <comment/>
+  </data>
+  <data name="CalculatingLabel" xml:space="preserve">
+    <value>Calculating</value>
+    <comment/>
+  </data>
+  <data name="DatabaseFileDidNotExists" xml:space="preserve">
+    <value>Database file did not exists. Created on</value>
+    <comment/>
+  </data>
+  <data name="EnsuringDatabaseTablesExistsOn" xml:space="preserve">
+    <value>Ensuring database tables exists on</value>
     <comment/>
   </data>
 </root>

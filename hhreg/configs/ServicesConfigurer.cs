@@ -12,19 +12,19 @@ using TextCopy;
 namespace hhreg.configs;
 
 public static class ServicesConfigurer {
-    public static void Configure(HostBuilderContext context, IServiceCollection services) 
+    public static void Configure(IServiceCollection services) 
     {
         services.AddLocalization();
 
-        services.AddSingleton<IDbSettings, DbSettings>();
-        services.Configure<DbSettings>(context.Configuration.GetSection("AppSettings:Database"));
-
-        services.AddScoped<ILocaleSettings, LocaleSettings>();
-        services.Configure<LocaleSettings>(context.Configuration.GetSection("AppSettings:Localizer"));
-
+        services.AddSingleton<IDbSettings, DbSettings>(ctx => 
+            ctx.GetRequiredService<IConfiguration>()
+                .GetRequiredSection("AppSettings:Database").Get<DbSettings>()!);
+        services.AddSingleton<ILocaleSettings, LocaleSettings>(ctx =>
+            ctx.GetRequiredService<IConfiguration>()
+                .GetRequiredSection("AppSettings:Localizer").Get<LocaleSettings>()!);
+        
         services.AddScoped(ctx => 
-            new UnitOfWorkContext(ctx.GetRequiredService<IDbSettings>())
-                .Create());
+            new UnitOfWorkContext(ctx.GetRequiredService<IDbSettings>()).Create());
 
         services.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();
         services.AddScoped<ISettingsRepository, SettingsRepository>();
