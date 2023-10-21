@@ -7,7 +7,8 @@ public static class HhregMessages
     public const string CouldNotParseAsAValidTimeFormat = "Could not parse '{0}' as a valid time format.";
     public const string CouldNotParseAsAValidIntegerFormat = "Could not parse '{0}' as a valid integer format";
     public const string InvalidInputFormatOnValue = "Invalid input format on value '{0}'";
-    
+    public const string SettingsNotYetInitialized = "CLI ainda não foi inicializado.";
+
     // Config
     public const string DatabaseLocationTitle = "Database location";
 

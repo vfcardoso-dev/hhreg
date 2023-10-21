@@ -5,16 +5,18 @@ namespace hhreg.business.domain;
 
 public class Settings : BaseEntity<Settings>
 {
-    public double InitialBalance { get; set; } // in minutes
-    public double WorkDay { get; set; } // in minutes
-    public string StartCalculationsAt { get; set; } = string.Empty;
+    public double StartBalanceInMinutes { get; set; }
+    public double WorkDayInMinutes { get; set; }
+    public double EntryToleranceInMinutes { get; set; }
+    public string LastBalanceCutoff { get; set; } = string.Empty; // Date
 
     public override string[] ExtractRow()
     {
         return new string[] {
-            InitialBalance.ToTimeString(),
-            WorkDay.ToTimeString(),
-            DateTime.Parse(StartCalculationsAt).ToString("dd/MM/yyyy")
+            StartBalanceInMinutes.ToTimeString(),
+            WorkDayInMinutes.ToTimeString(),
+            EntryToleranceInMinutes.ToTimeString(),
+            DateTime.Parse(LastBalanceCutoff).ToString("dd/MM/yyyy")
         };
     }
 }

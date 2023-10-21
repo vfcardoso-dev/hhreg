@@ -1,6 +1,5 @@
 ﻿using hhreg.business.utilities;
 using hhreg.configs;
-using hhreg.resources;
 using hhreg.services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,10 +18,8 @@ static class Program
 
         try {
             var appHost = app.Services.GetRequiredService<AppHost>();
-            var localizer = app.Services.GetRequiredService<ILocalizer>();
 
             var notCalculatedArgs = new string[]{"-h","-v","--help","--version", "update"};
-            var calculatingLabel = localizer.Get("CalculatingLabel");
             
             if (args.IsEmpty() || args.Any(arg => notCalculatedArgs.Contains(arg))) {
                 return appHost.Run(args);
@@ -31,7 +28,7 @@ static class Program
             return AnsiConsole.Status()
                 .Spinner(Spinner.Known.Star2)
                 .SpinnerStyle(Style.Parse("green"))
-                .Start($"{calculatingLabel}...", ctx => appHost.Run(args));
+                .Start("Calculando...", ctx => appHost.Run(args));
                 
         } catch (Exception ex) {
             AnsiConsole.MarkupLine($"[red]FATAL:[/] {ex.Message}");

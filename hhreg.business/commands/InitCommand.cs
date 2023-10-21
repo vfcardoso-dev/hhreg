@@ -12,11 +12,11 @@ namespace hhreg.business.commands;
 
 public sealed class InitCommand : Command<InitCommand.Settings>
 {
-    private readonly ISettingsRepository _settingsRepository;
+    private readonly ISettingsService _settingsService;
     private readonly ILogger _logger;
 
-    public InitCommand(ISettingsRepository settingsRepository, ILogger logger) {
-        _settingsRepository = settingsRepository;
+    public InitCommand(ISettingsService settingsService, ILogger logger) {
+        _settingsService = settingsService;
         _logger = logger;
     }
 
@@ -66,7 +66,7 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        if (_settingsRepository.IsAlreadyInitialized()) {
+        if (_settingsService.IsInitialized()) {
             throw new HhregException(HhregMessages.SettingsAlreadyInitialized);
         }
         
@@ -74,7 +74,13 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         var workDay = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay!);
         var startCalculationsAt = DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd");
 
-        _settingsRepository.Create(initialBalance, workDay, startCalculationsAt);
+        _settingsService.SaveSettings(new domain.Settings
+        {
+            StartBalanceInMinutes = initialBalance,
+            WorkDayInMinutes = workDay,
+            EntryToleranceInMinutes = 0,
+            LastBalanceCutoff = startCalculationsAt
+        });
         
         _logger.WriteLine($@"Settings [green]SUCCESSFULLY[/] initialized!");
         return 0;

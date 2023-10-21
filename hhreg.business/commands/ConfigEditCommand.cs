@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using hhreg.business.domain.valueObjects;
 using hhreg.business.exceptions;
 using hhreg.business.infrastructure;
-using hhreg.business.repositories;
 using hhreg.business.utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
@@ -12,11 +11,11 @@ namespace hhreg.business.commands;
 
 public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
 {
-    private readonly ISettingsRepository _settingsRepository;
+    private readonly ISettingsService _settingsService;
     private readonly ILogger _logger;
 
-    public ConfigEditCommand(ISettingsRepository settingsRepository, ILogger logger) {
-        _settingsRepository = settingsRepository;
+    public ConfigEditCommand(ISettingsService settingsService, ILogger logger) {
+        _settingsService = settingsService;
         _logger = logger;
     }
 
@@ -67,8 +66,16 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         var startCalculationsAt = settings.StartCalculationsAt != null 
             ? DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd") : null;
 
-        _settingsRepository.Update(initialBalance, workDay, startCalculationsAt);
-        
+        var oldSettings = _settingsService.GetSettings();
+
+        _settingsService.SaveSettings(new domain.Settings
+        {
+            StartBalanceInMinutes = initialBalance ?? oldSettings.StartBalanceInMinutes,
+            WorkDayInMinutes = workDay ?? oldSettings.WorkDayInMinutes,
+            EntryToleranceInMinutes = 0,
+            LastBalanceCutoff = startCalculationsAt ?? oldSettings.LastBalanceCutoff
+        });
+
         _logger.WriteLine($@"Settings [green]SUCCESSFULLY[/] updated!");
         return 0;
     }

@@ -27,11 +27,4 @@
     <ProjectReference Include="..\hhreg.business\hhreg.business.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="..\appsettings.json">
-      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>

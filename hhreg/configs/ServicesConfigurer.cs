@@ -16,18 +16,12 @@ public static class ServicesConfigurer {
     {
         services.AddLocalization();
 
-        services.AddSingleton<IDbSettings, DbSettings>(ctx => 
-            ctx.GetRequiredService<IConfiguration>()
-                .GetRequiredSection("AppSettings:Database").Get<DbSettings>()!);
-        services.AddSingleton<ILocaleSettings, LocaleSettings>(ctx =>
-            ctx.GetRequiredService<IConfiguration>()
-                .GetRequiredSection("AppSettings:Localizer").Get<LocaleSettings>()!);
+        services.AddSingleton<ISettingsService, SettingsService>();
         
         services.AddScoped(ctx => 
-            new UnitOfWorkContext(ctx.GetRequiredService<IDbSettings>()).Create());
+            new UnitOfWorkContext(ctx.GetRequiredService<ISettingsService>()).Create());
 
         services.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();
-        services.AddScoped<ISettingsRepository, SettingsRepository>();
         services.AddScoped<ITimeRepository, TimeRepository>();
         services.AddScoped<IClipboard, Clipboard>();
         
@@ -35,7 +29,6 @@ public static class ServicesConfigurer {
 
         services.AddSingleton<AppHost>();
         services.AddSingleton<ILogger, Logger>();
-        services.AddSingleton<ILocalizer, Localizer>();
         services.AddScoped<IEnsureInitInterceptor, EnsureInitInterceptor>();
         services.AddScoped<ICommandsConfigurer, CommandsConfigurer>();
         services.AddSingleton<ITypeRegistrar>(new TypeRegistrar(services));

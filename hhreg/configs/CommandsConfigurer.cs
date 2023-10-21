@@ -1,6 +1,5 @@
 using hhreg.business.commands;
 using hhreg.business.interceptors;
-using hhreg.resources;
 using Spectre.Console.Cli;
 
 namespace hhreg.configs;
@@ -11,14 +10,11 @@ public interface ICommandsConfigurer {
 
 public class CommandsConfigurer : ICommandsConfigurer {
     private readonly IEnsureInitInterceptor _ensureInitInterceptor;
-    private readonly ILocalizer _localizer;
 
     public CommandsConfigurer(
-        IEnsureInitInterceptor ensureInitInterceptor,
-        ILocalizer localizer)
+        IEnsureInitInterceptor ensureInitInterceptor)
     {
         _ensureInitInterceptor = ensureInitInterceptor;
-        _localizer = localizer;
     }
 
     public void Configure(IConfigurator cmd) 
@@ -31,58 +27,52 @@ public class CommandsConfigurer : ICommandsConfigurer {
         cmd.SetInterceptor(_ensureInitInterceptor);
 
         cmd.AddCommand<InitCommand>("init")
-            .WithDescription(_localizer.Get("InitCommandDescription"))
+            .WithDescription("Inicializa as configurações do CLI.")
             .WithExample(new string[]{"init","--initial-balance","-0:40","--workday","8:00","--start-calculations-at","01/12/2022"})
             .WithExample(new string[]{"init","-m","Minutes","-b","-20","-w","480","-s","01/12/2022"});
 
         cmd.AddCommand<UpdateCommand>("update")
-            .WithDescription(_localizer.Get("UpdateCommandDescription"));
+            .WithDescription("Atualiza o app se houver uma nova versão disponível.");
         
         cmd.AddBranch("config", config => {
-            config.SetDescription(_localizer.Get("ConfigCommandDescription"));
+            config.SetDescription("Gerencia as configurações do CLI.");
 
             config.AddCommand<ConfigShowCommand>("show")
-                .WithDescription(_localizer.Get("ConfigShowCommandDescription"));
+                .WithDescription("Exibe as configurações atuais.");
             config.AddCommand<ConfigDatabaseCommand>("database")
-                .WithDescription(_localizer.Get("ConfigDatabaseCommandDescription"));
+                .WithDescription("Imprime o local atual do arquivo do banco de dados.");
             config.AddCommand<ConfigEditCommand>("edit")
-                .WithDescription(_localizer.Get("ConfigEditCommandDescription"))
+                .WithDescription("Altera as configurações atuais.")
                 .WithExample(new string[]{"config","edit","--initial-balance","1:20","--start-calculations-at","01/04/2019"})
                 .WithExample(new string[]{"config","edit","-m","Minutes","-b","10"});
         });
 
         cmd.AddBranch("entry", entry => {
-            entry.SetDescription(_localizer.Get("EntryCommandDescription"));
+            entry.SetDescription("Gerencia as entradas no registro.");
 
             entry.AddCommand<EntryNewCommand>("new")
-                .WithDescription(_localizer.Get("EntryNewCommandDescription"))
+                .WithDescription("Registra novas entradas.")
                 .WithExample(new string[]{"entry","new","--day","23/02/2023","08:23","12:01","13:44","19:37"})
                 .WithExample(new string[]{"entry","new","-d","12/01/2023","-y","Sick","-j","\"This is a justification\""});
 
             entry.AddCommand<EntryOverrideCommand>("override")
-                .WithDescription(_localizer.Get("EntryOverrideCommandDescription"))
+                .WithDescription("Sobrescreve entradas no registro.")
                 .WithExample(new string[]{"entry","override","--day","23/02/2023","08:23","12:01","13:44","19:37"})
                 .WithExample(new string[]{"entry","override","-d","12/01/2023","-y","Sick","-j","\"This is a justification\""});
 
             entry.AddCommand<EntryNowCommand>("now")
-                .WithDescription(_localizer.Get("EntryNowCommandDescription"));
+                .WithDescription("Escreve uma nova entrada no registro agora.");
         });
 
         cmd.AddBranch("report", report => {
-            report.SetDescription(_localizer.Get("ReportCommandDescription"));
+            report.SetDescription("Consolida e exibe as entradas no registro.");
 
-            report.AddCommand<ReportDayCommand>("day")
-                .WithDescription(_localizer.Get("ReportDayCommandDescription"))
-                .WithExample(new string[]{"report","day","23/02/2023"});
-            report.AddCommand<ReportMonthCommand>("month")
-                .WithDescription(_localizer.Get("ReportMonthCommandDescription"))
-                .WithExample(new string[]{"report","month","02/2023"});
             report.AddCommand<ReportBalanceCommand>("balance")
-                .WithDescription(_localizer.Get("ReportBalanceCommandDescription"))
+                .WithDescription("Exibe o saldo acumulado do banco de horas.")
                 .WithExample(new string[]{"report","balance"})
                 .WithExample(new string[]{"report","balance","--tail","30"});
             report.AddCommand<ReportMyDrakeCommand>("mydrake")
-                .WithDescription(_localizer.Get("ReportMyDrakeCommandDescription"))
+                .WithDescription("Exporta as entradas do registro para inclusão em lote no MyDrake.")
                 .WithExample(new string[]{"report","mydrake","01/07/2023"})
                 .WithExample(new string[]{"report","mydrake","01/03/2023","31/03/2023"});
         });

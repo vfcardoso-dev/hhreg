@@ -67,7 +67,7 @@ public abstract class UnitTestsBase
 
     private IDbSettings GetAppSettings()
     {
-        var appSettings = Fixture.Create<DbSettings>();
+        var appSettings = Fixture.Create<SettingsService>();
         appSettings.DatabaseName = Guid.NewGuid().ToString().Split("-")[0];
         return appSettings;
     }

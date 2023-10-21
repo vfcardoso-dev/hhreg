@@ -12,16 +12,16 @@ namespace hhreg.business.commands;
 public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
-    private readonly ISettingsRepository _settingsRepository;
+    private readonly ISettingsService _settingsService;
     private readonly ILogger _logger;
 
     public ReportBalanceCommand(
-        ITimeRepository timeRepository, 
-        ISettingsRepository settingsRepository,
+        ITimeRepository timeRepository,
+        ISettingsService settingsService,
         ILogger logger) : base(timeRepository, logger) 
     {
         _timeRepository = timeRepository;
-        _settingsRepository = settingsRepository;
+        _settingsService = settingsService;
         _logger = logger;
     }
 
@@ -45,9 +45,9 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
     {
         CheckInvalidTimeEntries();
 
-        var cfg = _settingsRepository.Get();
+        var cfg = _settingsService.GetSettings();
         var offsetDate = DateTime.Today.AddDays((settings.Tail + 1) * -1).ToDateOnly();
-        var startCalculationsAt = cfg.StartCalculationsAt.ToDateOnly();
+        var startCalculationsAt = cfg.LastBalanceCutoff.ToDateOnly();
 
         if (startCalculationsAt > offsetDate) {
             throw new HhregException(string.Format(HhregMessages.ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate, startCalculationsAt, offsetDate));
@@ -60,7 +60,7 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
         
         foreach(var dayEntry in dayEntries)
         {
-            rows.Add(SpectreConsoleUtils.GetDayEntryBalanceRow(dayEntry, cfg.WorkDay, ref offsetAccumulatedBalance));
+            rows.Add(SpectreConsoleUtils.GetDayEntryBalanceRow(dayEntry, cfg.WorkDayInMinutes, ref offsetAccumulatedBalance));
         }
 
         _logger.WriteTable(SpectreConsoleUtils.GetDayEntryBalanceHeaders(), rows);

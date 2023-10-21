@@ -7,10 +7,10 @@ namespace hhreg.business.commands;
 
 public sealed class ConfigDatabaseCommand : Command<ConfigDatabaseCommand.Settings>
 {
-    private readonly IDbSettings _appSettings;
+    private readonly ISettingsService _appSettings;
     private readonly ILogger _logger;
 
-    public ConfigDatabaseCommand(IDbSettings appSettings, ILogger logger) {
+    public ConfigDatabaseCommand(ISettingsService appSettings, ILogger logger) {
         _appSettings = appSettings;
         _logger = logger;
     }
