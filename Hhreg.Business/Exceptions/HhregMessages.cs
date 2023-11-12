@@ -3,14 +3,14 @@ namespace Hhreg.Business.Exceptions;
 public static class HhregMessages
 {
     // Common
-    public const string CouldNotParseAsAValidDateFormat = "Could not parse '{0}' as a valid date format.";
-    public const string CouldNotParseAsAValidTimeFormat = "Could not parse '{0}' as a valid time format.";
-    public const string CouldNotParseAsAValidIntegerFormat = "Could not parse '{0}' as a valid integer format";
-    public const string InvalidInputFormatOnValue = "Invalid input format on value '{0}'";
+    public const string CouldNotParseAsAValidDateFormat = "Não foi possível converter '{0}' num formato de data válido.";
+    public const string CouldNotParseAsAValidTimeFormat = "Não foi possível converter '{0}' num formato de hora válido.";
+    public const string CouldNotParseAsAValidIntegerFormat = "Não foi possível converter '{0}' num formato de número inteiro válido";
+    public const string InvalidInputFormatOnValue = "Formato inválido de entrada no valor '{0}'";
     public const string SettingsNotYetInitialized = "CLI ainda não foi inicializado.";
 
     // Config
-    public const string DatabaseLocationTitle = "Database location";
+    public const string DatabaseLocationTitle = "Local do banco de dados";
 
     // Update
     public const string UnknownPlatform = "UnknownPlatform";
@@ -18,23 +18,23 @@ public static class HhregMessages
     public const string UpdateArtifactNotFound = "UpdateArtifactNotFound";
 
     // Entry
-    public const string YouShouldInformADayToLog = "You should inform a day to log (or set entry as today with -t).";
-    public const string YouShouldInformAtLeastOneTimeEntryOrSetAJustificative = "You should inform at least one time entry or set a justification with -j.";
-    public const string EntryTimesMustBePositive = "Entry times must be positives.";
-    public const string CannotOverrideANotYetCreatedDay = "Cannot override a not yet created day '{0}'";
+    public const string YouShouldInformADayToLog = "Você deve informar uma data para a entrada (ou definir como hoje com -t).";
+    public const string YouShouldInformAtLeastOneTimeEntryOrSetAJustificative = "Você deve informar ao menos uma marcação de horário ou definir uma justificativa com -j.";
+    public const string EntryTimesMustBePositive = "Os horários das marcações devem ser positivos.";
+    public const string CannotOverrideANotYetCreatedDay = "Não é possível sobrescrever um dia que ainda não foi criado '{0}'";
 
     // Init
-    public const string YouShouldInformInitialBalance = "You should inform initial balance.";
-    public const string YouShouldInformWorkday = "You should inform workday.";
-    public const string YouShouldInformStartCalculationsAt = "You should inform your a date to start balance calculations.";
-    public const string SettingsAlreadyInitialized = "Settings already initialized. You can change it with 'config edit'";
+    public const string YouShouldInformInitialBalance = "Você deve informar um saldo inicial.";
+    public const string YouShouldInformWorkday = "Você deve informar o tempo de um dia de trabalho.";
+    public const string YouShouldInformStartCalculationsAt = "Você deve informar uma data de corte para o cálculo do banco de horas.";
+    public const string SettingsAlreadyInitialized = "Configurações já inicializadas. Você pode alterá-las se desejar em 'config edit'";
 
     // Report
-    public const string YouShouldInformADay = "You should inform a day.";
-    public const string YouShouldInformAMonth = "You should inform a month (MM/yyyy).";
-    public const string TailMustHaveAPositiveValue = "Tail must have a positive value.";
-    public const string ThereAreDayEntriesWithAnOddCountOfTimeEntries = "[purple_1]DISCLAIMER:[/] There are day entries with an odd count of time entries, whose count should have been even.";
-    public const string PleaseFixTheseDaysBeforeGeneratingNewReports = "Please fix these days before generating new reports.";
-    public const string ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate = "Configuration is set to start balance calculations after the offset date. StartCalculationsAt: {0}; OffsetDate: {1}";
-    public const string InformedDayIsNotRegistered = "Informed day is not registered.";
+    public const string YouShouldInformADay = "Você deve informar um dia.";
+    public const string YouShouldInformAMonth = "Você deve informar um mês (MM/yyyy).";
+    public const string TailMustHaveAPositiveValue = "Tail deve ser um valor positivo.";
+    public const string ThereAreDayEntriesWithAnOddCountOfTimeEntries = "[purple_1]AVISO:[/] Existem entradas com contagem de marcações ímpar, quando deveriam ser par.";
+    public const string PleaseFixTheseDaysBeforeGeneratingNewReports = "Por favor, corrija as entradas antes de gerar novos relatórios.";
+    public const string ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate = "Configuração define o início dos cálculos de saldo pra depois do dia solicitado. StartCalculationsAt: {0}; OffsetDate: {1}";
+    public const string InformedDayIsNotRegistered = "Dia informado não foi lançado.";
 }

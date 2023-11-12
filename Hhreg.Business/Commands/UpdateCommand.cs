@@ -28,46 +28,46 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
     {
         return AnsiConsole.Status()
             .Spinner(Spinner.Known.Star2)
-            .Start("Upgrading hhreg...", ctx =>
+            .Start("Atualizando hhreg...", ctx =>
             {
-                AnsiConsole.MarkupLine("[blue]Hhreg updating process initiated...[/]");
+                AnsiConsole.MarkupLine("[blue]Processo de atualização iniciado...[/]");
 
                 AnsiConsole.WriteLine();
                 var currentVersion = Assembly.GetEntryAssembly()?.GetName().Version!.ToString(3);
-                AnsiConsole.MarkupLineInterpolated($"Current local version is [green]v{currentVersion}[/]");
+                AnsiConsole.MarkupLineInterpolated($"Versão instalada é [green]v{currentVersion}[/]");
 
                 var lastVersion = GetLastVersionNumber();
-                AnsiConsole.MarkupLineInterpolated($"Latest repository version is [green]v{lastVersion}[/]");
+                AnsiConsole.MarkupLineInterpolated($"Última versão disponível no repositório é [green]v{lastVersion}[/]");
 
                 if (currentVersion == lastVersion)
                 {
-                    AnsiConsole.Markup("[green bold]Hhreg is already up-to-date. =)[/]");
+                    AnsiConsole.Markup("[green bold]Hhreg já está atualizado com a última versão. =)[/]");
                     return 0;
                 }
 
                 AnsiConsole.WriteLine();
-                AnsiConsole.MarkupLine("There's a [u]new version[/]! Let's [green]update[/]!");
+                AnsiConsole.MarkupLine("Existe uma [u]nova versão[/]! Vamos [green]atualizar[/]!");
 
                 AnsiConsole.WriteLine();
                 var platform = GetPlatform();
                 DownloadArtifact(lastVersion, platform);
 
-                AnsiConsole.MarkupLine("Extracting files...");
+                AnsiConsole.MarkupLine("Extraindo arquivos...");
                 UnzippingFiles(platform);
 
                 AnsiConsole.WriteLine();
-                AnsiConsole.MarkupLine("Launching updater...");
+                AnsiConsole.MarkupLine("Executando atualizador...");
 
                 RunUpdateCommand(platform);
 
                 Thread.Sleep(6000);
 
-                AnsiConsole.MarkupLine("Removing temp files...");
+                AnsiConsole.MarkupLine("Removendo arquivos temporários...");
                 Directory.Delete(GetDestinationFolder(), true);
 
-                AnsiConsole.MarkupLine("[green bold]Updating complete![/]");
+                AnsiConsole.MarkupLine("[green bold]Atualização completa![/]");
 
-                ctx.Status("[green bold]Updating complete![/]");
+                ctx.Status("[green bold]Atualização completa![/]");
 
                 Thread.Sleep(1000);
 
@@ -104,7 +104,7 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
         var artifactUrl = $"{RepositoryUrl}/releases/download/v{version}/hhreg-v{version}-{platform}.{extension}";
         var destinationFolder = GetDestinationFolder();
 
-        _logger.WriteLine($"Downloading artifact from [green]{artifactUrl}[/]...");
+        _logger.WriteLine($"Fazendo download do artefato de [green]{artifactUrl}[/]...");
 
         if (!Directory.Exists(destinationFolder)) Directory.CreateDirectory(destinationFolder);
         var destinationFile = Path.Combine(destinationFolder, $"artifact.{extension}");
