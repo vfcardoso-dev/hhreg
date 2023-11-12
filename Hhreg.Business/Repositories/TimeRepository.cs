@@ -1,11 +1,11 @@
 using System.Data;
-using hhreg.business.domain;
-using hhreg.business.infrastructure;
-using Microsoft.Data.Sqlite;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Infrastructure;
 
-namespace hhreg.business.repositories;
+namespace Hhreg.Business.Repositories;
 
-public interface ITimeRepository {
+public interface ITimeRepository
+{
     DayEntry? GetDayEntry(DateOnly day);
     DayEntry? GetDayEntry(long dayEntryId);
     IEnumerable<DayEntry> GetDayEntries(DateOnly startDay, DateOnly endDay);
@@ -50,7 +50,7 @@ public class TimeRepository : ITimeRepository
 
         return dayEntry;
     }
-    
+
     public DayEntry? GetDayEntry(long dayEntryId)
     {
         var dayEntry = _unitOfWork.QuerySingleOrDefault<DayEntry>(DayEntryByIdQuery, new { dayEntryId });
@@ -67,7 +67,7 @@ public class TimeRepository : ITimeRepository
         var query = "select * from DayEntry where Day between @startDay and @endDay order by Day;";
         var dayEntries = _unitOfWork.Query<DayEntry>(query, new
         {
-            startDay = startDay.ToString("yyyy-MM-dd"), 
+            startDay = startDay.ToString("yyyy-MM-dd"),
             endDay = endDay.ToString("yyyy-MM-dd")
         });
         return FillTimeEntries(dayEntries);
@@ -78,8 +78,8 @@ public class TimeRepository : ITimeRepository
         var query = "select * from DayEntry where DayType = @dayType and Day between @startDay and @endDay order by Day;";
         var dayEntries = _unitOfWork.Query<DayEntry>(query, new
         {
-            startDay = startDay.ToString("yyyy-MM-dd"), 
-            endDay = endDay.ToString("yyyy-MM-dd"), 
+            startDay = startDay.ToString("yyyy-MM-dd"),
+            endDay = endDay.ToString("yyyy-MM-dd"),
             dayType
         });
         return FillTimeEntries(dayEntries);
@@ -92,7 +92,7 @@ public class TimeRepository : ITimeRepository
 
         var timeEntries = _unitOfWork.Query<TimeEntry>(TimeEntriesByDayEntryIdsQuery, new { dayEntryIds = invalidDayEntryIds }).ToList();
 
-        foreach(var dayEntry in invalidDayEntries) 
+        foreach (var dayEntry in invalidDayEntries)
         {
             dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id);
         }
@@ -104,12 +104,12 @@ public class TimeRepository : ITimeRepository
     {
         var existingDay = GetDayEntry(day);
         if (existingDay != null) return existingDay;
-        
+
         _unitOfWork.Execute(
             @"insert into DayEntry (Day, Justification, DayType) values (@day, @justification, @dayType);", new
             {
                 day = day.ToString("yyyy-MM-dd"),
-                justification, 
+                justification,
                 dayType
             });
 
@@ -132,33 +132,33 @@ public class TimeRepository : ITimeRepository
         cmdList.Add(
             _unitOfWork.CreateSqlCommand(
                 UpdateDayEntryTotalMinutesCommand,
-                new Dictionary<string, object?> {{"@totalMinutes",totalMinutes},{"@dayEntryId",dayEntryId}}));
+                new Dictionary<string, object?> { { "@totalMinutes", totalMinutes }, { "@dayEntryId", dayEntryId } }));
 
         _unitOfWork.BulkExecute(cmdList);
     }
 
     public void CreateTime(long dayEntryId, params string[] timeList)
     {
-        var cmdList = timeList.Select(time => 
+        var cmdList = timeList.Select(time =>
             _unitOfWork.CreateSqlCommand(
                 InsertTimeEntryByDateEntryIdCommand,
-                new Dictionary<string, object?> {{"@time",time},{"@dayEntryId",dayEntryId}}
+                new Dictionary<string, object?> { { "@time", time }, { "@dayEntryId", dayEntryId } }
             )
         );
 
         var dayEntry = GetDayEntry(dayEntryId)!;
-        var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Union(timeList).OrderBy(x=> x);
+        var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Union(timeList).OrderBy(x => x);
         var totalMinutes = CalculateTotalMinutes(timeStrs, dayEntry.DayType);
 
         cmdList = cmdList.Append(
             _unitOfWork.CreateSqlCommand(
                 UpdateDayEntryTotalMinutesCommand,
-                new Dictionary<string, object?> {{"@totalMinutes",totalMinutes},{"@dayEntryId",dayEntryId}}));
+                new Dictionary<string, object?> { { "@totalMinutes", totalMinutes }, { "@dayEntryId", dayEntryId } }));
 
         _unitOfWork.BulkExecute(cmdList);
     }
 
-    public void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList) 
+    public void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList)
     {
         var totalMinutes = CalculateTotalMinutes(timeList, dayType!.Value);
 
@@ -166,7 +166,7 @@ public class TimeRepository : ITimeRepository
             _unitOfWork.CreateSqlCommand(@"update DayEntry set Justification = @justification, DayType = @dayType, TotalMinutes = @totalMinutes where Id = @dayEntryId;",
                 new Dictionary<string, object?> {
                     {"@justification", justification},
-                    {"@dayType", dayType}, 
+                    {"@dayType", dayType},
                     {"@dayEntryId", dayEntryId},
                     {"@totalMinutes", totalMinutes}
                 }
@@ -177,9 +177,10 @@ public class TimeRepository : ITimeRepository
         };
 
         cmdList.AddRange(
-            timeList.Select(time => {
+            timeList.Select(time =>
+            {
                 return _unitOfWork.CreateSqlCommand(InsertTimeEntryByDateEntryIdCommand,
-                    new Dictionary<string, object?> {{"@time", time},{"@dayEntryId", dayEntryId}}
+                    new Dictionary<string, object?> { { "@time", time }, { "@dayEntryId", dayEntryId } }
                 );
             })
         );
@@ -191,22 +192,24 @@ public class TimeRepository : ITimeRepository
     {
         var startDayQuery = "select StartCalculationsAt from Settings limit 1";
         var balanceQuery = "select total(TotalMinutes - @workDay) from DayEntry where Day between @startDay and @limitDay";
-        
+
         var startDay = _unitOfWork.QuerySingle<string>(startDayQuery);
-        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, new { startDay, limitDay = limitDay.ToString("yyyy-MM-dd"), workDay = cfg.WorkDay });
-        return cfg.InitialBalance + balance;
+        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, new { startDay, limitDay = limitDay.ToString("yyyy-MM-dd"), workDay = cfg.WorkDayInMinutes });
+        return cfg.StartBalanceInMinutes + balance;
     }
 
-    private double CalculateTotalMinutes(IEnumerable<string> timeEntries, DayType dayType) 
+    private double CalculateTotalMinutes(IEnumerable<string> timeEntries, DayType dayType)
     {
         var summary = TimeSpan.Zero;
 
-        if (dayType != DayType.Work) {
+        if (dayType != DayType.Work)
+        {
             var workDay = _unitOfWork.QuerySingle<int>("select coalesce(WorkDay, 0) from Settings limit 1");
             return workDay;
         }
 
-        for(int i = 0, j = 1; j < (timeEntries.OrderBy(x => x).Count()); i=j+1, j+=2) {
+        for (int i = 0, j = 1; j < timeEntries.OrderBy(x => x).Count(); i = j + 1, j += 2)
+        {
             var second = TimeSpan.Parse(timeEntries.ElementAt(j));
             var first = TimeSpan.Parse(timeEntries.ElementAt(i));
             var diff = second.Subtract(first);
@@ -222,7 +225,7 @@ public class TimeRepository : ITimeRepository
 
         var timeEntries = _unitOfWork.Query<TimeEntry>(TimeEntriesByDayEntryIdsQuery, new { dayEntryIds });
 
-        foreach(var dayEntry in dayEntries) 
+        foreach (var dayEntry in dayEntries)
         {
             dayEntry.TimeEntries = timeEntries.Where(x => x.DayEntryId == dayEntry.Id);
         }

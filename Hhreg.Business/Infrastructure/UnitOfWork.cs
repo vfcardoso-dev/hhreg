@@ -2,7 +2,7 @@ using System.Data;
 using Dapper;
 using Microsoft.Data.Sqlite;
 
-namespace hhreg.business.infrastructure;
+namespace Hhreg.Business.Infrastructure;
 
 public interface IUnitOfWork : IDisposable
 {
@@ -25,20 +25,24 @@ public class UnitOfWork : IUnitOfWork
         _connection = connection;
     }
 
-    private SqliteConnection GetConnection() {
+    private SqliteConnection GetConnection()
+    {
         _connection.Open();
         return _connection;
     }
 
-    public void Execute(string query, object? param = null) 
+    public void Execute(string query, object? param = null)
     {
         var conn = GetConnection();
         var tx = conn.BeginTransaction();
-        
-        try {
+
+        try
+        {
             conn.Execute(query, param, tx);
             tx.Commit();
-        } catch(Exception) {
+        }
+        catch (Exception)
+        {
             tx.Rollback();
             throw;
         }
@@ -48,31 +52,37 @@ public class UnitOfWork : IUnitOfWork
     {
         var conn = GetConnection();
         var tx = conn.BeginTransaction();
-        
-        try {
-            foreach(var cmd in commands) {
+
+        try
+        {
+            foreach (var cmd in commands)
+            {
                 cmd.Connection = conn;
                 cmd.Transaction = tx;
                 cmd.Prepare();
                 cmd.ExecuteNonQuery();
             }
             tx.Commit();
-        } catch(Exception) {
+        }
+        catch (Exception)
+        {
             tx.Rollback();
             throw;
         }
     }
 
-    public IDbCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null) 
+    public IDbCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null)
     {
         var cmd = new SqliteCommand(query);
 
-        if (param != null) {
-            foreach(var paramEntry in param) {
+        if (param != null)
+        {
+            foreach (var paramEntry in param)
+            {
                 cmd.Parameters.AddWithValue(paramEntry.Key, paramEntry.Value ?? DBNull.Value);
             }
         }
-        
+
         return cmd;
     }
 
@@ -81,9 +91,9 @@ public class UnitOfWork : IUnitOfWork
         return GetConnection().Query<T>(query, param);
     }
 
-    public IEnumerable<T3> Query<T1,T2,T3>(string query, Func<T1,T2,T3> action, object? param = null, string? splitOn = null)
+    public IEnumerable<T3> Query<T1, T2, T3>(string query, Func<T1, T2, T3> action, object? param = null, string? splitOn = null)
     {
-        return GetConnection().Query<T1,T2,T3>(query, action, param, splitOn: splitOn);
+        return GetConnection().Query(query, action, param, splitOn: splitOn);
     }
 
     public T QuerySingle<T>(string query, object? param = null)

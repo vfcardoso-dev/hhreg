@@ -1,7 +1,7 @@
 using AutoFixture;
 using AutoFixture.Kernel;
 
-namespace hhreg.tests.utilities;
+namespace Hhreg.Tests.Infrastructure.Utilities;
 
 public static class FixtureExtensions
 {

@@ -1,6 +1,7 @@
-namespace hhreg.business.domain.dtos;
+namespace Hhreg.Business.Domain.Dtos;
 
-public class MyDrakeEvent {
+public class MyDrakeEvent
+{
     public Guid Id { get; set; }
     public string? CostCenterId { get; set; }
     public string? OccurrenceId { get; set; }
@@ -11,7 +12,8 @@ public class MyDrakeEvent {
     public MyDrakeInnerEvent? Event { get; set; }
 }
 
-public class MyDrakeInnerEvent {
+public class MyDrakeInnerEvent
+{
     public Option? Occurrence { get; set; }
     public Option? CostCenter { get; set; }
     public Option? OperationalUnit { get; set; }
@@ -20,7 +22,8 @@ public class MyDrakeInnerEvent {
     public string? Reason { get; set; }
 }
 
-public class Option {
+public class Option
+{
     public string? Id { get; set; }
     public string? Name { get; set; }
 }

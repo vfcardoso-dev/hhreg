@@ -1,8 +1,8 @@
 using AutoFixture;
 using AutoFixture.Kernel;
-using hhreg.business.domain;
+using Hhreg.Business.Domain;
 
-namespace hhreg.tests.infrastructure;
+namespace Hhreg.Tests.Infrastructure;
 
 public class DayEntryBuilder : BaseBuilder<DayEntry>
 {
@@ -18,7 +18,8 @@ public class DayEntryBuilder : BaseBuilder<DayEntry>
             Justification = null,
             TimeEntries = context.CreateMany<TimeEntry>(4)
                 .OrderBy(x => x.Time)
-                .Select(x => {
+                .Select(x =>
+                {
                     x.DayEntryId = dayEntryId;
                     return x;
                 })

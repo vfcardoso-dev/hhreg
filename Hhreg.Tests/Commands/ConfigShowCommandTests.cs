@@ -1,53 +1,55 @@
 using AutoFixture;
 using FluentAssertions;
-using hhreg.business.commands;
-using hhreg.business.domain;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.tests.infrastructure;
+using Hhreg.Business.Commands;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Tests.Infrastructure;
 using NSubstitute;
 
-namespace hhreg.tests.commands;
+namespace Hhreg.Tests.Commands;
 
 public class ConfigShowCommandTests : UnitTestsBase
 {
-    private ISettingsRepository? _settingsRepository;
+    private ISettingsService? _settingsService;
 
     [SetUp]
-    public void ConfigShowCommandTests_SetUp() {
-        _settingsRepository = Substitute.For<ISettingsRepository>();
+    public void ConfigShowCommandTests_SetUp()
+    {
+        _settingsService = Substitute.For<ISettingsService>();
     }
 
     [Test]
     public void Should_be_able_to_show_settings()
     {
         // Given
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
         var settings = Fixture.Create<Settings>();
-        _settingsRepository!.Get().Returns(settings);
+        _settingsService!.GetSettings().Returns(settings);
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigShowCommand>("show"));
 
         // When
-        var output = app.Run(new []{"show"});
+        var output = app.Run(new[] { "show" });
 
         // Then
         output.Should().Be(0);
         Logger.MethodHits.Should().ContainSingle("WriteTable");
-        
+
         var header = settings.ExtractColumns();
-        Logger.Headers.Should().HaveCount(3);
+        Logger.Headers.Should().HaveCount(4);
         Logger.Headers.Should().Contain(header[0]);
         Logger.Headers.Should().Contain(header[1]);
         Logger.Headers.Should().Contain(header[2]);
+        Logger.Headers.Should().Contain(header[3]);
 
         var row = settings.ExtractRow();
         Logger.Rows.Should().HaveCount(1);
-        Logger.Rows.First().Should().HaveCount(3);
+        Logger.Rows.First().Should().HaveCount(4);
         Logger.Rows.First().Should().Contain(row[0]);
         Logger.Rows.First().Should().Contain(row[1]);
         Logger.Rows.First().Should().Contain(row[2]);
+        Logger.Rows.First().Should().Contain(row[3]);
     }
 }

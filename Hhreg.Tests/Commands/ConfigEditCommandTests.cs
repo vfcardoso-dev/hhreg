@@ -1,23 +1,24 @@
 using AutoFixture;
 using FluentAssertions;
-using hhreg.business.commands;
-using hhreg.business.domain.valueObjects;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
-using hhreg.tests.infrastructure;
+using Hhreg.Business.Commands;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Domain.ValueObjects;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Utilities;
+using Hhreg.Tests.Infrastructure;
 using NSubstitute;
 
-namespace hhreg.tests.commands;
+namespace Hhreg.Tests.Commands;
 
 public class ConfigEditCommandTests : UnitTestsBase
 {
-    private ISettingsRepository? _settingsRepository;
+    private ISettingsService? _settingsService;
 
     [SetUp]
-    public void ConfigEditCommandTests_SetUp() {
-        _settingsRepository = Substitute.For<ISettingsRepository>();
+    public void ConfigEditCommandTests_SetUp()
+    {
+        _settingsService = Substitute.For<ISettingsService>();
     }
 
     [TestCase(TimeInputMode.Hours, "70", HhregMessages.CouldNotParseAsAValidTimeFormat)]
@@ -26,20 +27,20 @@ public class ConfigEditCommandTests : UnitTestsBase
     [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
-    public void Should_throw_validation_error_for_initial_balance_on_invalid_situations(TimeInputMode mode, 
+    public void Should_throw_validation_error_for_initial_balance_on_invalid_situations(TimeInputMode mode,
         string? initialBalance, string expectedValidationErrorMessage)
     {
         // Given
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
 
         // When
-        Action action = () => app.Run(new []{"edit", "-m", mode.ToString(), "-b", initialBalance!});
-        
+        Action action = () => app.Run(new[] { "edit", "-m", mode.ToString(), "-b", initialBalance! });
+
         // Then
-        _settingsRepository!.DidNotReceive().Update(Arg.Any<double?>(), Arg.Any<double?>(), Arg.Any<string?>());
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Any<Settings>());
         action.Should().Throw<Exception>().WithMessage(string.Format(expectedValidationErrorMessage, initialBalance));
     }
 
@@ -49,20 +50,20 @@ public class ConfigEditCommandTests : UnitTestsBase
     [TestCase(TimeInputMode.Minutes, "banana", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
-    public void Should_throw_validation_error_for_workday_on_invalid_situations(TimeInputMode mode, 
+    public void Should_throw_validation_error_for_workday_on_invalid_situations(TimeInputMode mode,
         string? workDay, string expectedValidationErrorMessage)
     {
         // Given
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
 
         // When
-        Action action = () => app.Run(new []{"edit", "-m", mode.ToString(), "-w", workDay!});
-        
+        Action action = () => app.Run(new[] { "edit", "-m", mode.ToString(), "-w", workDay! });
+
         // Then
-        _settingsRepository!.DidNotReceive().Update(Arg.Any<double?>(), Arg.Any<double?>(), Arg.Any<string?>());
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Any<Settings>());
         action.Should().Throw<Exception>().WithMessage(string.Format(expectedValidationErrorMessage, workDay));
     }
 
@@ -74,17 +75,17 @@ public class ConfigEditCommandTests : UnitTestsBase
     public void Should_throw_validation_error_if_start_calculations_at_is_invalid(string? startCalculationsAt)
     {
         // Given
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
 
         // When
-        Action action = () => app.Run(new []{"edit", "-s", startCalculationsAt!});
-        
+        Action action = () => app.Run(new[] { "edit", "-s", startCalculationsAt! });
+
         // Then
-        _settingsRepository!.DidNotReceive().Update(Arg.Any<double?>(), Arg.Any<double?>(), Arg.Any<string?>());
-        
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Any<Settings>());
+
         var expectedValidationErrorMessage = string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, startCalculationsAt);
         action.Should().Throw<Exception>().WithMessage(expectedValidationErrorMessage);
     }
@@ -97,19 +98,20 @@ public class ConfigEditCommandTests : UnitTestsBase
         var signal = Fixture.Create<bool>() ? -1 : 1;
         var initialBalance = TimeSpan.FromMinutes(Math.Abs(Fixture.Create<int>()) * signal);
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
+        _settingsService!.GetSettings().Returns(Fixture.Create<Settings>());
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
 
         // When
-        var result = app.Run(new []{"edit", 
+        var result = app.Run(new[]{"edit",
             "-m", mode.ToString(),
             "-b", mode == TimeInputMode.Hours ? initialBalance.ToTimeString() : initialBalance.TotalMinutes.ToString()});
-        
+
         // Then
         result.Should().Be(0);
-        _settingsRepository!.Received(1).Update(initialBalance.TotalMinutes, null, null);
+        _settingsService!.Received(1).SaveSettings(Arg.Is<Settings>(x => x.StartBalanceInMinutes == initialBalance.TotalMinutes));
     }
 
     [TestCase(TimeInputMode.Hours)]
@@ -120,19 +122,20 @@ public class ConfigEditCommandTests : UnitTestsBase
         var signal = Fixture.Create<bool>() ? -1 : 1;
         var workDay = TimeSpan.FromMinutes(Math.Abs(Fixture.Create<int>()) * signal);
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
+        _settingsService!.GetSettings().Returns(Fixture.Create<Settings>());
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
 
         // When
-        var result = app.Run(new []{"edit", 
+        var result = app.Run(new[]{"edit",
             "-m", mode.ToString(),
             "-w", mode == TimeInputMode.Hours ? workDay.ToTimeString() : workDay.TotalMinutes.ToString()});
-        
+
         // Then
         result.Should().Be(0);
-        _settingsRepository!.Received(1).Update(null, workDay.TotalMinutes, null);
+        _settingsService!.Received(1).SaveSettings(Arg.Is<Settings>(x => x.WorkDayInMinutes == workDay.TotalMinutes));
     }
 
     [Test]
@@ -141,17 +144,18 @@ public class ConfigEditCommandTests : UnitTestsBase
         // Given
         var startCalculationsAt = DateOnly.FromDateTime(Fixture.Create<DateTime>());
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
+        _settingsService!.GetSettings().Returns(Fixture.Create<Settings>());
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
 
         // When
-        var result = app.Run(new []{"edit", 
+        var result = app.Run(new[]{"edit",
             "-s", startCalculationsAt.ToString("dd/MM/yyyy")});
-        
+
         // Then
         result.Should().Be(0);
-        _settingsRepository!.Received(1).Update(null, null, startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.Received(1).SaveSettings(Arg.Is<Settings>(x => x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
     }
 }

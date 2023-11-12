@@ -1,10 +1,10 @@
 using FluentAssertions;
-using hhreg.business.commands;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.tests.infrastructure;
+using Hhreg.Business.Commands;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Tests.Infrastructure;
 
-namespace hhreg.tests.commands;
+namespace Hhreg.Tests.Commands;
 
 public class ConfigDatabaseCommandTests : UnitTestsBase
 {
@@ -12,13 +12,13 @@ public class ConfigDatabaseCommandTests : UnitTestsBase
     public void Should_be_able_to_show_database_location()
     {
         // Given
-        AddSingleton<IDbSettings>(AppSettings);
+        AddSingleton<ISettingsService>(AppSettings);
         AddSingleton<ILogger>(Logger);
 
         var app = CreateCommandApp((config) => config.AddCommand<ConfigDatabaseCommand>("database"));
 
         // When
-        var output = app.Run(new []{"database"});
+        var output = app.Run(new[] { "database" });
 
         // Then
         output.Should().Be(0);

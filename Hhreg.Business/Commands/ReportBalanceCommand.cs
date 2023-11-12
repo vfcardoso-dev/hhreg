@@ -1,13 +1,13 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Repositories;
+using Hhreg.Business.Utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace hhreg.business.commands;
+namespace Hhreg.Business.Commands;
 
 public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceCommand.Settings>
 {
@@ -18,14 +18,15 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
     public ReportBalanceCommand(
         ITimeRepository timeRepository,
         ISettingsService settingsService,
-        ILogger logger) : base(timeRepository, logger) 
+        ILogger logger) : base(timeRepository, logger)
     {
         _timeRepository = timeRepository;
         _settingsService = settingsService;
         _logger = logger;
     }
 
-    public sealed class Settings : CommandSettings {
+    public sealed class Settings : CommandSettings
+    {
         [Description("Retrieve last N days")]
         [CommandOption("-t|--tail")]
         [DefaultValue(5)]
@@ -33,10 +34,11 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
 
         public override ValidationResult Validate()
         {
-            if (Tail < 1) {
+            if (Tail < 1)
+            {
                 return ValidationResult.Error(HhregMessages.TailMustHaveAPositiveValue);
             }
-            
+
             return ValidationResult.Success();
         }
     }
@@ -49,16 +51,17 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
         var offsetDate = DateTime.Today.AddDays((settings.Tail + 1) * -1).ToDateOnly();
         var startCalculationsAt = cfg.LastBalanceCutoff.ToDateOnly();
 
-        if (startCalculationsAt > offsetDate) {
+        if (startCalculationsAt > offsetDate)
+        {
             throw new HhregException(string.Format(HhregMessages.ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate, startCalculationsAt, offsetDate));
         }
-        
+
         var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1));
         var dayEntries = _timeRepository.GetDayEntries(offsetDate, DateTime.Today.ToDateOnly());
 
         var rows = new List<Text[]>();
-        
-        foreach(var dayEntry in dayEntries)
+
+        foreach (var dayEntry in dayEntries)
         {
             rows.Add(SpectreConsoleUtils.GetDayEntryBalanceRow(dayEntry, cfg.WorkDayInMinutes, ref offsetAccumulatedBalance));
         }

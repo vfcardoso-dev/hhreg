@@ -1,11 +1,11 @@
-﻿using hhreg.business.utilities;
-using hhreg.configs;
-using hhreg.services;
+﻿using Hhreg.Business.Utilities;
+using Hhreg.Configs;
+using Hhreg.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Spectre.Console;
 
-namespace hhreg;
+namespace Hhreg;
 static class Program
 {
     static int Main(string[] args)
@@ -16,12 +16,14 @@ static class Program
             .ConfigureAppConfiguration(AppConfigurer.Configure)
             .Build();
 
-        try {
+        try
+        {
             var appHost = app.Services.GetRequiredService<AppHost>();
 
-            var notCalculatedArgs = new string[]{"-h","-v","--help","--version", "update"};
-            
-            if (args.IsEmpty() || args.Any(arg => notCalculatedArgs.Contains(arg))) {
+            var notCalculatedArgs = new string[] { "-h", "-v", "--help", "--version", "update" };
+
+            if (args.IsEmpty() || args.Any(arg => notCalculatedArgs.Contains(arg)))
+            {
                 return appHost.Run(args);
             }
 
@@ -29,11 +31,14 @@ static class Program
                 .Spinner(Spinner.Known.Star2)
                 .SpinnerStyle(Style.Parse("green"))
                 .Start("Calculando...", ctx => appHost.Run(args));
-                
-        } catch (Exception ex) {
+
+        }
+        catch (Exception ex)
+        {
             AnsiConsole.MarkupLine($"[red]FATAL:[/] {ex.Message}");
-            
-            if (!app.Services.GetRequiredService<IHostEnvironment>().IsProduction()) {
+
+            if (!app.Services.GetRequiredService<IHostEnvironment>().IsProduction())
+            {
                 AnsiConsole.WriteException(ex, ExceptionFormats.ShortenEverything);
             }
 

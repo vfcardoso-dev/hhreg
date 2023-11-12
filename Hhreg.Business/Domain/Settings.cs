@@ -1,7 +1,7 @@
-using hhreg.business.domain.common;
-using hhreg.business.utilities;
+using Hhreg.Business.Domain.Common;
+using Hhreg.Business.Utilities;
 
-namespace hhreg.business.domain;
+namespace Hhreg.Business.Domain;
 
 public class Settings : BaseEntity<Settings>
 {

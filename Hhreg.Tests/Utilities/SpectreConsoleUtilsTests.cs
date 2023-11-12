@@ -1,12 +1,12 @@
 ﻿using AutoFixture;
 using FluentAssertions;
-using hhreg.business.domain;
-using hhreg.business.utilities;
-using hhreg.tests.infrastructure;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Utilities;
+using Hhreg.Tests.Infrastructure;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace hhreg.tests.utilities;
+namespace Hhreg.Tests.Utilities;
 
 public class SpectreConsoleUtilsTests : UnitTestsBase
 {
@@ -25,7 +25,7 @@ public class SpectreConsoleUtilsTests : UnitTestsBase
 
         // Then
         var totalMinutesTs = TimeSpan.FromMinutes(dayEntry.TotalMinutes);
-        
+
         ExtractText(result[0]).Should().Be(dayEntry.Day!.ToDateOnly().ToString());
         ExtractText(result[1]).Should().Be(dayEntry.DayType.ToString());
         ExtractText(result[2]).Should().Be(string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time)));
@@ -33,7 +33,7 @@ public class SpectreConsoleUtilsTests : UnitTestsBase
         ExtractText(result[4]).Should().Be(expectedBalance);
         ExtractText(result[5]).Should().Be(dayEntry.Justification ?? "-");
     }
-    
+
     [TestCase(480, 500, 20, "+00:20", "+00:40", null)]
     [TestCase(480, 400, -20, "-01:20", "-01:40", null)]
     [TestCase(480, 480, 0, "00:00", "00:00", "This is a justification")]
@@ -54,10 +54,10 @@ public class SpectreConsoleUtilsTests : UnitTestsBase
         var totalMinutesTs = TimeSpan.FromMinutes(dayEntry.TotalMinutes);
         var balance = totalMinutesTs.Subtract(workDayTs);
 
-        var timeEntries = dayEntry.TimeEntries.Any() 
-            ? string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time)) 
+        var timeEntries = dayEntry.TimeEntries.Any()
+            ? string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))
             : dayEntry.Justification!;
-        
+
         ExtractText(result[0]).Should().Be(dayEntry.Day!.ToDateOnly().ToString());
         ExtractText(result[1]).Should().Be(dayEntry.DayType.ToString());
         ExtractText(result[2]).Should().Be(timeEntries);

@@ -1,34 +1,38 @@
-using hhreg.business.infrastructure;
+using Hhreg.Business.Infrastructure;
 using Spectre.Console;
 
-namespace hhreg.services;
+namespace Hhreg.Services;
 
-public interface IDatabaseEnsurer {
+public interface IDatabaseEnsurer
+{
     void Ensure();
 }
 
-public class DatabaseEnsurer : IDatabaseEnsurer {
+public class DatabaseEnsurer : IDatabaseEnsurer
+{
 
     private readonly ISettingsService _settingsService;
     private readonly IUnitOfWork _unitOfWork;
 
     public DatabaseEnsurer(
-        IUnitOfWork unitOfWork, 
-        ISettingsService settingsService) {
-            _unitOfWork = unitOfWork;
-            _settingsService = settingsService;
+        IUnitOfWork unitOfWork,
+        ISettingsService settingsService)
+    {
+        _unitOfWork = unitOfWork;
+        _settingsService = settingsService;
     }
 
-    public void Ensure() {
-        if (!Directory.Exists(_settingsService.AppDataFolder)) 
+    public void Ensure()
+    {
+        if (!Directory.Exists(_settingsService.AppDataFolder))
         {
             Directory.CreateDirectory(_settingsService.AppDataFolder);
         }
-        
-        if (!File.Exists(_settingsService.DatabaseFilePath)) 
+
+        if (!File.Exists(_settingsService.DatabaseFilePath))
         {
             var f = File.Create(_settingsService.DatabaseFilePath);
-            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Arquivo de banco de dados não existe. '[yellow]{_dbSettings.DatabaseFilePath}[/]'.");
+            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Arquivo de banco de dados não existe. '[yellow]{_settingsService.DatabaseFilePath}[/]'.");
             f.Close();
         }
 
@@ -38,9 +42,9 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
               FROM sqlite_master 
               WHERE type='table' AND name='Settings';");
 
-        if (!tableExists) 
+        if (!tableExists)
         {
-            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Garantindo que tabelas existem em '[yellow]{_dbSettings.ConnectionString}[/]'...");
+            AnsiConsole.MarkupLineInterpolated($"[darkblue]INFO:[/] Garantindo que tabelas existem em '[yellow]{_settingsService.ConnectionString}[/]'...");
 
             var sql = $@"
                 PRAGMA foreign_keys = ON;
@@ -61,6 +65,6 @@ public class DatabaseEnsurer : IDatabaseEnsurer {
                     );";
 
             _unitOfWork.Execute(sql);
-        }       
+        }
     }
 }

@@ -1,4 +1,4 @@
-namespace hhreg.business.domain;
+namespace Hhreg.Business.Domain;
 
 public enum DayType
 {

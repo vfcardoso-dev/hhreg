@@ -1,11 +1,12 @@
-using hhreg.business.domain;
-using hhreg.business.exceptions;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Exceptions;
 using System.Text.Json;
 using static System.Environment;
 
-namespace hhreg.business.infrastructure;
+namespace Hhreg.Business.Infrastructure;
 
-public interface ISettingsService {
+public interface ISettingsService
+{
     string AppName { get; }
     string AppDataFolder { get; }
     string DatabaseName { get; }
@@ -19,7 +20,7 @@ public interface ISettingsService {
 public class SettingsService : ISettingsService
 {
     private readonly string _appName = "hhreg";
-    private readonly string _appDataFolder = Environment.GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.DoNotVerify);
+    private readonly string _appDataFolder = GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.DoNotVerify);
     private readonly string _settingsFilename = "settings.json";
     private string _settingsFilePath => $@"{_appDataFolder}\{_settingsFilename}.db";
 
@@ -33,7 +34,7 @@ public class SettingsService : ISettingsService
     {
         if (!IsInitialized()) throw new HhregException(HhregMessages.SettingsNotYetInitialized);
 
-        using(var sr = new StreamReader(_settingsFilePath))
+        using (var sr = new StreamReader(_settingsFilePath))
         {
             var rawSettings = sr.ReadToEnd();
             var settings = JsonSerializer.Deserialize<Settings>(rawSettings);

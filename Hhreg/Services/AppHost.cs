@@ -1,28 +1,31 @@
-using hhreg.configs;
+using Hhreg.Configs;
 using Spectre.Console.Cli;
 
-namespace hhreg.services;
+namespace Hhreg.Services;
 
-public class AppHost {
+public class AppHost
+{
     private readonly IDatabaseEnsurer _databaseEnsurer;
     private readonly ICommandsConfigurer _commandsConfigurer;
     private readonly ITypeRegistrar _typeRegistrar;
 
     public AppHost(
         IDatabaseEnsurer databaseEnsurer,
-        ICommandsConfigurer commandsConfigurer, 
-        ITypeRegistrar typeRegistrar) {
-            _databaseEnsurer = databaseEnsurer;
-            _commandsConfigurer = commandsConfigurer;
-            _typeRegistrar = typeRegistrar;
+        ICommandsConfigurer commandsConfigurer,
+        ITypeRegistrar typeRegistrar)
+    {
+        _databaseEnsurer = databaseEnsurer;
+        _commandsConfigurer = commandsConfigurer;
+        _typeRegistrar = typeRegistrar;
     }
 
-    public int Run(string[] args) {
+    public int Run(string[] args)
+    {
         _databaseEnsurer.Ensure();
 
         var app = new CommandApp(_typeRegistrar);
         app.Configure(_commandsConfigurer.Configure);
-        
+
         return app.Run(args);
     }
 }

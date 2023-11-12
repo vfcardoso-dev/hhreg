@@ -1,7 +1,7 @@
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace hhreg.business.infrastructure;
+namespace Hhreg.Business.Infrastructure;
 
 public interface ILogger
 {
@@ -41,8 +41,8 @@ public class Logger : ILogger
         var renderableRows = rows.Select(row => row.Select(cell => new Text(cell, _rowStyle)));
 
         table.AddColumns(columns);
-        
-        foreach(var renderableRow in renderableRows)
+
+        foreach (var renderableRow in renderableRows)
         {
             table.AddRow(renderableRow);
         }
@@ -56,8 +56,8 @@ public class Logger : ILogger
         var columns = headers.Select(header => new TableColumn(new Text(header, _headerStyle))).ToArray();
 
         table.AddColumns(columns);
-        
-        foreach(var renderableRow in rows)
+
+        foreach (var renderableRow in rows)
         {
             table.AddRow(renderableRow);
         }
@@ -69,7 +69,7 @@ public class Logger : ILogger
     {
         var table = new Table();
         table.AddColumns(new TableColumn(new Text(header, _headerStyle)));
-        table.AddRow(new TextPath[]{new TextPath(filePath)});
+        table.AddRow(new TextPath[] { new TextPath(filePath) });
         Write(table);
     }
 }

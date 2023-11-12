@@ -1,23 +1,24 @@
 using AutoFixture;
 using FluentAssertions;
-using hhreg.business.commands;
-using hhreg.business.domain;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
-using hhreg.tests.infrastructure;
-using hhreg.tests.utilities;
+using Hhreg.Business.Commands;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Repositories;
+using Hhreg.Business.Utilities;
+using Hhreg.Tests.Infrastructure;
+using Hhreg.Tests.Infrastructure.Utilities;
 using NSubstitute;
 
-namespace hhreg.tests.commands;
+namespace Hhreg.Tests.Commands;
 
 public class EntryNewCommandTests : UnitTestsBase
 {
     private ITimeRepository? _timeRepository;
 
     [SetUp]
-    public void EntryNewCommandTests_SetUp() {
+    public void EntryNewCommandTests_SetUp()
+    {
         _timeRepository = Substitute.For<ITimeRepository>();
     }
 
@@ -33,8 +34,8 @@ public class EntryNewCommandTests : UnitTestsBase
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 
         // When
-        Action action = () => app.Run(new []{"new", "-y", dayType.ToString(), entry});
-        
+        Action action = () => app.Run(new[] { "new", "-y", dayType.ToString(), entry });
+
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
         action.Should().Throw<Exception>().WithMessage(HhregMessages.YouShouldInformADayToLog);
@@ -44,7 +45,7 @@ public class EntryNewCommandTests : UnitTestsBase
     public void deve_falhar_ao_informar_data_invalida()
     {
         // Given
-        var invalidDates = new string[]{"01/13/2023", "32/03/2023", "10/03/0000"};
+        var invalidDates = new string[] { "01/13/2023", "32/03/2023", "10/03/0000" };
         var entry = TimeSpan.FromMinutes(Math.Abs(Fixture.Create<int>())).ToTimeString();
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
@@ -53,8 +54,8 @@ public class EntryNewCommandTests : UnitTestsBase
 
         // When
         var entryDate = invalidDates[Fixture.CreateBetween(0, 2)];
-        Action action = () => app.Run(new []{"new", "-d", entryDate, entry});
-        
+        Action action = () => app.Run(new[] { "new", "-d", entryDate, entry });
+
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
         action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, entryDate));
@@ -70,8 +71,8 @@ public class EntryNewCommandTests : UnitTestsBase
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 
         // When
-        Action action = () => app.Run(new []{"new", "-t"});
-        
+        Action action = () => app.Run(new[] { "new", "-t" });
+
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
         action.Should().Throw<Exception>().WithMessage(HhregMessages.YouShouldInformAtLeastOneTimeEntryOrSetAJustificative);
@@ -88,8 +89,8 @@ public class EntryNewCommandTests : UnitTestsBase
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 
         // When
-        Action action = () => app.Run(new []{"new", "-t", badEntry});
-        
+        Action action = () => app.Run(new[] { "new", "-t", badEntry });
+
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
         action.Should().Throw<Exception>().WithMessage(HhregMessages.EntryTimesMustBePositive);
@@ -99,7 +100,7 @@ public class EntryNewCommandTests : UnitTestsBase
     public void deve_falhar_ao_informar_entradas_invalidas()
     {
         // Given
-        var badEntries = new[]{"08:95","24:32","26:02","02:1"};
+        var badEntries = new[] { "08:95", "24:32", "26:02", "02:1" };
         AddSingleton<ITimeRepository>(_timeRepository!);
         AddSingleton<ILogger>(Logger);
 
@@ -107,8 +108,8 @@ public class EntryNewCommandTests : UnitTestsBase
 
         // When
         var badEntry = badEntries[Fixture.CreateBetween(0, 3)];
-        Action action = () => app.Run(new []{"new", "-t", badEntry});
-        
+        Action action = () => app.Run(new[] { "new", "-t", badEntry });
+
         // Then
         _timeRepository!.DidNotReceive().CreateTime(Arg.Any<long>(), Arg.Any<string[]>());
         action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, badEntry));
@@ -131,8 +132,8 @@ public class EntryNewCommandTests : UnitTestsBase
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 
         // When
-        var output = app.Run(new []{"new", "-t", entry1, entry2, entry3, entry4});
-        
+        var output = app.Run(new[] { "new", "-t", entry1, entry2, entry3, entry4 });
+
         // Then
         output.Should().Be(0);
         _timeRepository!.Received().CreateTime(dayEntry.Id, Arg.Is<string[]>(x =>
@@ -157,8 +158,8 @@ public class EntryNewCommandTests : UnitTestsBase
         var app = CreateCommandApp((config) => config.AddCommand<EntryNewCommand>("new"));
 
         // When
-        var output = app.Run(new []{"new", "-t", "-y", dayType, "-j", justificative});
-        
+        var output = app.Run(new[] { "new", "-t", "-y", dayType, "-j", justificative });
+
         // Then
         output.Should().Be(0);
         _timeRepository!.Received().CreateTime(dayEntry.Id, Arg.Any<string[]>());

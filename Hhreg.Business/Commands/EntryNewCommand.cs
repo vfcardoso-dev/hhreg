@@ -1,14 +1,14 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using hhreg.business.domain;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Repositories;
+using Hhreg.Business.Utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace hhreg.business.commands;
+namespace Hhreg.Business.Commands;
 
 public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
 {
@@ -21,7 +21,7 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         _logger = logger;
     }
 
-    public sealed class Settings : CommandSettings 
+    public sealed class Settings : CommandSettings
     {
         [Description("Sets entry day as today")]
         [CommandOption("-t|--today")]
@@ -47,36 +47,36 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
 
         public override ValidationResult Validate()
         {
-            if (!IsToday && Day == null) 
+            if (!IsToday && Day == null)
             {
                 return ValidationResult.Error(HhregMessages.YouShouldInformADayToLog);
             }
 
-            if (!IsToday && !DateOnly.TryParse(Day, out var _)) 
+            if (!IsToday && !DateOnly.TryParse(Day, out var _))
             {
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, Day));
             }
-                
-            if (Entries.Length == 0 && Justification == null) 
+
+            if (Entries.Length == 0 && Justification == null)
             {
                 return ValidationResult.Error(HhregMessages.YouShouldInformAtLeastOneTimeEntryOrSetAJustificative);
             }
 
-            foreach(var entry in Entries) 
+            foreach (var entry in Entries)
             {
-                if (TimeSpan.TryParse(entry, out var time)) 
+                if (TimeSpan.TryParse(entry, out var time))
                 {
-                    if (time < TimeSpan.Zero) 
+                    if (time < TimeSpan.Zero)
                     {
                         return ValidationResult.Error(HhregMessages.EntryTimesMustBePositive);
                     }
-                } 
-                else 
+                }
+                else
                 {
                     return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, entry));
                 }
             }
-            
+
             return ValidationResult.Success();
         }
     }
@@ -88,7 +88,7 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         var dayEntry = _timeRepository.GetOrCreateDay(inputDay, settings.Justification, settings.DayType);
 
         _timeRepository.CreateTime(dayEntry.Id, settings.Entries);
-        
+
         var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
         _logger.WriteLine($@"Day entry [green]SUCCESSFULLY[/] created!");
         _logger.WriteLine($"[yellow]{inputDay}[/]: {dayText}");

@@ -1,13 +1,13 @@
-using hhreg.business.infrastructure;
+using Hhreg.Business.Infrastructure;
 using Spectre.Console;
 using Spectre.Console.Rendering;
 
-namespace hhreg.tests.infrastructure.stubs;
+namespace Hhreg.Tests.Infrastructure.Stubs;
 
 public class LoggerStub : ILogger
 {
-    public IList<string> Lines { get; private set; } = new List<string>(); 
-    public IList<string> Headers { get; private set; } = new List<string>(); 
+    public IList<string> Lines { get; private set; } = new List<string>();
+    public IList<string> Headers { get; private set; } = new List<string>();
     public IList<string[]> Rows { get; private set; } = new List<string[]>();
     public IList<string> MethodHits { get; private set; } = new List<string>();
 
@@ -34,7 +34,7 @@ public class LoggerStub : ILogger
     public void WriteFilePath(string header, string filePath)
     {
         Headers.Add(header);
-        Rows.Add(new string[]{filePath});
+        Rows.Add(new string[] { filePath });
         MethodHits.Add("WriteFilePath");
     }
 
@@ -52,12 +52,12 @@ public class LoggerStub : ILogger
 
     public void WriteTable(string[] headers, IEnumerable<string[]> rows)
     {
-        foreach(var header in headers)
+        foreach (var header in headers)
         {
             Headers.Add(header);
         }
 
-        foreach(var row in rows)
+        foreach (var row in rows)
         {
             Rows.Add(row);
         }
@@ -67,12 +67,12 @@ public class LoggerStub : ILogger
 
     public void WriteTable(string[] headers, IEnumerable<Text[]> rows)
     {
-        foreach(var header in headers)
+        foreach (var header in headers)
         {
             Headers.Add(header);
         }
 
-        foreach(var row in rows)
+        foreach (var row in rows)
         {
             Rows.Add(row.Select(x => x.ToString()).ToArray()!);
         }
@@ -82,9 +82,9 @@ public class LoggerStub : ILogger
 
     public void Clear()
     {
-        Lines.Clear(); 
-        Headers.Clear(); 
-        Rows.Clear(); 
-        MethodHits.Clear(); 
+        Lines.Clear();
+        Headers.Clear();
+        Rows.Clear();
+        MethodHits.Clear();
     }
 }

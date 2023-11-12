@@ -1,26 +1,26 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using hhreg.business.domain.valueObjects;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
+using Hhreg.Business.Domain.ValueObjects;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace hhreg.business.commands;
+namespace Hhreg.Business.Commands;
 
 public sealed class InitCommand : Command<InitCommand.Settings>
 {
     private readonly ISettingsService _settingsService;
     private readonly ILogger _logger;
 
-    public InitCommand(ISettingsService settingsService, ILogger logger) {
+    public InitCommand(ISettingsService settingsService, ILogger logger)
+    {
         _settingsService = settingsService;
         _logger = logger;
     }
 
-    public sealed class Settings : CommandSettings 
+    public sealed class Settings : CommandSettings
     {
         [Description("Time bank initial balance")]
         [CommandOption("-b|--initial-balance")]
@@ -44,44 +44,45 @@ public sealed class InitCommand : Command<InitCommand.Settings>
             if (InitialBalance == null) return ValidationResult.Error(HhregMessages.YouShouldInformInitialBalance);
             if (WorkDay == null) return ValidationResult.Error(HhregMessages.YouShouldInformWorkday);
             if (StartCalculationsAt == null) return ValidationResult.Error(HhregMessages.YouShouldInformStartCalculationsAt);
-            
+
             if (TimeInputMode == TimeInputMode.Hours && InitialBalance?.IsTime() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, InitialBalance));
-            
+
             if (TimeInputMode == TimeInputMode.Minutes && InitialBalance?.IsInteger() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, InitialBalance));
-            
+
             if (TimeInputMode == TimeInputMode.Hours && WorkDay?.IsTime() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, WorkDay));
-            
+
             if (TimeInputMode == TimeInputMode.Minutes && WorkDay?.IsInteger() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, WorkDay));
 
             if (!DateOnly.TryParse(StartCalculationsAt, out var _))
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
-            
+
             return ValidationResult.Success();
         }
     }
 
     public override int Execute([NotNull] CommandContext context, [NotNull] Settings settings)
     {
-        if (_settingsService.IsInitialized()) {
+        if (_settingsService.IsInitialized())
+        {
             throw new HhregException(HhregMessages.SettingsAlreadyInitialized);
         }
-        
+
         var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance!);
         var workDay = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay!);
         var startCalculationsAt = DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd");
 
-        _settingsService.SaveSettings(new domain.Settings
+        _settingsService.SaveSettings(new Domain.Settings
         {
             StartBalanceInMinutes = initialBalance,
             WorkDayInMinutes = workDay,
             EntryToleranceInMinutes = 0,
             LastBalanceCutoff = startCalculationsAt
         });
-        
+
         _logger.WriteLine($@"Settings [green]SUCCESSFULLY[/] initialized!");
         return 0;
     }

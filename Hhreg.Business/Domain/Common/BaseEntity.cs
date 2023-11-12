@@ -1,8 +1,8 @@
-namespace hhreg.business.domain.common;
+namespace Hhreg.Business.Domain.Common;
 
 public abstract class BaseEntity<T>
 {
-    public virtual string[] ExtractColumns() 
+    public virtual string[] ExtractColumns()
     {
         return typeof(T).GetProperties().Select(x => x.Name).ToArray();
     }

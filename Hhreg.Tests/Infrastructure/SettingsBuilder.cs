@@ -1,8 +1,8 @@
 using AutoFixture;
 using AutoFixture.Kernel;
-using hhreg.business.domain;
+using Hhreg.Business.Domain;
 
-namespace hhreg.tests.infrastructure;
+namespace Hhreg.Tests.Infrastructure;
 
 public class SettingsBuilder : BaseBuilder<Settings>
 {
@@ -10,9 +10,10 @@ public class SettingsBuilder : BaseBuilder<Settings>
     {
         var settings = new Settings
         {
-            InitialBalance = context.Create<double>(),
-            WorkDay = context.Create<double>(),
-            StartCalculationsAt = context.Create<DateTime>().ToString("yyyy-MM-dd")
+            StartBalanceInMinutes = context.Create<double>(),
+            WorkDayInMinutes = context.Create<double>(),
+            EntryToleranceInMinutes = 0,
+            LastBalanceCutoff = context.Create<DateTime>().ToString("yyyy-MM-dd")
         };
 
         return settings;

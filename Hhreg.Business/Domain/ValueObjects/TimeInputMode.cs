@@ -1,4 +1,4 @@
-namespace hhreg.business.domain.valueObjects;
+namespace Hhreg.Business.Domain.ValueObjects;
 
 public enum TimeInputMode
 {

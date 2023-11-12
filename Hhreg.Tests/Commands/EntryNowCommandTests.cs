@@ -1,24 +1,25 @@
 using AutoFixture;
 using FluentAssertions;
-using hhreg.business.commands;
-using hhreg.business.domain;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
-using hhreg.tests.infrastructure;
+using Hhreg.Business.Commands;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Repositories;
+using Hhreg.Business.Utilities;
+using Hhreg.Tests.Infrastructure;
 using NSubstitute;
 
-namespace hhreg.tests.commands;
+namespace Hhreg.Tests.Commands;
 
 public class EntryNowCommandTests : UnitTestsBase
 {
     private ITimeRepository? _timeRepository;
 
     [SetUp]
-    public void EntryNowCommandTests_SetUp() {
+    public void EntryNowCommandTests_SetUp()
+    {
         _timeRepository = Substitute.For<ITimeRepository>();
     }
-    
+
     [Test]
     public void deve_ser_capaz_de_lancar_entradas()
     {
@@ -36,8 +37,8 @@ public class EntryNowCommandTests : UnitTestsBase
         var app = CreateCommandApp((config) => config.AddCommand<EntryNowCommand>("now"));
 
         // When
-        var output = app.Run(new []{"now"});
-        
+        var output = app.Run(new[] { "now" });
+
         // Then
         output.Should().Be(0);
         _timeRepository!.Received().GetOrCreateDay(today);

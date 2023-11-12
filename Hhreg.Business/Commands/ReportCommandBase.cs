@@ -1,10 +1,10 @@
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Repositories;
+using Hhreg.Business.Utilities;
 using Spectre.Console.Cli;
 
-namespace hhreg.business.commands;
+namespace Hhreg.Business.Commands;
 
 public abstract class ReportCommandBase<T> : Command<T> where T : CommandSettings
 {
@@ -22,7 +22,8 @@ public abstract class ReportCommandBase<T> : Command<T> where T : CommandSetting
         var invalidDays = _timeRepository.GetInvalidDayEntries().ToList();
         if (!invalidDays.Any()) return;
 
-        foreach(var dayEntry in invalidDays) {
+        foreach (var dayEntry in invalidDays)
+        {
             var day = dayEntry.Day!.ToDateOnly();
             _logger.WriteLine($@"[orange1]VALIDATION:[/] Odd number of time entries ([orange1]{dayEntry.TimeEntries.Count()}[/]) at [orange1]{day:dd/MM/yyyy}[/]! ({string
                 .Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))})");

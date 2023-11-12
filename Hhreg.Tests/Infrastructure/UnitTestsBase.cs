@@ -1,18 +1,18 @@
 using AutoFixture;
-using hhreg.business.infrastructure;
-using hhreg.tests.infrastructure.stubs;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Tests.Infrastructure.Stubs;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace hhreg.tests.infrastructure;
+namespace Hhreg.Tests.Infrastructure;
 
 public abstract class UnitTestsBase
 {
     protected readonly Fixture Fixture = CreateFixture();
-    protected readonly IDbSettings AppSettings;
+    protected readonly ISettingsService AppSettings;
     protected readonly LoggerStub Logger;
     protected ITypeRegistrar? TypeRegistrar;
-    
+
     private readonly IServiceCollection _serviceCollection = new ServiceCollection();
 
     public UnitTestsBase()
@@ -42,14 +42,15 @@ public abstract class UnitTestsBase
 
     protected void AddSingleton<T>() => _serviceCollection.AddSingleton(typeof(T));
 
-    protected void AddSingleton<T1,T2>() => _serviceCollection.AddSingleton(typeof(T1), typeof(T2));
+    protected void AddSingleton<T1, T2>() => _serviceCollection.AddSingleton(typeof(T1), typeof(T2));
 
     protected void AddSingleton<T>(object instance) => _serviceCollection.AddSingleton(typeof(T), instance);
 
     protected ICommandApp CreateCommandApp(Action<IConfigurator> configurer)
     {
         var app = new CommandApp(TypeRegistrar);
-        app.Configure(app => {
+        app.Configure(app =>
+        {
             app.PropagateExceptions();
             configurer(app);
         });
@@ -65,10 +66,9 @@ public abstract class UnitTestsBase
         return fixture;
     }
 
-    private IDbSettings GetAppSettings()
+    private ISettingsService GetAppSettings()
     {
         var appSettings = Fixture.Create<SettingsService>();
-        appSettings.DatabaseName = Guid.NewGuid().ToString().Split("-")[0];
         return appSettings;
     }
 }

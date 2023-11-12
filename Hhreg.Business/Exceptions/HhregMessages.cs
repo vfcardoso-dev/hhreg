@@ -1,4 +1,4 @@
-namespace hhreg.business.exceptions;
+namespace Hhreg.Business.Exceptions;
 
 public static class HhregMessages
 {
@@ -16,7 +16,7 @@ public static class HhregMessages
     public const string UnknownPlatform = "UnknownPlatform";
     public const string LastestReleaseUnavailable = "LastestReleaseUnavailable";
     public const string UpdateArtifactNotFound = "UpdateArtifactNotFound";
-    
+
     // Entry
     public const string YouShouldInformADayToLog = "You should inform a day to log (or set entry as today with -t).";
     public const string YouShouldInformAtLeastOneTimeEntryOrSetAJustificative = "You should inform at least one time entry or set a justification with -j.";

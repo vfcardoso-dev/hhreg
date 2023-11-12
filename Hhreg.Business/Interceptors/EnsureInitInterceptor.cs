@@ -1,10 +1,10 @@
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
 using Spectre.Console.Cli;
 
-namespace hhreg.business.interceptors;
+namespace Hhreg.Business.Interceptors;
 
-public interface IEnsureInitInterceptor : ICommandInterceptor {}
+public interface IEnsureInitInterceptor : ICommandInterceptor { }
 
 public class EnsureInitInterceptor : IEnsureInitInterceptor
 {
@@ -21,7 +21,8 @@ public class EnsureInitInterceptor : IEnsureInitInterceptor
 
         var initialized = _settingsService.IsInitialized();
 
-        if (!initialized) {
+        if (!initialized)
+        {
             throw new HhregException("Você precisa inicializar as configurações do CLI através do comando '[green]init[/]'.");
         }
     }

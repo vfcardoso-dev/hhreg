@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace hhreg.business.infrastructure;
+namespace Hhreg.Business.Infrastructure;
 
 public sealed class TypeRegistrar : ITypeRegistrar
 {

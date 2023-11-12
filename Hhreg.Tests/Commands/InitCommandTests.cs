@@ -1,27 +1,29 @@
 using AutoFixture;
 using FluentAssertions;
-using hhreg.business.commands;
-using hhreg.business.domain.valueObjects;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.repositories;
-using hhreg.business.utilities;
-using hhreg.tests.infrastructure;
+using Hhreg.Business.Commands;
+using Hhreg.Business.Domain;
+using Hhreg.Business.Domain.ValueObjects;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Utilities;
+using Hhreg.Tests.Infrastructure;
 using NSubstitute;
 
-namespace hhreg.tests.commands;
+namespace Hhreg.Tests.Commands;
 
 public class InitCommandTests : UnitTestsBase
 {
-    private ISettingsRepository? _settingsRepository;
+    private ISettingsService? _settingsService;
 
     [SetUp]
-    public void InitCommandTests_SetUp() {
-        _settingsRepository = Substitute.For<ISettingsRepository>();
+    public void InitCommandTests_SetUp()
+    {
+        _settingsService = Substitute.For<ISettingsService>();
     }
 
     [Test]
-    public void deve_falhar_se_nao_for_informado_initial_balance(){
+    public void deve_falhar_se_nao_for_informado_initial_balance()
+    {
         // Given
         var initialBalanceInMinutes = Fixture.Create<int>();
         var workDayInMinutes = Fixture.Create<int>();
@@ -29,18 +31,21 @@ public class InitCommandTests : UnitTestsBase
         var workDay = TimeSpan.FromMinutes(workDayInMinutes).ToTimeString();
         var startCalculationsAt = Fixture.Create<DateTime>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        Action action = () => app.Run(new []{"init", "-w", workDay, "-s", startCalculationsAt!.ToString("dd/MM/yyyy")});
-        
+        Action action = () => app.Run(new[] { "init", "-w", workDay, "-s", startCalculationsAt!.ToString("dd/MM/yyyy") });
+
         // Then
-        _settingsRepository!.DidNotReceive().Create(initialBalanceInMinutes, workDayInMinutes, startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.WorkDayInMinutes == workDayInMinutes &&
+            x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         action.Should().Throw<Exception>().WithMessage(HhregMessages.YouShouldInformInitialBalance);
     }
 
@@ -54,18 +59,21 @@ public class InitCommandTests : UnitTestsBase
         var workDay = TimeSpan.FromMinutes(workDayInMinutes).ToTimeString();
         var startCalculationsAt = Fixture.Create<DateTime>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        Action action = () => app.Run(new []{"init", "-b", initialBalance, "-s", startCalculationsAt!.ToString("dd/MM/yyyy")});
-        
+        Action action = () => app.Run(new[] { "init", "-b", initialBalance, "-s", startCalculationsAt!.ToString("dd/MM/yyyy") });
+
         // Then
-        _settingsRepository!.DidNotReceive().Create(initialBalanceInMinutes, workDayInMinutes, startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.WorkDayInMinutes == workDayInMinutes && 
+            x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         action.Should().Throw<Exception>().WithMessage(HhregMessages.YouShouldInformWorkday);
     }
 
@@ -79,18 +87,21 @@ public class InitCommandTests : UnitTestsBase
         var workDay = TimeSpan.FromMinutes(workDayInMinutes).ToTimeString();
         var startCalculationsAt = Fixture.Create<DateTime>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        Action action = () => app.Run(new []{"init", "-b", initialBalance, "-w", workDay});
-        
+        Action action = () => app.Run(new[] { "init", "-b", initialBalance, "-w", workDay });
+
         // Then
-        _settingsRepository!.DidNotReceive().Create(initialBalanceInMinutes, workDayInMinutes, startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.WorkDayInMinutes == workDayInMinutes && 
+            x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         action.Should().Throw<Exception>().WithMessage(HhregMessages.YouShouldInformStartCalculationsAt);
     }
 
@@ -101,26 +112,30 @@ public class InitCommandTests : UnitTestsBase
     [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     public void deve_falhar_valor_informado_para_initial_balance_for_invalido(
-        TimeInputMode mode, string initialBalance, string expectedExceptionMessage){
+        TimeInputMode mode, string initialBalance, string expectedExceptionMessage)
+    {
         // Given
         var workDayInMinutes = Fixture.Create<int>();
         var workDay = TimeSpan.FromMinutes(workDayInMinutes).ToTimeString();
         var workdayParam = mode == TimeInputMode.Hours ? workDay : workDayInMinutes.ToString();
         var startCalculationsAt = Fixture.Create<DateTime>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        Action action = () => app.Run(new []{"init", "-m", mode.ToString(), "-b", initialBalance, 
+        Action action = () => app.Run(new[]{"init", "-m", mode.ToString(), "-b", initialBalance,
             "-w", workdayParam, "-s", startCalculationsAt!.ToString("dd/MM/yyyy")});
-        
+
         // Then
-        _settingsRepository!.DidNotReceive().Create(Arg.Any<double>(), workDayInMinutes, startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Is<Settings>(x =>
+            x.WorkDayInMinutes == workDayInMinutes &&
+            x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
+
         action.Should().Throw<Exception>().WithMessage(string.Format(expectedExceptionMessage, initialBalance));
     }
 
@@ -131,26 +146,29 @@ public class InitCommandTests : UnitTestsBase
     [TestCase(TimeInputMode.Minutes, "01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     [TestCase(TimeInputMode.Minutes, "-01:00", HhregMessages.CouldNotParseAsAValidIntegerFormat)]
     public void deve_falhar_valor_informado_para_workday_for_invalido(
-        TimeInputMode mode, string workday, string expectedExceptionMessage){
+        TimeInputMode mode, string workday, string expectedExceptionMessage)
+    {
         // Given
         var initialBalanceInMinutes = Fixture.Create<int>();
         var initialBalance = TimeSpan.FromMinutes(initialBalanceInMinutes).ToTimeString();
         var initialBalanceParam = mode == TimeInputMode.Hours ? initialBalance : initialBalanceInMinutes.ToString();
         var startCalculationsAt = Fixture.Create<DateTime>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        Action action = () => app.Run(new []{"init", "-m", mode.ToString(), "-b", initialBalanceParam, 
+        Action action = () => app.Run(new[]{"init", "-m", mode.ToString(), "-b", initialBalanceParam,
             "-w", workday, "-s", startCalculationsAt!.ToString("dd/MM/yyyy")});
-        
+
         // Then
-        _settingsRepository!.DidNotReceive().Create(initialBalanceInMinutes, Arg.Any<double>(), startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         action.Should().Throw<Exception>().WithMessage(string.Format(expectedExceptionMessage, workday));
     }
 
@@ -165,20 +183,23 @@ public class InitCommandTests : UnitTestsBase
         var initialBalanceInMinutes = Fixture.Create<int>();
         var workdayInMinutes = Fixture.Create<int>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        Action action = () => app.Run(new []{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(), 
+        Action action = () => app.Run(new[]{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(),
             "-w", workdayInMinutes.ToString(), "-s", startCalculationsAt});
-        
+
         // Then
-        _settingsRepository!.DidNotReceive().Create(initialBalanceInMinutes, workdayInMinutes, startCalculationsAt);
-        action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, startCalculationsAt));   
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.WorkDayInMinutes == workdayInMinutes &&
+            x.LastBalanceCutoff == startCalculationsAt));
+        action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, startCalculationsAt));
     }
 
     [Test]
@@ -189,20 +210,23 @@ public class InitCommandTests : UnitTestsBase
         var workdayInMinutes = Fixture.Create<int>();
         var startCalculationsAt = Fixture.Create<DateTime>().ToString("dd/MM/yyyy");
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(true);
+        _settingsService!.IsInitialized().Returns(true);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        Action action = () => app.Run(new []{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(), 
+        Action action = () => app.Run(new[]{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(),
             "-w", workdayInMinutes.ToString(), "-s", startCalculationsAt});
-        
+
         // Then
-        _settingsRepository!.DidNotReceive().Create(initialBalanceInMinutes, workdayInMinutes, startCalculationsAt);
-        action.Should().Throw<Exception>().WithMessage(HhregMessages.SettingsAlreadyInitialized);   
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.WorkDayInMinutes == workdayInMinutes &&
+            x.LastBalanceCutoff == startCalculationsAt));
+        action.Should().Throw<Exception>().WithMessage(HhregMessages.SettingsAlreadyInitialized);
     }
 
     [Test]
@@ -213,20 +237,23 @@ public class InitCommandTests : UnitTestsBase
         var workdayInMinutes = Fixture.Create<int>();
         var startCalculationsAt = Fixture.Create<DateTime>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        var output = app.Run(new []{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(), 
+        var output = app.Run(new[]{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(),
             "-w", workdayInMinutes.ToString(), "-s", startCalculationsAt.ToString("dd/MM/yyyy")});
-        
+
         // Then
         output.Should().Be(0);
-        _settingsRepository!.Received().Create(initialBalanceInMinutes, workdayInMinutes, startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.Received().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.WorkDayInMinutes == workdayInMinutes &&
+            x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(1);
         Logger.Lines.Should().Contain("Settings [green]SUCCESSFULLY[/] initialized!");
     }
@@ -241,19 +268,22 @@ public class InitCommandTests : UnitTestsBase
         var workday = TimeSpan.FromMinutes(workdayInMinutes).ToTimeString();
         var startCalculationsAt = Fixture.Create<DateTime>();
 
-        AddSingleton<ISettingsRepository>(_settingsRepository!);
+        AddSingleton<ISettingsService>(_settingsService!);
         AddSingleton<ILogger>(Logger);
 
-        _settingsRepository!.IsAlreadyInitialized().Returns(false);
+        _settingsService!.IsInitialized().Returns(false);
 
         var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
 
         // When
-        var output = app.Run(new []{"init", "-m", "Hours", "-b", initialBalance, "-w", workday, "-s", startCalculationsAt.ToString("dd/MM/yyyy")});
-        
+        var output = app.Run(new[] { "init", "-m", "Hours", "-b", initialBalance, "-w", workday, "-s", startCalculationsAt.ToString("dd/MM/yyyy") });
+
         // Then
         output.Should().Be(0);
-        _settingsRepository!.Received().Create(initialBalanceInMinutes, workdayInMinutes, startCalculationsAt.ToString("yyyy-MM-dd"));
+        _settingsService!.Received().SaveSettings(Arg.Is<Settings>(x =>
+            x.StartBalanceInMinutes == initialBalanceInMinutes &&
+            x.WorkDayInMinutes == workdayInMinutes &&
+            x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(1);
         Logger.Lines.Should().Contain("Settings [green]SUCCESSFULLY[/] initialized!");
     }

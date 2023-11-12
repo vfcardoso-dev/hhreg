@@ -1,11 +1,11 @@
-using hhreg.business.domain;
+using Hhreg.Business.Domain;
 using Spectre.Console;
 
-namespace hhreg.business.utilities;
+namespace Hhreg.Business.Utilities;
 
 public static class SpectreConsoleUtils
 {
-    public static string[] GetDayEntrySummaryHeaders() 
+    public static string[] GetDayEntrySummaryHeaders()
     {
         return new string[]{
             "Day",
@@ -17,7 +17,7 @@ public static class SpectreConsoleUtils
         };
     }
 
-    public static string[] GetDayEntryBalanceHeaders() 
+    public static string[] GetDayEntryBalanceHeaders()
     {
         return new string[]{
             "Day",
@@ -36,7 +36,7 @@ public static class SpectreConsoleUtils
         var balance = totalMinutesTs.Subtract(workDayTs);
         var balanceColor = balance > TimeSpan.Zero ? Color.Green : Color.Red;
         var balanceSignal = balance > TimeSpan.Zero ? "+" : "";
-        
+
         var evenTimeEntries = dayEntry.TimeEntries.Count() % 2 == 0;
 
         var totalMinutesResult = evenTimeEntries ? totalMinutesTs.ToTimeString() : "";
@@ -66,14 +66,14 @@ public static class SpectreConsoleUtils
         var accumulatedTs = TimeSpan.FromMinutes(accumulated);
         var accumulatedColor = accumulatedTs > TimeSpan.Zero ? Color.Green : Color.Red;
         var accumulatedSignal = accumulatedTs > TimeSpan.Zero ? "+" : "";
-        var timeEntries = dayEntry.TimeEntries.Any() 
-            ? string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time)) 
+        var timeEntries = dayEntry.TimeEntries.Any()
+            ? string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))
             : dayEntry.Justification!;
 
         var totalMinutesResult = evenTimeEntries ? totalMinutesTs.ToTimeString() : "";
         var balanceResult = evenTimeEntries ? $"{balanceSignal}{balance.ToTimeString()}" : "";
         var accumulatedResult = evenTimeEntries ? $"{accumulatedSignal}{accumulatedTs.ToTimeString()}" : "";
-        
+
         return new Text[] {
             new Text(dayEntry.Day!.ToDateOnly().ToString(), defaultRowStyle),
             new Text(dayEntry.DayType.ToString(), defaultRowStyle),

@@ -1,20 +1,21 @@
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
-using hhreg.business.domain.valueObjects;
-using hhreg.business.exceptions;
-using hhreg.business.infrastructure;
-using hhreg.business.utilities;
+using Hhreg.Business.Domain.ValueObjects;
+using Hhreg.Business.Exceptions;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Utilities;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace hhreg.business.commands;
+namespace Hhreg.Business.Commands;
 
 public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
 {
     private readonly ISettingsService _settingsService;
     private readonly ILogger _logger;
 
-    public ConfigEditCommand(ISettingsService settingsService, ILogger logger) {
+    public ConfigEditCommand(ISettingsService settingsService, ILogger logger)
+    {
         _settingsService = settingsService;
         _logger = logger;
     }
@@ -42,19 +43,19 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         {
             if (TimeInputMode == TimeInputMode.Hours && InitialBalance?.IsTime() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, InitialBalance));
-            
+
             if (TimeInputMode == TimeInputMode.Minutes && InitialBalance?.IsInteger() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, InitialBalance));
-            
+
             if (TimeInputMode == TimeInputMode.Hours && WorkDay?.IsTime() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, WorkDay));
-            
+
             if (TimeInputMode == TimeInputMode.Minutes && WorkDay?.IsInteger() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, WorkDay));
 
             if (StartCalculationsAt != null && !DateOnly.TryParse(StartCalculationsAt, out var _))
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
-            
+
             return ValidationResult.Success();
         }
     }
@@ -63,12 +64,12 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
     {
         var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance);
         var workDay = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay);
-        var startCalculationsAt = settings.StartCalculationsAt != null 
+        var startCalculationsAt = settings.StartCalculationsAt != null
             ? DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd") : null;
 
         var oldSettings = _settingsService.GetSettings();
 
-        _settingsService.SaveSettings(new domain.Settings
+        _settingsService.SaveSettings(new Domain.Settings
         {
             StartBalanceInMinutes = initialBalance ?? oldSettings.StartBalanceInMinutes,
             WorkDayInMinutes = workDay ?? oldSettings.WorkDayInMinutes,

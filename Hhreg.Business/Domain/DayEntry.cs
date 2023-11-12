@@ -1,7 +1,6 @@
+using Hhreg.Business.Domain.Common;
 
-using hhreg.business.domain.common;
-
-namespace hhreg.business.domain;
+namespace Hhreg.Business.Domain;
 
 public class DayEntry : BaseEntity<DayEntry>
 {

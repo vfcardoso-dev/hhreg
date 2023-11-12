@@ -1,30 +1,28 @@
-using hhreg.business.infrastructure;
-using hhreg.business.interceptors;
-using hhreg.business.repositories;
-using hhreg.resources;
-using hhreg.services;
-using Microsoft.Extensions.Configuration;
+using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Interceptors;
+using Hhreg.Business.Repositories;
+using Hhreg.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Spectre.Console.Cli;
 using TextCopy;
 
-namespace hhreg.configs;
+namespace Hhreg.Configs;
 
-public static class ServicesConfigurer {
-    public static void Configure(IServiceCollection services) 
+public static class ServicesConfigurer
+{
+    public static void Configure(IServiceCollection services)
     {
         services.AddLocalization();
 
         services.AddSingleton<ISettingsService, SettingsService>();
-        
-        services.AddScoped(ctx => 
+
+        services.AddScoped(ctx =>
             new UnitOfWorkContext(ctx.GetRequiredService<ISettingsService>()).Create());
 
         services.AddScoped<IDatabaseEnsurer, DatabaseEnsurer>();
         services.AddScoped<ITimeRepository, TimeRepository>();
         services.AddScoped<IClipboard, Clipboard>();
-        
+
         // resto das dependencias....
 
         services.AddSingleton<AppHost>();

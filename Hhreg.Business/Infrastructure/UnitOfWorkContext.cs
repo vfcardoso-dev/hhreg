@@ -1,18 +1,20 @@
 using Microsoft.Data.Sqlite;
 
-namespace hhreg.business.infrastructure;
+namespace Hhreg.Business.Infrastructure;
 
 public interface IUnitOfWorkContext
 {
     IUnitOfWork Create();
 }
 
-public class UnitOfWorkContext : IUnitOfWorkContext {
+public class UnitOfWorkContext : IUnitOfWorkContext
+{
 
     private readonly ISettingsService _appSettings;
     private IUnitOfWork? _unitOfWork;
 
-    public UnitOfWorkContext(ISettingsService appSettings) {
+    public UnitOfWorkContext(ISettingsService appSettings)
+    {
         _appSettings = appSettings;
     }
 
@@ -25,5 +27,5 @@ public class UnitOfWorkContext : IUnitOfWorkContext {
         }
 
         return _unitOfWork;
-    }   
+    }
 }

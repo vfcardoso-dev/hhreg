@@ -1,6 +1,6 @@
-using hhreg.business.domain.common;
+using Hhreg.Business.Domain.Common;
 
-namespace hhreg.business.domain;
+namespace Hhreg.Business.Domain;
 
 public class TimeEntry : BaseEntity<TimeEntry>
 {
