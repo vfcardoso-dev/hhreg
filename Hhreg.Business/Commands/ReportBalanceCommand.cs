@@ -27,7 +27,7 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
 
     public sealed class Settings : CommandSettings
     {
-        [Description("Retrieve last N days")]
+        [Description("Recupera últimos N dias")]
         [CommandOption("-t|--tail")]
         [DefaultValue(5)]
         public int Tail { get; init; }
@@ -56,7 +56,7 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
             throw new HhregException(string.Format(HhregMessages.ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate, startCalculationsAt, offsetDate));
         }
 
-        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(cfg, offsetDate.AddDays(-1));
+        var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(offsetDate.AddDays(-1));
         var dayEntries = _timeRepository.GetDayEntries(offsetDate, DateTime.Today.ToDateOnly());
 
         var rows = new List<Text[]>();

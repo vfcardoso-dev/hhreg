@@ -1,6 +1,7 @@
 using System.Data;
 using Hhreg.Business.Domain;
 using Hhreg.Business.Infrastructure;
+using Hhreg.Business.Utilities;
 
 namespace Hhreg.Business.Repositories;
 
@@ -15,12 +16,13 @@ public interface ITimeRepository
     void CreateTime(long dayEntryId, string time);
     void CreateTime(long dayEntryId, params string[] timeList);
     void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList);
-    double GetAccumulatedBalance(Settings cfg, DateOnly limitDay);
+    double GetAccumulatedBalance(DateOnly limitDay);
 }
 
 public class TimeRepository : ITimeRepository
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ISettingsService _settingsService;
 
     private const string DayEntryByDayQuery = "select * from DayEntry where Day = @day;";
     private const string DayEntryByIdQuery = "select * from DayEntry where Id = @dayEntryId;";
@@ -35,9 +37,10 @@ public class TimeRepository : ITimeRepository
         group by DayEntryId
         having TimeEntriesCount % 2 <> 0";
 
-    public TimeRepository(IUnitOfWork unitOfWork)
+    public TimeRepository(IUnitOfWork unitOfWork, ISettingsService settingsService)
     {
         _unitOfWork = unitOfWork;
+        _settingsService = settingsService;
     }
 
     public DayEntry? GetDayEntry(DateOnly day)
@@ -125,9 +128,10 @@ public class TimeRepository : ITimeRepository
                 new Dictionary<string, object?> {{"@time",time},{"@dayEntryId",dayEntryId}})
         };
 
+        var cfg = _settingsService.GetSettings();
         var dayEntry = GetDayEntry(dayEntryId)!;
         var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Append(time);
-        var totalMinutes = CalculateTotalMinutes(timeStrs, dayEntry.DayType);
+        var totalMinutes = Calculations.GetTotalMinutes(timeStrs, dayEntry.DayType, cfg.EntryToleranceInMinutes, cfg.WorkDayInMinutes);
 
         cmdList.Add(
             _unitOfWork.CreateSqlCommand(
@@ -146,9 +150,10 @@ public class TimeRepository : ITimeRepository
             )
         );
 
+        var cfg = _settingsService.GetSettings();
         var dayEntry = GetDayEntry(dayEntryId)!;
         var timeStrs = dayEntry.TimeEntries.Select(x => x.Time!).Union(timeList).OrderBy(x => x);
-        var totalMinutes = CalculateTotalMinutes(timeStrs, dayEntry.DayType);
+        var totalMinutes = Calculations.GetTotalMinutes(timeStrs, dayEntry.DayType, cfg.EntryToleranceInMinutes, cfg.WorkDayInMinutes);
 
         cmdList = cmdList.Append(
             _unitOfWork.CreateSqlCommand(
@@ -160,7 +165,8 @@ public class TimeRepository : ITimeRepository
 
     public void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList)
     {
-        var totalMinutes = CalculateTotalMinutes(timeList, dayType!.Value);
+        var cfg = _settingsService.GetSettings();
+        var totalMinutes = Calculations.GetTotalMinutes(timeList, dayType!.Value, cfg.EntryToleranceInMinutes, cfg.WorkDayInMinutes);
 
         var cmdList = new List<IDbCommand>{
             _unitOfWork.CreateSqlCommand(@"update DayEntry set Justification = @justification, DayType = @dayType, TotalMinutes = @totalMinutes where Id = @dayEntryId;",
@@ -188,35 +194,14 @@ public class TimeRepository : ITimeRepository
         _unitOfWork.BulkExecute(cmdList);
     }
 
-    public double GetAccumulatedBalance(Settings cfg, DateOnly limitDay)
+    public double GetAccumulatedBalance(DateOnly limitDay)
     {
-        var startDayQuery = "select StartCalculationsAt from Settings limit 1";
+        var cfg = _settingsService.GetSettings();
         var balanceQuery = "select total(TotalMinutes - @workDay) from DayEntry where Day between @startDay and @limitDay";
 
-        var startDay = _unitOfWork.QuerySingle<string>(startDayQuery);
-        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, new { startDay, limitDay = limitDay.ToString("yyyy-MM-dd"), workDay = cfg.WorkDayInMinutes });
+        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, 
+            new { startDay = cfg.LastBalanceCutoff, limitDay = limitDay.ToString("yyyy-MM-dd"), workDay = cfg.WorkDayInMinutes });
         return cfg.StartBalanceInMinutes + balance;
-    }
-
-    private double CalculateTotalMinutes(IEnumerable<string> timeEntries, DayType dayType)
-    {
-        var summary = TimeSpan.Zero;
-
-        if (dayType != DayType.Work)
-        {
-            var workDay = _unitOfWork.QuerySingle<int>("select coalesce(WorkDay, 0) from Settings limit 1");
-            return workDay;
-        }
-
-        for (int i = 0, j = 1; j < timeEntries.OrderBy(x => x).Count(); i = j + 1, j += 2)
-        {
-            var second = TimeSpan.Parse(timeEntries.ElementAt(j));
-            var first = TimeSpan.Parse(timeEntries.ElementAt(i));
-            var diff = second.Subtract(first);
-            summary = summary.Add(diff);
-        }
-
-        return summary.TotalMinutes;
     }
 
     private IEnumerable<DayEntry> FillTimeEntries(IEnumerable<DayEntry> dayEntries)

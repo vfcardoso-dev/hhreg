@@ -22,24 +22,24 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
 
     public sealed class Settings : CommandSettings
     {
-        [Description("Sets entry day as today")]
+        [Description("Define a data da entrada como hoje")]
         [CommandOption("-t|--today")]
         public bool IsToday { get; init; }
 
-        [Description("Sets day type (Work,Weekend,Sick,Holiday,Vacation)")]
+        [Description("Define o tipo do dia (Work,Weekend,Sick,Holiday,Vacation)")]
         [CommandOption("-y|--day-type")]
         [DefaultValue(DayType.Work)]
         public DayType DayType { get; init; }
 
-        [Description("Defines a justification")]
+        [Description("Define uma justificativa")]
         [CommandOption("-j|--justification")]
         public string? Justification { get; init; }
 
-        [Description("Defines the day")]
+        [Description("Define a data da entrada (formato: dd/MM/yyyy)")]
         [CommandOption("-d|--day")]
         public string? Day { get; init; }
 
-        [Description("Defines time entries (format: HH:mm)")]
+        [Description("Define as marcações (formato: HH:mm)")]
         [CommandArgument(0, "[entries]")]
         public string[] Entries { get; init; } = Array.Empty<string>();
 
@@ -87,12 +87,13 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
             : DateOnly.Parse(settings.Day!);
 
         var dayEntry = _timeRepository.GetDayEntry(inputDay);
-        if (dayEntry == null) throw new HhregException(string.Format(HhregMessages.CannotOverrideANotYetCreatedDay, inputDay.ToString("dd/MM/yyyy")));
+        if (dayEntry == null) throw new HhregException(string.Format(HhregMessages.CannotOverrideANotYetCreatedDay, 
+            inputDay.ToString("dd/MM/yyyy")));
 
         _timeRepository.OverrideDayEntry(dayEntry.Id, settings.Justification, settings.DayType, settings.Entries);
 
         var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
-        _logger.WriteLine($@"Day entry [green]SUCCESSFULLY[/] overridden!");
+        _logger.WriteLine($@"Marcações sobrescritas com [green]SUCESSO[/]!");
         _logger.WriteLine($"[yellow]{inputDay}[/]: {dayText}");
         return 0;
     }

@@ -36,15 +36,15 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
     public sealed class Settings : CommandSettings
     {
-        [Description("First day on export period (format: dd/MM/yyyy).")]
+        [Description("Data inicial da exportação (formato: dd/MM/yyyy).")]
         [CommandArgument(0, "<start>")]
         public string Start { get; init; } = string.Empty;
 
-        [Description("Last day on export period (format: dd/MM/yyyy). Optional.")]
+        [Description("Dia final da exportação (formato: dd/MM/yyyy). Opcional.")]
         [CommandArgument(1, "[end]")]
         public string? End { get; init; }
 
-        [Description("Last day on export period (format: dd/MM/yyyy). Optional.")]
+        [Description("Modo verboso. Opcional.")]
         [CommandOption("-v|--verbose")]
         public bool Verbose { get; init; }
 
@@ -71,7 +71,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         var startDate = settings.Start.ToDateOnly();
         var endDate = settings.End?.ToDateOnly() ?? DateTime.Today.ToDateOnly();
 
-        _logger.WriteLine($"Exporting entries from {startDate:dd/MM/yyyy} to {endDate:dd/MM/yyyy}...");
+        _logger.WriteLine($"Exportando marcações entre {startDate:dd/MM/yyyy} até {endDate:dd/MM/yyyy}...");
 
         var dayEntries = _timeRepository.GetDayEntriesByType(startDate, endDate, DayType.Work);
         var myDrakeEvents = new List<MyDrakeEvent>();
@@ -81,7 +81,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
             if (dayEntry.DayType != DayType.Work)
             {
                 var day = DateOnly.Parse(dayEntry.Day!).ToString("dd/MM/yyyy");
-                _logger.WriteLine($"[darkblue]INFO:[/] Bypassing day [yellow]{day}[/] because it's not a work day. Type: {dayEntry.DayType}. Justification: {dayEntry.Justification}");
+                _logger.WriteLine($"[darkblue]INFO:[/] Ignorando o dia [yellow]{day}[/] pois não é um dia do tipo 'Work'. Tipo: {dayEntry.DayType}. Justification: {dayEntry.Justification}");
                 continue;
             }
 
@@ -117,7 +117,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
         if (settings.Verbose)
         {
-            var panel = new Panel("Copy the code below and paste on [green]hhreg.chrome[/] extension");
+            var panel = new Panel("Copie o código abaixo e cole na extensão [green]hhreg.chrome[/]");
             _logger.Write(panel);
 
             _logger.WriteLine(encoded);
@@ -126,7 +126,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         {
             _clipboard.SetText(encoded);
 
-            var panel = new Panel("Code generated and copied to clipboard. You can now paste it on [green]hhreg.chrome[/] extension");
+            var panel = new Panel("Código gerado e copiado para a área de transferência. Agora você pode colar na extensão [green]hhreg.chrome[/]");
             _logger.Write(panel);
         }
 

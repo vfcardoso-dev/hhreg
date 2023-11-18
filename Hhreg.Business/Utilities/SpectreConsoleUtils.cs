@@ -8,24 +8,24 @@ public static class SpectreConsoleUtils
     public static string[] GetDayEntrySummaryHeaders()
     {
         return new string[]{
-            "Day",
-            "Day Type",
-            "Time entries",
+            "Data",
+            "Tipo",
+            "Marcações",
             "Total",
-            "Day Balance",
-            "Justification"
+            "Saldo",
+            "Justificativa"
         };
     }
 
     public static string[] GetDayEntryBalanceHeaders()
     {
         return new string[]{
-            "Day",
-            "Day Type",
-            "Time entries / Justification",
+            "Data",
+            "Tipo",
+            "Marcações / Justificativa",
             "Total",
-            "Day Balance",
-            "Accumulated"
+            "Saldo",
+            "Acumulado"
         };
     }
 

@@ -255,7 +255,7 @@ public class InitCommandTests : UnitTestsBase
             x.WorkDayInMinutes == workdayInMinutes &&
             x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(1);
-        Logger.Lines.Should().Contain("Settings [green]SUCCESSFULLY[/] initialized!");
+        Logger.Lines.Should().Contain("Configurações inicializadas com [green]SUCESSO[/]!");
     }
 
     [Test]
@@ -285,6 +285,6 @@ public class InitCommandTests : UnitTestsBase
             x.WorkDayInMinutes == workdayInMinutes &&
             x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(1);
-        Logger.Lines.Should().Contain("Settings [green]SUCCESSFULLY[/] initialized!");
+        Logger.Lines.Should().Contain("Configurações inicializadas com [green]SUCESSO[/]!");
     }
 }

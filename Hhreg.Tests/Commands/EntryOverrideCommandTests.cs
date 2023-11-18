@@ -156,7 +156,7 @@ public class EntryOverrideCommandTests : UnitTestsBase
         _timeRepository!.Received().OverrideDayEntry(dayEntry.Id, Arg.Any<string>(), Arg.Any<DayType>(),
             Arg.Is<string[]>(x => x.Contains(entry1) && x.Contains(entry2) && x.Contains(entry3) && x.Contains(entry4)));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(2);
-        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] overridden!");
+        Logger.Lines.Should().Contain("Marcações sobrescritas com [green]SUCESSO[/]!");
         Logger.Lines.Should().Contain($"[yellow]{DateTime.Today:dd/MM/yyyy}[/]: {entry1} / {entry2} / {entry3} / {entry4}");
     }
 
@@ -182,7 +182,7 @@ public class EntryOverrideCommandTests : UnitTestsBase
         _timeRepository!.Received().OverrideDayEntry(dayEntry.Id, justificative, dayType, Arg.Any<string[]>());
 
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(2);
-        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] overridden!");
+        Logger.Lines.Should().Contain("Marcações sobrescritas com [green]SUCESSO[/]!");
         Logger.Lines.Should().Contain($"[yellow]{DateTime.Today:dd/MM/yyyy}[/]: {justificative}");
     }
 }

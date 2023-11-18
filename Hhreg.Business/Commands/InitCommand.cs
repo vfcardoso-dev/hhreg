@@ -22,22 +22,26 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
     public sealed class Settings : CommandSettings
     {
-        [Description("Time bank initial balance")]
+        [Description("Saldo inicial do banco de horas")]
         [CommandOption("-b|--initial-balance")]
         public string? InitialBalance { get; init; }
 
-        [Description("Workday")]
+        [Description("Duração do dia de trabalho")]
         [CommandOption("-w|--workday")]
         public string? WorkDay { get; init; }
 
-        [Description("Time input mode: Hours (HH:mm) or Minutes (1..999+)")]
+        [Description("Modo de inserção de tempo: Hours (HH:mm) ou Minutes (1..999+). Padrão: Hours")]
         [CommandOption("-m|--time-input-mode")]
         [DefaultValue(TimeInputMode.Hours)]
         public TimeInputMode TimeInputMode { get; init; }
 
-        [Description("Start calculations at (format: dd/MM/yyyy)")]
+        [Description("Data de início do cálculo de banco de horas (formato: dd/MM/yyyy)")]
         [CommandOption("-s|--start-calculations-at")]
         public string? StartCalculationsAt { get; init; }
+
+        [Description("Tolerância na marcação")]
+        [CommandOption("-t|--tolerance")]
+        public string? EntryTolerance { get; init; }
 
         public override ValidationResult Validate()
         {
@@ -57,6 +61,12 @@ public sealed class InitCommand : Command<InitCommand.Settings>
             if (TimeInputMode == TimeInputMode.Minutes && WorkDay?.IsInteger() == false)
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, WorkDay));
 
+            if (TimeInputMode == TimeInputMode.Hours && EntryTolerance?.IsTime() == false)
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidTimeFormat, WorkDay));
+
+            if (TimeInputMode == TimeInputMode.Minutes && EntryTolerance?.IsInteger() == false)
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidIntegerFormat, WorkDay));
+
             if (!DateOnly.TryParse(StartCalculationsAt, out var _))
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
 
@@ -72,18 +82,21 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         }
 
         var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance!);
-        var workDay = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay!);
+        var workday = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay!);
+        var entryTolerance = settings.EntryTolerance != null 
+            ? GetTimeInputValue(settings.TimeInputMode, settings.EntryTolerance!) 
+            : 0;
         var startCalculationsAt = DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd");
 
         _settingsService.SaveSettings(new Domain.Settings
         {
             StartBalanceInMinutes = initialBalance,
-            WorkDayInMinutes = workDay,
-            EntryToleranceInMinutes = 0,
+            WorkDayInMinutes = workday,
+            EntryToleranceInMinutes = entryTolerance,
             LastBalanceCutoff = startCalculationsAt
         });
 
-        _logger.WriteLine($@"Settings [green]SUCCESSFULLY[/] initialized!");
+        _logger.WriteLine($@"Configurações inicializadas com [green]SUCESSO[/]!");
         return 0;
     }
 

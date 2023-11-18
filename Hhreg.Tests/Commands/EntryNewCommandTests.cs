@@ -139,7 +139,7 @@ public class EntryNewCommandTests : UnitTestsBase
         _timeRepository!.Received().CreateTime(dayEntry.Id, Arg.Is<string[]>(x =>
             x.Contains(entry1) && x.Contains(entry2) && x.Contains(entry3) && x.Contains(entry4)));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(2);
-        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] created!");
+        Logger.Lines.Should().Contain("Marcações criadas com [green]SUCESSO[/]!");
         Logger.Lines.Should().Contain($"[yellow]{DateTime.Today:dd/MM/yyyy}[/]: {entry1} / {entry2} / {entry3} / {entry4}");
     }
 
@@ -164,7 +164,7 @@ public class EntryNewCommandTests : UnitTestsBase
         output.Should().Be(0);
         _timeRepository!.Received().CreateTime(dayEntry.Id, Arg.Any<string[]>());
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(2);
-        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] created!");
+        Logger.Lines.Should().Contain("Marcações criadas com [green]SUCESSO[/]!");
         Logger.Lines.Should().Contain($"[yellow]{DateTime.Today:dd/MM/yyyy}[/]: {justificative}");
     }
 }

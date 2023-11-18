@@ -29,7 +29,7 @@ public sealed class EntryNowCommand : Command<EntryNowCommand.Settings>
 
         _timeRepository.CreateTime(dayEntry.Id, time.ToTimeString());
 
-        _logger.WriteLine($@"Day entry [green]SUCCESSFULLY[/] created!");
+        _logger.WriteLine($@"Marcação criada com [green]SUCESSO[/]!");
         _logger.WriteLine($"[yellow]{date}[/]: {time.ToTimeString()}");
         return 0;
     }

@@ -72,6 +72,11 @@ public class CommandsConfigurer : ICommandsConfigurer
         {
             report.SetDescription("Consolida e exibe as entradas no registro.");
 
+            report.AddCommand<ReportSimulateCommand>("simulate")
+                .WithDescription("Simula marcações para obter saldo acumulado estimado do banco de horas.")
+                .WithExample(new string[] { "report", "simulate" })
+                .WithExample(new string[] { "report", "simulate", "18:30" })
+                .WithExample(new string[] { "report", "simulate", "-d", "01/11/2023", "18:30" });
             report.AddCommand<ReportBalanceCommand>("balance")
                 .WithDescription("Exibe o saldo acumulado do banco de horas.")
                 .WithExample(new string[] { "report", "balance" })

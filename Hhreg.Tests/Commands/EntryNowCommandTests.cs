@@ -44,7 +44,7 @@ public class EntryNowCommandTests : UnitTestsBase
         _timeRepository!.Received().GetOrCreateDay(today);
         _timeRepository!.Received().CreateTime(dayEntry.Id, Arg.Is<string>(x => x == now));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(2);
-        Logger.Lines.Should().Contain("Day entry [green]SUCCESSFULLY[/] created!");
+        Logger.Lines.Should().Contain("Marcação criada com [green]SUCESSO[/]!");
         Logger.Lines.Should().Contain($"[yellow]{DateTime.Today:dd/MM/yyyy}[/]: {now}");
     }
 }

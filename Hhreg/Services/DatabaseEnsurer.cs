@@ -40,7 +40,7 @@ public class DatabaseEnsurer : IDatabaseEnsurer
             @"SELECT 
                 case when count(*) == 0 then false else true end 
               FROM sqlite_master 
-              WHERE type='table' AND name='Settings';");
+              WHERE type='table' AND name='DayEntry';");
 
         if (!tableExists)
         {
