@@ -11,9 +11,9 @@ public interface IUnitOfWork : IDisposable
     IDbCommand CreateSqlCommand(string query, IDictionary<string, object?>? param = null);
     IEnumerable<T> Query<T>(string query, object? param = null);
     T QuerySingle<T>(string query, object? param = null);
-    T QuerySingleOrDefault<T>(string query, object? param = null);
+    T? QuerySingleOrDefault<T>(string query, object? param = null);
     T QueryFirst<T>(string query, object? param = null);
-    T QueryFirstOrDefault<T>(string query, object? param = null);
+    T? QueryFirstOrDefault<T>(string query, object? param = null);
 }
 
 public class UnitOfWork : IUnitOfWork
@@ -93,7 +93,7 @@ public class UnitOfWork : IUnitOfWork
 
     public IEnumerable<T3> Query<T1, T2, T3>(string query, Func<T1, T2, T3> action, object? param = null, string? splitOn = null)
     {
-        return GetConnection().Query(query, action, param, splitOn: splitOn);
+        return GetConnection().Query(query, action, param, splitOn: splitOn ?? "Id");
     }
 
     public T QuerySingle<T>(string query, object? param = null)
@@ -101,7 +101,7 @@ public class UnitOfWork : IUnitOfWork
         return GetConnection().QuerySingle<T>(query, param);
     }
 
-    public T QuerySingleOrDefault<T>(string query, object? param = null)
+    public T? QuerySingleOrDefault<T>(string query, object? param = null)
     {
         return GetConnection().QuerySingleOrDefault<T>(query, param);
     }
@@ -111,7 +111,7 @@ public class UnitOfWork : IUnitOfWork
         return GetConnection().QueryFirst<T>(query, param);
     }
 
-    public T QueryFirstOrDefault<T>(string query, object? param = null)
+    public T? QueryFirstOrDefault<T>(string query, object? param = null)
     {
         return GetConnection().QueryFirstOrDefault<T>(query, param);
     }
