@@ -63,7 +63,7 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
                 Thread.Sleep(6000);
 
                 AnsiConsole.MarkupLine("Removendo arquivos temporários...");
-                Directory.Delete(GetAppFolder(), true);
+                Directory.Delete(GetAppFolder("updating"), true);
 
                 AnsiConsole.MarkupLine("[green bold]Atualização completa![/]");
 
