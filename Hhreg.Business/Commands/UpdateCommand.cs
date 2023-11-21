@@ -30,23 +30,23 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
             .Spinner(Spinner.Known.Star2)
             .Start("Atualizando hhreg...", ctx =>
             {
-                AnsiConsole.MarkupLine("[blue]Processo de atualizaÁ„o iniciado...[/]");
+                AnsiConsole.MarkupLine("[blue]Processo de atualiza√ß√£o iniciado...[/]");
 
                 AnsiConsole.WriteLine();
                 var currentVersion = Assembly.GetEntryAssembly()?.GetName().Version!.ToString(3);
-                AnsiConsole.MarkupLineInterpolated($"Vers„o instalada È [green]v{currentVersion}[/]");
+                AnsiConsole.MarkupLineInterpolated($"Vers√£o instalada √© [green]v{currentVersion}[/]");
 
                 var lastVersion = GetLastVersionNumber();
-                AnsiConsole.MarkupLineInterpolated($"⁄ltima vers„o disponÌvel no repositÛrio È [green]v{lastVersion}[/]");
+                AnsiConsole.MarkupLineInterpolated($"√öltima vers√£o dispon√≠vel no reposit√≥rio √© [green]v{lastVersion}[/]");
 
                 if (currentVersion == lastVersion)
                 {
-                    AnsiConsole.Markup("[green bold]Hhreg j· est· atualizado com a ˙ltima vers„o. =)[/]");
+                    AnsiConsole.Markup("[green bold]Hhreg j√° est√° atualizado com a √∫ltima vers√£o. =)[/]");
                     return 0;
                 }
 
                 AnsiConsole.WriteLine();
-                AnsiConsole.MarkupLine("Existe uma [u]nova vers„o[/]! Vamos [green]atualizar[/]!");
+                AnsiConsole.MarkupLine("Existe uma [u]nova vers√£o[/]! Vamos [green]atualizar[/]!");
 
                 AnsiConsole.WriteLine();
                 var platform = GetPlatform();
@@ -62,12 +62,12 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
 
                 Thread.Sleep(6000);
 
-                AnsiConsole.MarkupLine("Removendo arquivos tempor·rios...");
-                Directory.Delete(GetDestinationFolder(), true);
+                AnsiConsole.MarkupLine("Removendo arquivos tempor√°rios...");
+                Directory.Delete(GetAppFolder(), true);
 
-                AnsiConsole.MarkupLine("[green bold]AtualizaÁ„o completa![/]");
+                AnsiConsole.MarkupLine("[green bold]Atualiza√ß√£o completa![/]");
 
-                ctx.Status("[green bold]AtualizaÁ„o completa![/]");
+                ctx.Status("[green bold]Atualiza√ß√£o completa![/]");
 
                 Thread.Sleep(1000);
 
@@ -77,32 +77,33 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
 
     private void RunUpdateCommand(string platform)
     {
-        var origin = GetDestinationFolder();
-        var destination = AppDomain.CurrentDomain.BaseDirectory;
+        var origin = GetAppFolder("updating");
+        var destination = GetAppFolder();
         string cmdStr;
 
         if (platform.StartsWith("win"))
         {
-            cmdStr = $"/c start cmd.exe /c copy /b {origin} {destination}";
+            cmdStr = $"/c start cmd.exe /c copy /b /y {origin} {destination}";
         }
         else
         {
-            cmdStr = $"-c bash -c cp -r {origin} {destination}";
+            cmdStr = $"-c bash -c cp -rf {origin} {destination}";
         }
 
         System.Diagnostics.Process.Start("cmd.exe", cmdStr);
     }
 
-    private string GetDestinationFolder()
+    private string GetAppFolder(string? pathToAppend = null)
     {
-        return Path.Combine(_appSettings.AppDataFolder, "updating");
+        var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        return pathToAppend == null ? path : Path.Combine(path, pathToAppend);
     }
 
     private void DownloadArtifact(string version, string platform)
     {
         var extension = platform.StartsWith("win") ? "zip" : "tar.gz";
         var artifactUrl = $"{RepositoryUrl}/releases/download/v{version}/hhreg-v{version}-{platform}.{extension}";
-        var destinationFolder = GetDestinationFolder();
+        var destinationFolder = GetAppFolder("updating");
 
         _logger.WriteLine($"Fazendo download do artefato de [green]{artifactUrl}[/]...");
 
@@ -119,8 +120,8 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
     private void UnzippingFiles(string platform)
     {
         var extension = platform.StartsWith("win") ? "zip" : "tar.gz";
-        var fileToExtract = Path.Combine(GetDestinationFolder(), $"artifact.{extension}");
-        var destination = GetDestinationFolder();
+        var fileToExtract = Path.Combine(GetAppFolder("updating"), $"artifact.{extension}");
+        var destination = GetAppFolder("updating");
 
         if (File.Exists(fileToExtract))
         {
