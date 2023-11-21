@@ -22,12 +22,12 @@ public class SettingsService : ISettingsService
     private readonly string _appName = "hhreg";
     private readonly string _appDataFolder = GetFolderPath(SpecialFolder.LocalApplicationData, SpecialFolderOption.DoNotVerify);
     private readonly string _settingsFilename = "settings.json";
-    private string _settingsFilePath => $@"{_appDataFolder}\{_settingsFilename}.db";
+    private string _settingsFilePath => $@"{_appDataFolder}\{_appName}\{_settingsFilename}";
 
     public string AppName => _appName;
     public string DatabaseName => _appName;
     public string AppDataFolder => _appDataFolder;
-    public string DatabaseFilePath => $@"{_appDataFolder}\{DatabaseName}.db";
+    public string DatabaseFilePath => $@"{_appDataFolder}\{_appName}\{DatabaseName}.db";
     public string ConnectionString => $@"Data Source={DatabaseFilePath}";
 
     public Settings GetSettings()
