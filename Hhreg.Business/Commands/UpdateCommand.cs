@@ -95,7 +95,7 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
 
     private string GetAppFolder(string? pathToAppend = null)
     {
-        var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
+        var path = Path.GetDirectoryName(System.AppContext.BaseDirectory)!;
         return pathToAppend == null ? path : Path.Combine(path, pathToAppend);
     }
 
