@@ -41,7 +41,7 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
 
                 if (currentVersion == lastVersion)
                 {
-                    AnsiConsole.Markup("[green bold]Hhreg já está atualizado com a última versão. =)[/]");
+                    AnsiConsole.MarkupLine("[green bold]Hhreg já está atualizado com a última versão. =)[/]");
                     return 0;
                 }
 
