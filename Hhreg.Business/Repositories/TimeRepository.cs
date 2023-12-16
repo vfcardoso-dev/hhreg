@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using Hhreg.Business.Domain;
 using Hhreg.Business.Infrastructure;
@@ -9,6 +10,7 @@ public interface ITimeRepository
 {
     DayEntry? GetDayEntry(DateOnly day);
     DayEntry? GetDayEntry(long dayEntryId);
+    IEnumerable<DayEntry> GetAllDayEntries();
     IEnumerable<DayEntry> GetDayEntries(DateOnly startDay, DateOnly endDay);
     IEnumerable<DayEntry> GetDayEntriesByType(DateOnly startDay, DateOnly endDay, DayType dayType);
     IEnumerable<DayEntry> GetInvalidDayEntries();
@@ -16,6 +18,7 @@ public interface ITimeRepository
     void CreateTime(long dayEntryId, string time);
     void CreateTime(long dayEntryId, params string[] timeList);
     void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList);
+    void UpdateDayEntryTotalMinutes(long dayEntryId, double total);
     double GetAccumulatedBalance(DateOnly limitDay);
 }
 
@@ -73,6 +76,13 @@ public class TimeRepository : ITimeRepository
             startDay = startDay.ToString("yyyy-MM-dd"),
             endDay = endDay.ToString("yyyy-MM-dd")
         });
+        return FillTimeEntries(dayEntries);
+    }
+
+    public IEnumerable<DayEntry> GetAllDayEntries()
+    {
+        var query = "select * from DayEntry order by Day;";
+        var dayEntries = _unitOfWork.Query<DayEntry>(query);
         return FillTimeEntries(dayEntries);
     }
 
@@ -192,6 +202,12 @@ public class TimeRepository : ITimeRepository
         );
 
         _unitOfWork.BulkExecute(cmdList);
+    }
+
+    public void UpdateDayEntryTotalMinutes(long dayEntryId, double total)
+    {
+        _unitOfWork.Execute(@"update DayEntry set TotalMinutes = @totalMinutes where Id = @dayEntryId;",
+                new Dictionary<string, object?> { { "@dayEntryId", dayEntryId }, { "@totalMinutes", total } });
     }
 
     public double GetAccumulatedBalance(DateOnly limitDay)

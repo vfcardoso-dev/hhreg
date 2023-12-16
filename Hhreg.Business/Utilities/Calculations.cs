@@ -4,11 +4,12 @@ namespace Hhreg.Business.Utilities
 {
     public static class Calculations
     {
-        public static double GetTotalMinutes(IEnumerable<string> timeEntries, DayType dayType, double entryToleranceInMinutes, double workdayInMinutes)
+        public static double GetTotalMinutes(IEnumerable<string> timeEntries, DayType dayType, double entryToleranceInMinutes, 
+            double workdayInMinutes)
         {
             var summary = TimeSpan.Zero;
-            var expectedHalfWorkday = TimeSpan.FromMinutes(workdayInMinutes / 2);
             var tolerance = TimeSpan.FromMinutes(entryToleranceInMinutes);
+            var workday = TimeSpan.FromMinutes(workdayInMinutes);
 
             if (dayType != DayType.Work) return workdayInMinutes;
 
@@ -16,15 +17,15 @@ namespace Hhreg.Business.Utilities
             {
                 var second = TimeSpan.Parse(timeEntries.ElementAt(j));
                 var first = TimeSpan.Parse(timeEntries.ElementAt(i));
-                var diff = second.Subtract(first);
-                var diffWithTolerance = diff < (expectedHalfWorkday - tolerance) || diff >= expectedHalfWorkday
-                    ? diff 
-                    : expectedHalfWorkday;
-
-                summary = summary.Add(diffWithTolerance);
+                
+                summary = summary.Add(second.Subtract(first));
             }
 
-            return summary.TotalMinutes;
+            var summaryWithTolerance = summary < (workday - tolerance) || summary > (workday + tolerance)
+                    ? summary
+                    : workday;
+
+            return summaryWithTolerance.TotalMinutes;
         }
     }
 }

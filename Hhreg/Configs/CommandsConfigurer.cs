@@ -42,8 +42,13 @@ public class CommandsConfigurer : ICommandsConfigurer
 
             config.AddCommand<ConfigShowCommand>("show")
                 .WithDescription("Exibe as configurações atuais.");
+
             config.AddCommand<ConfigDatabaseCommand>("database")
                 .WithDescription("Imprime o local atual do arquivo do banco de dados.");
+
+            config.AddCommand<ConfigRecalculateCommand>("recalculate")
+                .WithDescription("Recalcula as marcações de cada dia registrado no banco de dados.");
+
             config.AddCommand<ConfigEditCommand>("edit")
                 .WithDescription("Altera as configurações atuais.")
                 .WithExample(new string[] { "config", "edit", "--initial-balance", "1:20", "--start-calculations-at", "01/04/2019" })

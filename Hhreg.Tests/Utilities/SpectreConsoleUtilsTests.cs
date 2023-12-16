@@ -13,7 +13,7 @@ public class SpectreConsoleUtilsTests : UnitTestsBase
     [TestCase(480, 500, "+00:20", null)]
     [TestCase(480, 400, "-01:20", null)]
     [TestCase(480, 480, "00:00", "This is a justification")]
-    public void deve_calcular_corretamente_linha_de_summary_de_dayEntry(double workDay, double dayEntryTotalMinutes, string expectedBalance, string justification)
+    public void deve_calcular_corretamente_linha_de_summary_de_dayEntry(double workDay, double dayEntryTotalMinutes, string expectedBalance, string? justification)
     {
         // Given
         var dayEntry = Fixture.Create<DayEntry>();
@@ -38,7 +38,7 @@ public class SpectreConsoleUtilsTests : UnitTestsBase
     [TestCase(480, 400, -20, "-01:20", "-01:40", null)]
     [TestCase(480, 480, 0, "00:00", "00:00", "This is a justification")]
     public void deve_calcular_corretamente_linha_de_balance_de_dayEntry(
-        double workDay, double dayEntryTotalMinutes, double initialAcc, string expectedBalance, string expectedAcc, string justification)
+        double workDay, double dayEntryTotalMinutes, double initialAcc, string expectedBalance, string expectedAcc, string? justification)
     {
         // Given
         var dayEntry = Fixture.Create<DayEntry>();

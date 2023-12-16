@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Hhreg": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "config recalculate"
     }
   }
 }
