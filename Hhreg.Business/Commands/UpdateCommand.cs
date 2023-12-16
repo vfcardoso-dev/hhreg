@@ -60,16 +60,9 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
 
                 RunUpdateCommand(platform);
 
-                //Thread.Sleep(6000);
-
-                //AnsiConsole.MarkupLine("Removendo arquivos temporários...");
-                //Directory.Delete(GetAppFolder("updating"), true);
-
                 AnsiConsole.MarkupLine("[green bold]Atualização completa![/]");
 
                 ctx.Status("[green bold]Atualização completa![/]");
-
-                //Thread.Sleep(1000);
 
                 return 0;
             });
@@ -83,11 +76,11 @@ public sealed class UpdateCommand : Command<UpdateCommand.Settings>
 
         if (platform.StartsWith("win"))
         {
-            cmdStr = $"/c start cmd.exe /c copy /b /y {origin} {destination} && rmdir {origin} /s /q";
+            cmdStr = $"/c start cmd.exe /c \"copy /b /y {origin} {destination} & rmdir {origin} /s /q\"";
         }
         else
         {
-            cmdStr = $"-c bash -c cp -rf {origin} {destination} && rm -rf {origin}";
+            cmdStr = $"-c bash -c \"cp -rf {origin} {destination} && rm -rf {origin}\"";
         }
 
         System.Diagnostics.Process.Start("cmd.exe", cmdStr);
