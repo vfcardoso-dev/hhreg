@@ -6,5 +6,6 @@ public enum DayType
     Weekend,
     Sick,
     Holiday,
-    Vacation
+    Vacation,
+    Justified
 }

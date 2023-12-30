@@ -12,7 +12,7 @@ public interface ITimeRepository
     DayEntry? GetDayEntry(long dayEntryId);
     IEnumerable<DayEntry> GetAllDayEntries();
     IEnumerable<DayEntry> GetDayEntries(DateOnly startDay, DateOnly endDay);
-    IEnumerable<DayEntry> GetDayEntriesByType(DateOnly startDay, DateOnly endDay, DayType dayType);
+    IEnumerable<DayEntry> GetDayEntriesByType(DateOnly startDay, DateOnly endDay, params DayType[] dayTypes);
     IEnumerable<DayEntry> GetInvalidDayEntries();
     DayEntry GetOrCreateDay(DateOnly day, string? justification = null, DayType? dayType = DayType.Work);
     void CreateTime(long dayEntryId, string time);
@@ -86,14 +86,14 @@ public class TimeRepository : ITimeRepository
         return FillTimeEntries(dayEntries);
     }
 
-    public IEnumerable<DayEntry> GetDayEntriesByType(DateOnly startDay, DateOnly endDay, DayType dayType)
+    public IEnumerable<DayEntry> GetDayEntriesByType(DateOnly startDay, DateOnly endDay, params DayType[] dayTypes)
     {
-        var query = "select * from DayEntry where DayType = @dayType and Day between @startDay and @endDay order by Day;";
+        var query = "select * from DayEntry where DayType in @dayTypes and Day between @startDay and @endDay order by Day;";
         var dayEntries = _unitOfWork.Query<DayEntry>(query, new
         {
             startDay = startDay.ToString("yyyy-MM-dd"),
             endDay = endDay.ToString("yyyy-MM-dd"),
-            dayType
+            dayTypes
         });
         return FillTimeEntries(dayEntries);
     }

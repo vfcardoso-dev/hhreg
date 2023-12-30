@@ -44,9 +44,9 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         [CommandArgument(1, "[end]")]
         public string? End { get; init; }
 
-        [Description("Modo verboso. Opcional.")]
-        [CommandOption("-v|--verbose")]
-        public bool Verbose { get; init; }
+        [Description("Mostrar resultado. Opcional.")]
+        [CommandOption("-s|--show-results")]
+        public bool ShowResults { get; init; }
 
         public override ValidationResult Validate()
         {
@@ -73,18 +73,12 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
         _logger.WriteLine($"Exportando marcações entre {startDate:dd/MM/yyyy} até {endDate:dd/MM/yyyy}...");
 
-        var dayEntries = _timeRepository.GetDayEntriesByType(startDate, endDate, DayType.Work);
+        var validDayTypes = new[] { DayType.Work, DayType.Justified };
+        var dayEntries = _timeRepository.GetDayEntriesByType(startDate, endDate, validDayTypes);
         var myDrakeEvents = new List<MyDrakeEvent>();
 
         foreach (var dayEntry in dayEntries)
         {
-            if (dayEntry.DayType != DayType.Work)
-            {
-                var day = DateOnly.Parse(dayEntry.Day!).ToString("dd/MM/yyyy");
-                _logger.WriteLine($"[darkblue]INFO:[/] Ignorando o dia [yellow]{day}[/] pois não é um dia do tipo 'Work'. Tipo: {dayEntry.DayType}. Justification: {dayEntry.Justification}");
-                continue;
-            }
-
             for (int i = 0, j = 1; j < dayEntry.TimeEntries.OrderBy(x => x.Time).Count(); i = j + 1, j += 2)
             {
                 var first = TimeSpan.Parse(dayEntry.TimeEntries.ElementAt(i).Time!).ToTimeString();
@@ -115,7 +109,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         var bytes = Encoding.UTF8.GetBytes(json);
         var encoded = Convert.ToBase64String(bytes);
 
-        if (settings.Verbose)
+        if (settings.ShowResults)
         {
             var panel = new Panel("Copie o código abaixo e cole na extensão [green]hhreg.chrome[/]");
             _logger.Write(panel);
