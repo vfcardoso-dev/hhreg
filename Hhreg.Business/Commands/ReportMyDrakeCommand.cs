@@ -154,13 +154,13 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
             new MyDrakeEvent
             {
                 Id = Guid.NewGuid(),
-                Start = $"{dayEntry.Day}T{start1}:00",
-                End = $"{dayEntry.Day}T{end1}:00",
+                Start = $"{dayEntry.Day}T{start1}",
+                End = $"{dayEntry.Day}T{end1}",
                 Justification = dayEntry.Justification,
                 Event = new MyDrakeInnerEvent
                 {
-                    StartDate = $"{dayEntry.Day}T{start1}:00.000Z",
-                    EndDate = $"{dayEntry.Day}T{end1}:00.000Z",
+                    StartDate = $"{dayEntry.Day}T{start1}.000Z",
+                    EndDate = $"{dayEntry.Day}T{end1}.000Z",
                     Occurrence = new Option(),
                     OperationalUnit = new Option(),
                     CostCenter = new Option(),
@@ -169,13 +169,13 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
             },
             new MyDrakeEvent{
                 Id = Guid.NewGuid(),
-                Start = $"{dayEntry.Day}T{start2}:00",
-                End = $"{dayEntry.Day}T{end2}:00",
+                Start = $"{dayEntry.Day}T{start2}",
+                End = $"{dayEntry.Day}T{end2}",
                 Justification = dayEntry.Justification,
                 Event = new MyDrakeInnerEvent
                 {
-                    StartDate = $"{dayEntry.Day}T{start2}:00.000Z",
-                    EndDate = $"{dayEntry.Day}T{end2}:00.000Z",
+                    StartDate = $"{dayEntry.Day}T{start2}.000Z",
+                    EndDate = $"{dayEntry.Day}T{end2}.000Z",
                     Occurrence = new Option(),
                     OperationalUnit = new Option(),
                     CostCenter = new Option(),
