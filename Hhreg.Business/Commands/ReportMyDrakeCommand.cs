@@ -17,6 +17,7 @@ namespace Hhreg.Business.Commands;
 public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeCommand.Settings>
 {
     private readonly ITimeRepository _timeRepository;
+    private readonly ISettingsService _settingsService;
     private readonly IClipboard _clipboard;
     private readonly ILogger _logger;
     private readonly JsonSerializerOptions _jsonSerializerOptions = new()
@@ -26,10 +27,12 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
     public ReportMyDrakeCommand(
         ITimeRepository timeRepository,
+        ISettingsService settingsService,
         IClipboard clipboard,
         ILogger logger) : base(timeRepository, logger)
     {
         _timeRepository = timeRepository;
+        _settingsService = settingsService;
         _clipboard = clipboard;
         _logger = logger;
     }
@@ -70,6 +73,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
         var startDate = settings.Start.ToDateOnly();
         var endDate = settings.End?.ToDateOnly() ?? DateTime.Today.ToDateOnly();
+        var workDay = TimeSpan.FromMinutes(_settingsService.GetSettings().WorkDayInMinutes);
 
         _logger.WriteLine($"Exportando marcações entre {startDate:dd/MM/yyyy} até {endDate:dd/MM/yyyy}...");
 
@@ -79,30 +83,13 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
         foreach (var dayEntry in dayEntries)
         {
-            for (int i = 0, j = 1; j < dayEntry.TimeEntries.OrderBy(x => x.Time).Count(); i = j + 1, j += 2)
-            {
-                var first = TimeSpan.Parse(dayEntry.TimeEntries.ElementAt(i).Time!).ToTimeString();
-                var second = TimeSpan.Parse(dayEntry.TimeEntries.ElementAt(j).Time!).ToTimeString();
+            if (dayEntry.DayType != DayType.Work) {
 
-                var evt = new MyDrakeEvent
-                {
-                    Id = Guid.NewGuid(),
-                    Start = $"{dayEntry.Day}T{first}:00",
-                    End = $"{dayEntry.Day}T{second}:00",
-                    Justification = dayEntry.Justification,
-                    Event = new MyDrakeInnerEvent
-                    {
-                        StartDate = $"{dayEntry.Day}T{first}:00.000Z",
-                        EndDate = $"{dayEntry.Day}T{second}:00.000Z",
-                        Occurrence = new Option(),
-                        OperationalUnit = new Option(),
-                        CostCenter = new Option(),
-                        Reason = dayEntry.Justification
-                    }
-                };
-
-                myDrakeEvents.Add(evt);
+                CreateNonWorkEntries(myDrakeEvents, dayEntry, workDay);
+                continue;
             }
+
+            CreateWorkEntries(myDrakeEvents, dayEntry);   
         }
 
         var json = JsonSerializer.Serialize(myDrakeEvents, _jsonSerializerOptions);
@@ -126,5 +113,75 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
 
         return 0;
+    }
+
+    private static void CreateWorkEntries(List<MyDrakeEvent> myDrakeEvents, DayEntry dayEntry)
+    {
+        for (int i = 0, j = 1; j < dayEntry.TimeEntries.OrderBy(x => x.Time).Count(); i = j + 1, j += 2)
+        {
+            var first = TimeSpan.Parse(dayEntry.TimeEntries.ElementAt(i).Time!).ToTimeString();
+            var second = TimeSpan.Parse(dayEntry.TimeEntries.ElementAt(j).Time!).ToTimeString();
+
+            var evt = new MyDrakeEvent
+            {
+                Id = Guid.NewGuid(),
+                Start = $"{dayEntry.Day}T{first}:00",
+                End = $"{dayEntry.Day}T{second}:00",
+                Justification = dayEntry.Justification,
+                Event = new MyDrakeInnerEvent
+                {
+                    StartDate = $"{dayEntry.Day}T{first}:00.000Z",
+                    EndDate = $"{dayEntry.Day}T{second}:00.000Z",
+                    Occurrence = new Option(),
+                    OperationalUnit = new Option(),
+                    CostCenter = new Option(),
+                    Reason = dayEntry.Justification
+                }
+            };
+
+            myDrakeEvents.Add(evt);
+        }
+    }
+
+    private static void CreateNonWorkEntries(List<MyDrakeEvent> myDrakeEvents, DayEntry dayEntry, TimeSpan workDay)
+    {
+        var start1 = TimeSpan.Parse("08:00:00");
+        var end1 = start1.Add(workDay.Divide(2));
+        var start2 = end1.Add(TimeSpan.FromHours(1));
+        var end2 = start2.Add(workDay.Divide(2));
+
+        myDrakeEvents.AddRange(new MyDrakeEvent[] {
+            new MyDrakeEvent
+            {
+                Id = Guid.NewGuid(),
+                Start = $"{dayEntry.Day}T{start1}:00",
+                End = $"{dayEntry.Day}T{end1}:00",
+                Justification = dayEntry.Justification,
+                Event = new MyDrakeInnerEvent
+                {
+                    StartDate = $"{dayEntry.Day}T{start1}:00.000Z",
+                    EndDate = $"{dayEntry.Day}T{end1}:00.000Z",
+                    Occurrence = new Option(),
+                    OperationalUnit = new Option(),
+                    CostCenter = new Option(),
+                    Reason = dayEntry.Justification
+                }
+            },
+            new MyDrakeEvent{
+                Id = Guid.NewGuid(),
+                Start = $"{dayEntry.Day}T{start2}:00",
+                End = $"{dayEntry.Day}T{end2}:00",
+                Justification = dayEntry.Justification,
+                Event = new MyDrakeInnerEvent
+                {
+                    StartDate = $"{dayEntry.Day}T{start2}:00.000Z",
+                    EndDate = $"{dayEntry.Day}T{end2}:00.000Z",
+                    Occurrence = new Option(),
+                    OperationalUnit = new Option(),
+                    CostCenter = new Option(),
+                    Reason = dayEntry.Justification
+                }
+            }
+        });
     }
 }
