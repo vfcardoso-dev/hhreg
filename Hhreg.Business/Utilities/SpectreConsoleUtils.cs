@@ -81,7 +81,7 @@ public static class SpectreConsoleUtils
             new Text(totalMinutesResult, defaultRowStyle), // Total Minutes
             new Text(balanceResult, new Style(balanceColor, Color.Black)), // balance
             new Text(accumulatedResult, new Style(accumulatedColor, Color.Black)), // accumulated
-            new Text(timeEntries, defaultRowStyle) // justification
+            new Text(justification, defaultRowStyle) // justification
         };
     }
 }

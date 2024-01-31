@@ -54,9 +54,8 @@ public class SpectreConsoleUtilsTests : UnitTestsBase
         var totalMinutesTs = TimeSpan.FromMinutes(dayEntry.TotalMinutes);
         var balance = totalMinutesTs.Subtract(workDayTs);
 
-        var timeEntries = dayEntry.TimeEntries.Any()
-            ? string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))
-            : dayEntry.Justification!;
+        var timeEntries = string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time));
+        var justifStr = dayEntry.Justification ?? "";
 
         ExtractText(result[0]).Should().Be(dayEntry.Day!.ToDateOnly().ToString());
         ExtractText(result[1]).Should().Be(dayEntry.DayType.ToString());
@@ -64,6 +63,7 @@ public class SpectreConsoleUtilsTests : UnitTestsBase
         ExtractText(result[3]).Should().Be(totalMinutesTs.ToTimeString());
         ExtractText(result[4]).Should().Be(expectedBalance);
         ExtractText(result[5]).Should().Be(expectedAcc);
+        ExtractText(result[6]).Should().Be(justifStr);
         accumulated.Should().Be(initialAcc + balance.TotalMinutes);
     }
 
