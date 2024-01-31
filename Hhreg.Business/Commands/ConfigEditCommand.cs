@@ -26,20 +26,20 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         [CommandOption("-b|--initial-balance")]
         public string? InitialBalance { get; init; }
 
-        [Description("DuraÁ„o do dia de trabalho")]
+        [Description("Dura√ß√£o do dia de trabalho")]
         [CommandOption("-w|--workday")]
         public string? WorkDay { get; init; }
 
-        [Description("Modo de inserÁ„o de tempo: Hours (HH:mm) ou Minutes (1..999+). Padr„o: Hours")]
+        [Description("Modo de inser√ß√£o de tempo: Hours (HH:mm) ou Minutes (1..999+). Padr√£o: Hours")]
         [CommandOption("-m|--time-input-mode")]
         [DefaultValue(TimeInputMode.Hours)]
         public TimeInputMode TimeInputMode { get; init; }
 
-        [Description("Data de inÌcio do c·lculo do banco de horas (formato: dd/MM/yyyy)")]
+        [Description("Data de in√≠cio do c√°lculo do banco de horas (formato: dd/MM/yyyy)")]
         [CommandOption("-s|--start-calculations-at")]
         public string? StartCalculationsAt { get; init; }
 
-        [Description("Toler‚ncia nas marcaÁıes")]
+        [Description("Toler√¢ncia nas marca√ß√µes")]
         [CommandOption("-t|--tolerance")]
         public string? EntryTolerance { get; init; }
 
@@ -88,7 +88,7 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
             LastBalanceCutoff = startCalculationsAt ?? oldSettings.LastBalanceCutoff
         });;
 
-        _logger.WriteLine($@"ConfiguraÁıes atualizadas com [green]SUCESSO[/]!");
+        _logger.WriteLine($@"Configura√ß√µes atualizadas com [green]SUCESSO[/]!");
         return 0;
     }
 

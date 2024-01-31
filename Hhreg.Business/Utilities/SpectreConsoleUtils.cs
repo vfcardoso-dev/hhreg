@@ -10,7 +10,7 @@ public static class SpectreConsoleUtils
         return new string[]{
             "Data",
             "Tipo",
-            "Marcações",
+            "MarcaÃ§Ãµes",
             "Total",
             "Saldo",
             "Justificativa"
@@ -22,10 +22,11 @@ public static class SpectreConsoleUtils
         return new string[]{
             "Data",
             "Tipo",
-            "Marcações / Justificativa",
+            "MarcaÃ§Ãµes",
             "Total",
             "Saldo",
-            "Acumulado"
+            "Acumulado",
+            "Justificativa"
         };
     }
 
@@ -66,9 +67,8 @@ public static class SpectreConsoleUtils
         var accumulatedTs = TimeSpan.FromMinutes(accumulated);
         var accumulatedColor = accumulatedTs > TimeSpan.Zero ? Color.Green : Color.Red;
         var accumulatedSignal = accumulatedTs > TimeSpan.Zero ? "+" : "";
-        var timeEntries = dayEntry.TimeEntries.Any()
-            ? string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))
-            : dayEntry.Justification!;
+        var timeEntries = string.Join(" / ", dayEntry.TimeEntries.Select(x => x.Time));
+        var justification = dayEntry.Justification ?? "";
 
         var totalMinutesResult = evenTimeEntries ? totalMinutesTs.ToTimeString() : "";
         var balanceResult = evenTimeEntries ? $"{balanceSignal}{balance.ToTimeString()}" : "";
@@ -80,7 +80,8 @@ public static class SpectreConsoleUtils
             new Text(timeEntries, defaultRowStyle),
             new Text(totalMinutesResult, defaultRowStyle), // Total Minutes
             new Text(balanceResult, new Style(balanceColor, Color.Black)), // balance
-            new Text(accumulatedResult, new Style(accumulatedColor, Color.Black)) // balance
+            new Text(accumulatedResult, new Style(accumulatedColor, Color.Black)), // accumulated
+            new Text(timeEntries, defaultRowStyle) // justification
         };
     }
 }

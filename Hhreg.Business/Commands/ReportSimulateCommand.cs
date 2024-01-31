@@ -28,11 +28,11 @@ public sealed class ReportSimulateCommand : ReportCommandBase<ReportSimulateComm
 
     public sealed class Settings : CommandSettings
     {
-        [Description("Define a data da simulação. (formato: dd/MM/yyyy)")]
+        [Description("Define a data da simulaÃ§Ã£o. (formato: dd/MM/yyyy)")]
         [CommandOption("-d|--day")]
         public string? Day { get; init; }
 
-        [Description("Marcações a simular (formato: HH:mm)")]
+        [Description("MarcaÃ§Ãµes a simular (formato: HH:mm)")]
         [CommandArgument(0, "[entries]")]
         public string[] Entries { get; init; } = Array.Empty<string>();
 

@@ -39,11 +39,11 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
     public sealed class Settings : CommandSettings
     {
-        [Description("Data inicial da exportação (formato: dd/MM/yyyy).")]
+        [Description("Data inicial da exportaÃ§Ã£o (formato: dd/MM/yyyy).")]
         [CommandArgument(0, "<start>")]
         public string Start { get; init; } = string.Empty;
 
-        [Description("Dia final da exportação (formato: dd/MM/yyyy). Opcional.")]
+        [Description("Dia final da exportaÃ§Ã£o (formato: dd/MM/yyyy). Opcional.")]
         [CommandArgument(1, "[end]")]
         public string? End { get; init; }
 
@@ -75,7 +75,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         var endDate = settings.End?.ToDateOnly() ?? DateTime.Today.ToDateOnly();
         var workDay = TimeSpan.FromMinutes(_settingsService.GetSettings().WorkDayInMinutes);
 
-        _logger.WriteLine($"Exportando marcações entre {startDate:dd/MM/yyyy} até {endDate:dd/MM/yyyy}...");
+        _logger.WriteLine($"Exportando marcaÃ§Ãµes entre {startDate:dd/MM/yyyy} atÃ© {endDate:dd/MM/yyyy}...");
 
         var validDayTypes = new[] { DayType.Work, DayType.Justified };
         var dayEntries = _timeRepository.GetDayEntriesByType(startDate, endDate, validDayTypes);
@@ -98,7 +98,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
 
         if (settings.ShowResults)
         {
-            var panel = new Panel("Copie o código abaixo e cole na extensão [green]hhreg.chrome[/]");
+            var panel = new Panel("Copie o cÃ³digo abaixo e cole na extensÃ£o [green]hhreg.chrome[/]");
             _logger.Write(panel);
 
             _logger.WriteLine(encoded);
@@ -107,7 +107,7 @@ public sealed class ReportMyDrakeCommand : ReportCommandBase<ReportMyDrakeComman
         {
             _clipboard.SetText(encoded);
 
-            var panel = new Panel("Código gerado e copiado para a área de transferência. Agora você pode colar na extensão [green]hhreg.chrome[/]");
+            var panel = new Panel("CÃ³digo gerado e copiado para a Ã¡rea de transferï¿½ncia. Agora vocÃª pode colar na extensÃ£o [green]hhreg.chrome[/]");
             _logger.Write(panel);
         }
 

@@ -25,12 +25,10 @@ public abstract class ReportCommandBase<T> : Command<T> where T : CommandSetting
         foreach (var dayEntry in invalidDays)
         {
             var day = dayEntry.Day!.ToDateOnly();
-            _logger.WriteLine($@"[orange1]VALIDAÇÃO:[/] Número ímpar de marcações ([orange1]{dayEntry.TimeEntries.Count()}[/]) em [orange1]{day:dd/MM/yyyy}[/]! ({string
+            _logger.WriteLine($@"[orange1]VALIDAÃ‡ÃƒO:[/] NÃºmero Ã­mpar de marcaÃ§Ãµes ([orange1]{dayEntry.TimeEntries.Count()}[/]) em [orange1]{day:dd/MM/yyyy}[/]! ({string
                 .Join(" / ", dayEntry.TimeEntries.Select(x => x.Time))})");
         }
 
         _logger.WriteLine(HhregMessages.ThereAreDayEntriesWithAnOddCountOfTimeEntries);
-
-        // throw new HhregException(HhregMessages.PleaseFixTheseDaysBeforeGeneratingNewReports);
     }
 }

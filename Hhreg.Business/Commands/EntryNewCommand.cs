@@ -23,7 +23,7 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
 
     public sealed class Settings : CommandSettings
     {
-        [Description("Define a data da marcação como hoje")]
+        [Description("Define a data da marcaÃ§Ã£o como hoje")]
         [CommandOption("-t|--today")]
         public bool IsToday { get; init; }
 
@@ -36,11 +36,11 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         [CommandOption("-j|--justification")]
         public string? Justification { get; init; }
 
-        [Description("Define a data da marcação. (formato: dd/MM/yyyy)")]
+        [Description("Define a data da marcaÃ§Ã£o. (formato: dd/MM/yyyy)")]
         [CommandOption("-d|--day")]
         public string? Day { get; init; }
 
-        [Description("Define as marcações (formato: HH:mm)")]
+        [Description("Define as marcaÃ§Ãµes (formato: HH:mm)")]
         [CommandArgument(0, "[entries]")]
         public string[] Entries { get; init; } = Array.Empty<string>();
 
@@ -90,7 +90,7 @@ public sealed class EntryNewCommand : Command<EntryNewCommand.Settings>
         _timeRepository.CreateTime(dayEntry.Id, settings.Entries);
 
         var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
-        _logger.WriteLine($@"Marcações criadas com [green]SUCESSO[/]!");
+        _logger.WriteLine($@"MarcaÃ§Ãµes criadas com [green]SUCESSO[/]!");
         _logger.WriteLine($"[yellow]{inputDay}[/]: {dayText}");
         return 0;
     }

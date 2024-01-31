@@ -29,56 +29,56 @@ public class CommandsConfigurer : ICommandsConfigurer
         cmd.SetInterceptor(_ensureInitInterceptor);
 
         cmd.AddCommand<InitCommand>("init")
-            .WithDescription("Inicializa as configuraÁıes do CLI.")
+            .WithDescription("Inicializa as configura√ß√µes do CLI.")
             .WithExample(new string[] { "init", "--initial-balance", "-0:40", "--workday", "8:00", "--start-calculations-at", "01/12/2022" })
             .WithExample(new string[] { "init", "-m", "Minutes", "-b", "-20", "-w", "480", "-s", "01/12/2022" });
 
         cmd.AddCommand<UpdateCommand>("update")
-            .WithDescription("Atualiza o app se houver uma nova vers„o disponÌvel.");
+            .WithDescription("Atualiza o app se houver uma nova vers√£o dispon√≠vel.");
 
         cmd.AddBranch("config", config =>
         {
-            config.SetDescription("Gerencia as configuraÁıes do CLI.");
+            config.SetDescription("Gerencia as configura√ß√µes do CLI.");
 
             config.AddCommand<ConfigShowCommand>("show")
-                .WithDescription("Exibe as configuraÁıes atuais.");
+                .WithDescription("Exibe as configura√ß√µes atuais.");
 
             config.AddCommand<ConfigDatabaseCommand>("database")
                 .WithDescription("Imprime o local atual do arquivo do banco de dados.");
 
             config.AddCommand<ConfigRecalculateCommand>("recalculate")
-                .WithDescription("Recalcula as marcaÁıes de cada dia registrado no banco de dados.");
+                .WithDescription("Recalcula as marca√ß√µes de cada dia registrado no banco de dados.");
 
             config.AddCommand<ConfigEditCommand>("edit")
-                .WithDescription("Altera as configuraÁıes atuais.")
+                .WithDescription("Altera as configura√ß√µes atuais.")
                 .WithExample(new string[] { "config", "edit", "--initial-balance", "1:20", "--start-calculations-at", "01/04/2019" })
                 .WithExample(new string[] { "config", "edit", "-m", "Minutes", "-b", "10" });
         });
 
         cmd.AddBranch("entry", entry =>
         {
-            entry.SetDescription("Gerencia as entradas no registro.");
+            entry.SetDescription("Gerencia as marca√ß√µes no registro.");
 
             entry.AddCommand<EntryNewCommand>("new")
-                .WithDescription("Registra novas entradas.")
+                .WithDescription("Registra novas marca√ß√µes.")
                 .WithExample(new string[] { "entry", "new", "--day", "23/02/2023", "08:23", "12:01", "13:44", "19:37" })
                 .WithExample(new string[] { "entry", "new", "-d", "12/01/2023", "-y", "Sick", "-j", "\"This is a justification\"" });
 
             entry.AddCommand<EntryOverrideCommand>("override")
-                .WithDescription("Sobrescreve entradas no registro.")
+                .WithDescription("Sobrescreve marca√ß√µes no registro.")
                 .WithExample(new string[] { "entry", "override", "--day", "23/02/2023", "08:23", "12:01", "13:44", "19:37" })
                 .WithExample(new string[] { "entry", "override", "-d", "12/01/2023", "-y", "Sick", "-j", "\"This is a justification\"" });
 
             entry.AddCommand<EntryNowCommand>("now")
-                .WithDescription("Escreve uma nova entrada no registro agora.");
+                .WithDescription("Escreve uma nova marca√ß√£o no registro agora.");
         });
 
         cmd.AddBranch("report", report =>
         {
-            report.SetDescription("Consolida e exibe as entradas no registro.");
+            report.SetDescription("Consolida e exibe as marca√ß√µes no registro.");
 
             report.AddCommand<ReportSimulateCommand>("simulate")
-                .WithDescription("Simula marcaÁıes para obter saldo acumulado estimado do banco de horas.")
+                .WithDescription("Simula novas marca√ß√µes para obter saldo acumulado estimado do banco de horas.")
                 .WithExample(new string[] { "report", "simulate" })
                 .WithExample(new string[] { "report", "simulate", "18:30" })
                 .WithExample(new string[] { "report", "simulate", "-d", "01/11/2023", "18:30" });
@@ -87,7 +87,7 @@ public class CommandsConfigurer : ICommandsConfigurer
                 .WithExample(new string[] { "report", "balance" })
                 .WithExample(new string[] { "report", "balance", "--tail", "30" });
             report.AddCommand<ReportMyDrakeCommand>("mydrake")
-                .WithDescription("Exporta as entradas do registro para inclus„o em lote no MyDrake.")
+                .WithDescription("Exporta as marca√ß√µes do registro para inclus√£o em lote no MyDrake.")
                 .WithExample(new string[] { "report", "mydrake", "01/07/2023" })
                 .WithExample(new string[] { "report", "mydrake", "01/03/2023", "31/03/2023" });
         });

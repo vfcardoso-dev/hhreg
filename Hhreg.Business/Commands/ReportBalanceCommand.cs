@@ -27,7 +27,7 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
 
     public sealed class Settings : CommandSettings
     {
-        [Description("Recupera últimos N dias")]
+        [Description("Recupera Ãšltimos N dias")]
         [CommandOption("-t|--tail")]
         [DefaultValue(5)]
         public int Tail { get; init; }

@@ -39,7 +39,7 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
         [CommandOption("-d|--day")]
         public string? Day { get; init; }
 
-        [Description("Define as marcações (formato: HH:mm)")]
+        [Description("Define as marcaÃ§Ãµes (formato: HH:mm)")]
         [CommandArgument(0, "[entries]")]
         public string[] Entries { get; init; } = Array.Empty<string>();
 
@@ -93,7 +93,7 @@ public sealed class EntryOverrideCommand : Command<EntryOverrideCommand.Settings
         _timeRepository.OverrideDayEntry(dayEntry.Id, settings.Justification, settings.DayType, settings.Entries);
 
         var dayText = settings.DayType == DayType.Work ? string.Join(" / ", settings.Entries) : settings.Justification;
-        _logger.WriteLine($@"Marcações sobrescritas com [green]SUCESSO[/]!");
+        _logger.WriteLine($@"MarcaÃ§Ãµes sobrescritas com [green]SUCESSO[/]!");
         _logger.WriteLine($"[yellow]{inputDay}[/]: {dayText}");
         return 0;
     }

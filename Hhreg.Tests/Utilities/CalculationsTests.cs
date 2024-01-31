@@ -38,6 +38,9 @@ namespace Hhreg.Tests.Utilities
         [TestCase(new[] { "08:00", "12:00", "13:00", "17:15" }, 10, 495)]
         [TestCase(new[] { "08:00", "12:00", "13:00", "16:45" }, 10, 465)]
         [TestCase(new[] { "08:15", "12:00", "13:00", "17:00" }, 15, 480)]
+        [TestCase(new[] { "08:15", "12:00", "13:00", "17:00" }, 15, 480)]
+        [TestCase(new[] { "08:00", "12:00", "13:00", "17:00", "20:00", "22:00" }, 10, 600)]
+        //[TestCase(new[] { "08:00", "12:00", "13:00", "17:00", "21:00", "01:00" }, 10, 720)]
         public void deve_realizar_calculos_de_horario_de_trabalho(IEnumerable<string> entries, double toleranceInMinutes, double expectedResult)
         {
             // Given/When
