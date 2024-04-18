@@ -21,7 +21,7 @@ namespace Hhreg.Business.Utilities
                 summary = summary.Add(second.Subtract(first));
             }
 
-            var summaryWithTolerance = summary < (workday - tolerance) || summary > (workday + tolerance)
+            var summaryWithTolerance = summary <= (workday - tolerance) || summary >= (workday + tolerance)
                     ? summary
                     : workday;
 
