@@ -13,7 +13,8 @@ public class SettingsBuilder : BaseBuilder<Settings>
             StartBalanceInMinutes = context.Create<double>(),
             WorkDayInMinutes = context.Create<double>(),
             EntryToleranceInMinutes = 0,
-            LastBalanceCutoff = context.Create<DateTime>().ToString("yyyy-MM-dd")
+            LastBalanceCutoff = context.Create<DateTime>().ToString("yyyy-MM-dd"),
+            MonthlyBonusPercentage = 0
         };
 
         return settings;

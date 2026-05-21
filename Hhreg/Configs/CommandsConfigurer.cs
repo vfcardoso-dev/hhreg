@@ -31,7 +31,8 @@ public class CommandsConfigurer : ICommandsConfigurer
         cmd.AddCommand<InitCommand>("init")
             .WithDescription("Inicializa as configurações do CLI.")
             .WithExample(new string[] { "init", "--initial-balance", "-0:40", "--workday", "8:00", "--start-calculations-at", "01/12/2022" })
-            .WithExample(new string[] { "init", "-m", "Minutes", "-b", "-20", "-w", "480", "-s", "01/12/2022" });
+            .WithExample(new string[] { "init", "-m", "Minutes", "-b", "-20", "-w", "480", "-s", "01/12/2022" })
+            .WithExample(new string[] { "init", "-b", "0:00", "-w", "8:00", "-s", "01/12/2022", "-p", "50" });
 
         cmd.AddCommand<UpdateCommand>("update")
             .WithDescription("Atualiza o app se houver uma nova versão disponível.");
@@ -52,7 +53,8 @@ public class CommandsConfigurer : ICommandsConfigurer
             config.AddCommand<ConfigEditCommand>("edit")
                 .WithDescription("Altera as configurações atuais.")
                 .WithExample(new string[] { "config", "edit", "--initial-balance", "1:20", "--start-calculations-at", "01/04/2019" })
-                .WithExample(new string[] { "config", "edit", "-m", "Minutes", "-b", "10" });
+                .WithExample(new string[] { "config", "edit", "-m", "Minutes", "-b", "10" })
+                .WithExample(new string[] { "config", "edit", "--monthly-bonus-percentage", "50" });
         });
 
         cmd.AddBranch("entry", entry =>

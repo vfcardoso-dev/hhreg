@@ -6,6 +6,7 @@ public static class HhregMessages
     public const string CouldNotParseAsAValidDateFormat = "N�o foi possível converter '{0}' num formato de data válido.";
     public const string CouldNotParseAsAValidTimeFormat = "N�o foi possível converter '{0}' num formato de hora válido.";
     public const string CouldNotParseAsAValidIntegerFormat = "Não foi possível converter '{0}' num formato de n�mero inteiro válido";
+    public const string CouldNotParseAsAValidPercentageFormat = "Não foi possível converter '{0}' num percentual inteiro válido (esperado: 0..100).";
     public const string InvalidInputFormatOnValue = "Formato inválido de entrada no valor '{0}'";
     public const string SettingsNotYetInitialized = "CLI ainda não foi inicializado.";
 

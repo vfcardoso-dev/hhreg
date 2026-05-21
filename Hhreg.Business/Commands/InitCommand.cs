@@ -43,6 +43,10 @@ public sealed class InitCommand : Command<InitCommand.Settings>
         [CommandOption("-t|--tolerance")]
         public string? EntryTolerance { get; init; }
 
+        [Description("Bônus mensal sobre saldo positivo (percentual inteiro 0..100). Default: 0")]
+        [CommandOption("-p|--monthly-bonus-percentage")]
+        public string? MonthlyBonusPercentage { get; init; }
+
         public override ValidationResult Validate()
         {
             if (InitialBalance == null) return ValidationResult.Error(HhregMessages.YouShouldInformInitialBalance);
@@ -70,7 +74,15 @@ public sealed class InitCommand : Command<InitCommand.Settings>
             if (!DateOnly.TryParse(StartCalculationsAt, out var _))
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
 
+            if (MonthlyBonusPercentage != null && !IsValidPercentage(MonthlyBonusPercentage))
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidPercentageFormat, MonthlyBonusPercentage));
+
             return ValidationResult.Success();
+        }
+
+        private static bool IsValidPercentage(string value)
+        {
+            return value.IsInteger() && int.TryParse(value, out var parsed) && parsed >= 0 && parsed <= 100;
         }
     }
 
@@ -83,17 +95,21 @@ public sealed class InitCommand : Command<InitCommand.Settings>
 
         var initialBalance = GetTimeInputValue(settings.TimeInputMode, settings.InitialBalance!);
         var workday = GetTimeInputValue(settings.TimeInputMode, settings.WorkDay!);
-        var entryTolerance = settings.EntryTolerance != null 
-            ? GetTimeInputValue(settings.TimeInputMode, settings.EntryTolerance!) 
+        var entryTolerance = settings.EntryTolerance != null
+            ? GetTimeInputValue(settings.TimeInputMode, settings.EntryTolerance!)
             : 0;
         var startCalculationsAt = DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd");
+        var monthlyBonusPercentage = settings.MonthlyBonusPercentage != null
+            ? double.Parse(settings.MonthlyBonusPercentage)
+            : 0;
 
         _settingsService.SaveSettings(new Domain.Settings
         {
             StartBalanceInMinutes = initialBalance,
             WorkDayInMinutes = workday,
             EntryToleranceInMinutes = entryTolerance,
-            LastBalanceCutoff = startCalculationsAt
+            LastBalanceCutoff = startCalculationsAt,
+            MonthlyBonusPercentage = monthlyBonusPercentage
         });
 
         _logger.WriteLine($@"Configurações inicializadas com [green]SUCESSO[/]!");

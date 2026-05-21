@@ -7,6 +7,7 @@ using Hhreg.Business.Exceptions;
 using Hhreg.Business.Infrastructure;
 using Hhreg.Business.Utilities;
 using Hhreg.Tests.Infrastructure;
+using Hhreg.Tests.Infrastructure.Utilities;
 using NSubstitute;
 
 namespace Hhreg.Tests.Commands;
@@ -255,7 +256,86 @@ public class InitCommandTests : UnitTestsBase
             x.WorkDayInMinutes == workdayInMinutes &&
             x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(1);
-        Logger.Lines.Should().Contain("Configurações inicializadas com [green]SUCESSO[/]!");
+        Logger.Lines.Should().Contain("ConfiguraÃ§Ãµes inicializadas com [green]SUCESSO[/]!");
+    }
+
+    [TestCase("abc")]
+    [TestCase("-1")]
+    [TestCase("101")]
+    [TestCase("10.5")]
+    public void deve_falhar_valor_informado_para_monthly_bonus_percentage_for_invalido(string monthlyBonusPercentage)
+    {
+        // Given
+        var initialBalanceInMinutes = Fixture.Create<int>();
+        var workdayInMinutes = Fixture.Create<int>();
+        var startCalculationsAt = Fixture.Create<DateTime>();
+
+        AddSingleton<ISettingsService>(_settingsService!);
+        AddSingleton<ILogger>(Logger);
+
+        _settingsService!.IsInitialized().Returns(false);
+
+        var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
+
+        // When
+        Action action = () => app.Run(new[]{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(),
+            "-w", workdayInMinutes.ToString(), "-s", startCalculationsAt.ToString("dd/MM/yyyy"),
+            "-p", monthlyBonusPercentage});
+
+        // Then
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Any<Settings>());
+        action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CouldNotParseAsAValidPercentageFormat, monthlyBonusPercentage));
+    }
+
+    [Test]
+    public void deve_ser_capaz_de_inicializar_configuracoes_com_monthly_bonus_percentage()
+    {
+        // Given
+        var initialBalanceInMinutes = Fixture.Create<int>();
+        var workdayInMinutes = Fixture.Create<int>();
+        var startCalculationsAt = Fixture.Create<DateTime>();
+        var monthlyBonusPercentage = Fixture.CreateBetween(0, 100);
+
+        AddSingleton<ISettingsService>(_settingsService!);
+        AddSingleton<ILogger>(Logger);
+
+        _settingsService!.IsInitialized().Returns(false);
+
+        var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
+
+        // When
+        var output = app.Run(new[]{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(),
+            "-w", workdayInMinutes.ToString(), "-s", startCalculationsAt.ToString("dd/MM/yyyy"),
+            "-p", monthlyBonusPercentage.ToString()});
+
+        // Then
+        output.Should().Be(0);
+        _settingsService!.Received().SaveSettings(Arg.Is<Settings>(x =>
+            x.MonthlyBonusPercentage == monthlyBonusPercentage));
+    }
+
+    [Test]
+    public void deve_ser_capaz_de_inicializar_configuracoes_sem_monthly_bonus_percentage_resultando_em_zero()
+    {
+        // Given
+        var initialBalanceInMinutes = Fixture.Create<int>();
+        var workdayInMinutes = Fixture.Create<int>();
+        var startCalculationsAt = Fixture.Create<DateTime>();
+
+        AddSingleton<ISettingsService>(_settingsService!);
+        AddSingleton<ILogger>(Logger);
+
+        _settingsService!.IsInitialized().Returns(false);
+
+        var app = CreateCommandApp((config) => config.AddCommand<InitCommand>("init"));
+
+        // When
+        var output = app.Run(new[]{"init", "-m", "Minutes", "-b", initialBalanceInMinutes.ToString(),
+            "-w", workdayInMinutes.ToString(), "-s", startCalculationsAt.ToString("dd/MM/yyyy")});
+
+        // Then
+        output.Should().Be(0);
+        _settingsService!.Received().SaveSettings(Arg.Is<Settings>(x => x.MonthlyBonusPercentage == 0));
     }
 
     [Test]
@@ -285,6 +365,6 @@ public class InitCommandTests : UnitTestsBase
             x.WorkDayInMinutes == workdayInMinutes &&
             x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
         Logger.MethodHits.Where(x => x == "WriteLine").Should().HaveCount(1);
-        Logger.Lines.Should().Contain("Configurações inicializadas com [green]SUCESSO[/]!");
+        Logger.Lines.Should().Contain("ConfiguraÃ§Ãµes inicializadas com [green]SUCESSO[/]!");
     }
 }

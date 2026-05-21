@@ -20,6 +20,7 @@ public interface ITimeRepository
     void OverrideDayEntry(long dayEntryId, string? justification = null, DayType? dayType = DayType.Work, params string[] timeList);
     void UpdateDayEntryTotalMinutes(long dayEntryId, double total);
     double GetAccumulatedBalance(DateOnly limitDay);
+    IDictionary<string, double> GetMonthlyDeltas(DateOnly limitDay);
 }
 
 public class TimeRepository : ITimeRepository
@@ -213,11 +214,38 @@ public class TimeRepository : ITimeRepository
     public double GetAccumulatedBalance(DateOnly limitDay)
     {
         var cfg = _settingsService.GetSettings();
-        var balanceQuery = "select total(TotalMinutes - @workDay) from DayEntry where Day between @startDay and @limitDay";
+        var monthDeltas = GetMonthlyDeltas(limitDay);
+        var aggregated = Calculations.AggregateMonthlyBalance(
+            monthDeltas.Select(kv => (kv.Key, kv.Value)),
+            limitDay,
+            cfg.MonthlyBonusPercentage);
+        return cfg.StartBalanceInMinutes + aggregated;
+    }
 
-        var balance = _unitOfWork.QuerySingle<double>(balanceQuery, 
-            new { startDay = cfg.LastBalanceCutoff, limitDay = limitDay.ToString("yyyy-MM-dd"), workDay = cfg.WorkDayInMinutes });
-        return cfg.StartBalanceInMinutes + balance;
+    public IDictionary<string, double> GetMonthlyDeltas(DateOnly limitDay)
+    {
+        var cfg = _settingsService.GetSettings();
+        var query = @"
+            select substr(Day, 1, 7) as YearMonth, total(TotalMinutes - @workDay) as Delta
+            from DayEntry
+            where Day between @startDay and @limitDay
+            group by substr(Day, 1, 7)
+            order by YearMonth;";
+
+        var rows = _unitOfWork.Query<MonthlyDeltaRow>(query, new
+        {
+            startDay = cfg.LastBalanceCutoff,
+            limitDay = limitDay.ToString("yyyy-MM-dd"),
+            workDay = cfg.WorkDayInMinutes
+        });
+
+        return rows.ToDictionary(r => r.YearMonth, r => r.Delta);
+    }
+
+    private sealed class MonthlyDeltaRow
+    {
+        public string YearMonth { get; set; } = string.Empty;
+        public double Delta { get; set; }
     }
 
     private IEnumerable<DayEntry> FillTimeEntries(IEnumerable<DayEntry> dayEntries)

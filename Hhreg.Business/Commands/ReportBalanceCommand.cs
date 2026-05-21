@@ -56,13 +56,24 @@ public sealed class ReportBalanceCommand : ReportCommandBase<ReportBalanceComman
             throw new HhregException(string.Format(HhregMessages.ConfigurationIsSetToStartBalanceCalculationsAfterTheOffsetDate, startCalculationsAt, offsetDate));
         }
 
+        var today = DateTime.Today.ToDateOnly();
         var offsetAccumulatedBalance = _timeRepository.GetAccumulatedBalance(offsetDate.AddDays(-1));
-        var dayEntries = _timeRepository.GetDayEntries(offsetDate, DateTime.Today.ToDateOnly());
+        var monthDeltas = _timeRepository.GetMonthlyDeltas(today);
+        var dayEntries = _timeRepository.GetDayEntries(offsetDate, today);
 
         var rows = new List<Text[]>();
+        string? currentYearMonth = null;
 
         foreach (var dayEntry in dayEntries)
         {
+            var entryYearMonth = dayEntry.Day!.Substring(0, 7);
+            if (currentYearMonth != null && currentYearMonth != entryYearMonth)
+            {
+                var closedMonthDelta = monthDeltas.TryGetValue(currentYearMonth, out var d) ? d : 0;
+                offsetAccumulatedBalance += Calculations.ComputeMonthBonus(closedMonthDelta, monthClosed: true, cfg.MonthlyBonusPercentage);
+            }
+            currentYearMonth = entryYearMonth;
+
             rows.Add(SpectreConsoleUtils.GetDayEntryBalanceRow(dayEntry, cfg.WorkDayInMinutes, ref offsetAccumulatedBalance));
         }
 

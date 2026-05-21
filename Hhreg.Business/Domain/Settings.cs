@@ -9,6 +9,7 @@ public class Settings : BaseEntity<Settings>
     public double WorkDayInMinutes { get; set; }
     public double EntryToleranceInMinutes { get; set; }
     public string LastBalanceCutoff { get; set; } = string.Empty; // Date
+    public double MonthlyBonusPercentage { get; set; }
 
     public override string[] ExtractRow()
     {
@@ -16,7 +17,8 @@ public class Settings : BaseEntity<Settings>
             StartBalanceInMinutes.ToTimeString(),
             WorkDayInMinutes.ToTimeString(),
             EntryToleranceInMinutes.ToTimeString(),
-            DateTime.Parse(LastBalanceCutoff).ToString("dd/MM/yyyy")
+            DateTime.Parse(LastBalanceCutoff).ToString("dd/MM/yyyy"),
+            $"{MonthlyBonusPercentage:0.##}%"
         };
     }
 }

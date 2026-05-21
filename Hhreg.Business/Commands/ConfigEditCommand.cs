@@ -43,6 +43,10 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         [CommandOption("-t|--tolerance")]
         public string? EntryTolerance { get; init; }
 
+        [Description("Bônus mensal sobre saldo positivo (percentual inteiro 0..100)")]
+        [CommandOption("-p|--monthly-bonus-percentage")]
+        public string? MonthlyBonusPercentage { get; init; }
+
         public override ValidationResult Validate()
         {
             if (TimeInputMode == TimeInputMode.Hours && InitialBalance?.IsTime() == false)
@@ -66,7 +70,15 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
             if (StartCalculationsAt != null && !DateOnly.TryParse(StartCalculationsAt, out var _))
                 return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidDateFormat, StartCalculationsAt));
 
+            if (MonthlyBonusPercentage != null && !IsValidPercentage(MonthlyBonusPercentage))
+                return ValidationResult.Error(string.Format(HhregMessages.CouldNotParseAsAValidPercentageFormat, MonthlyBonusPercentage));
+
             return ValidationResult.Success();
+        }
+
+        private static bool IsValidPercentage(string value)
+        {
+            return value.IsInteger() && int.TryParse(value, out var parsed) && parsed >= 0 && parsed <= 100;
         }
     }
 
@@ -77,6 +89,8 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
         var entryTolerance = GetTimeInputValue(settings.TimeInputMode, settings.EntryTolerance);
         var startCalculationsAt = settings.StartCalculationsAt != null
             ? DateOnly.Parse(settings.StartCalculationsAt!).ToString("yyyy-MM-dd") : null;
+        var monthlyBonusPercentage = settings.MonthlyBonusPercentage != null
+            ? double.Parse(settings.MonthlyBonusPercentage) : (double?)null;
 
         var oldSettings = _settingsService.GetSettings();
 
@@ -85,7 +99,8 @@ public sealed class ConfigEditCommand : Command<ConfigEditCommand.Settings>
             StartBalanceInMinutes = initialBalance ?? oldSettings.StartBalanceInMinutes,
             WorkDayInMinutes = workday ?? oldSettings.WorkDayInMinutes,
             EntryToleranceInMinutes = entryTolerance ?? oldSettings.EntryToleranceInMinutes,
-            LastBalanceCutoff = startCalculationsAt ?? oldSettings.LastBalanceCutoff
+            LastBalanceCutoff = startCalculationsAt ?? oldSettings.LastBalanceCutoff,
+            MonthlyBonusPercentage = monthlyBonusPercentage ?? oldSettings.MonthlyBonusPercentage
         });;
 
         _logger.WriteLine($@"Configurações atualizadas com [green]SUCESSO[/]!");

@@ -1,3 +1,4 @@
+using System.Reflection;
 using Hhreg.Business.Infrastructure;
 using Spectre.Console;
 using Spectre.Console.Rendering;
@@ -74,10 +75,36 @@ public class LoggerStub : ILogger
 
         foreach (var row in rows)
         {
-            Rows.Add(row.Select(x => x.ToString()).ToArray()!);
+            Rows.Add(row.Select(ExtractText).ToArray()!);
         }
 
         MethodHits.Add("WriteTable");
+    }
+
+    private static readonly FieldInfo? ParagraphField = typeof(Text)
+        .GetField("_paragraph", BindingFlags.NonPublic | BindingFlags.Instance);
+
+    private static readonly FieldInfo? LinesField = ParagraphField?.FieldType
+        .GetField("_lines", BindingFlags.NonPublic | BindingFlags.Instance);
+
+    private static string ExtractText(Text text)
+    {
+        var paragraph = ParagraphField?.GetValue(text);
+        if (paragraph == null || LinesField == null) return text.ToString() ?? "";
+
+        if (LinesField.GetValue(paragraph) is not System.Collections.IEnumerable lines) return "";
+
+        var builder = new System.Text.StringBuilder();
+        foreach (var line in lines)
+        {
+            if (line is not System.Collections.IEnumerable segments) continue;
+            foreach (var segment in segments)
+            {
+                var textProperty = segment.GetType().GetProperty("Text");
+                builder.Append(textProperty?.GetValue(segment) as string);
+            }
+        }
+        return builder.ToString();
     }
 
     public void Clear()

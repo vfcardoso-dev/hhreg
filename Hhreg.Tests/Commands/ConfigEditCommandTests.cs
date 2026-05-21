@@ -7,6 +7,7 @@ using Hhreg.Business.Exceptions;
 using Hhreg.Business.Infrastructure;
 using Hhreg.Business.Utilities;
 using Hhreg.Tests.Infrastructure;
+using Hhreg.Tests.Infrastructure.Utilities;
 using NSubstitute;
 
 namespace Hhreg.Tests.Commands;
@@ -157,5 +158,72 @@ public class ConfigEditCommandTests : UnitTestsBase
         // Then
         result.Should().Be(0);
         _settingsService!.Received(1).SaveSettings(Arg.Is<Settings>(x => x.LastBalanceCutoff == startCalculationsAt.ToString("yyyy-MM-dd")));
+    }
+
+    [TestCase("abc")]
+    [TestCase("-1")]
+    [TestCase("101")]
+    [TestCase("10.5")]
+    public void Should_throw_validation_error_for_monthly_bonus_percentage_on_invalid_situations(string monthlyBonusPercentage)
+    {
+        // Given
+        AddSingleton<ISettingsService>(_settingsService!);
+        AddSingleton<ILogger>(Logger);
+
+        var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
+
+        // When
+        Action action = () => app.Run(new[] { "edit", "-p", monthlyBonusPercentage });
+
+        // Then
+        _settingsService!.DidNotReceive().SaveSettings(Arg.Any<Settings>());
+        action.Should().Throw<Exception>().WithMessage(string.Format(HhregMessages.CouldNotParseAsAValidPercentageFormat, monthlyBonusPercentage));
+    }
+
+    [Test]
+    public void Should_be_able_to_edit_monthly_bonus_percentage_setting()
+    {
+        // Given
+        var monthlyBonusPercentage = Fixture.CreateBetween(0, 100);
+
+        AddSingleton<ISettingsService>(_settingsService!);
+        AddSingleton<ILogger>(Logger);
+        _settingsService!.GetSettings().Returns(Fixture.Create<Settings>());
+
+        var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
+
+        // When
+        var result = app.Run(new[] { "edit", "-p", monthlyBonusPercentage.ToString() });
+
+        // Then
+        result.Should().Be(0);
+        _settingsService!.Received(1).SaveSettings(Arg.Is<Settings>(x => x.MonthlyBonusPercentage == monthlyBonusPercentage));
+    }
+
+    [Test]
+    public void Should_preserve_old_monthly_bonus_percentage_when_flag_is_not_passed()
+    {
+        // Given
+        var oldSettings = new Settings
+        {
+            StartBalanceInMinutes = 0,
+            WorkDayInMinutes = 480,
+            EntryToleranceInMinutes = 0,
+            LastBalanceCutoff = "2025-01-01",
+            MonthlyBonusPercentage = 75
+        };
+
+        AddSingleton<ISettingsService>(_settingsService!);
+        AddSingleton<ILogger>(Logger);
+        _settingsService!.GetSettings().Returns(oldSettings);
+
+        var app = CreateCommandApp((config) => config.AddCommand<ConfigEditCommand>("edit"));
+
+        // When
+        var result = app.Run(new[] { "edit", "-m", "Minutes", "-b", "10" });
+
+        // Then
+        result.Should().Be(0);
+        _settingsService!.Received(1).SaveSettings(Arg.Is<Settings>(x => x.MonthlyBonusPercentage == 75));
     }
 }
